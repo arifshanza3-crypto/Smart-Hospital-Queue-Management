@@ -1,0 +1,21 @@
+/* --- SECTION 1: HEADER & NAVIGATION --- */
+.navbar {
+    background-color: #0B2E33 !important; /* Theme color updated */
+    padding: 15px 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.navbar-brand {
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #FFFFFF !important; 
+}
+
+.nav-link {
+    color: #FFFFFF !important; 
+    margin: 0 10px;
+    font-weight: 500;
+}
+

@@ -1,0 +1,104 @@
+:root {
+    --dark-green: #1a3a3a;
+    --bg-light: #3e8686;
+    --accent-blue: #00d4ff;
+}
+
+.about-hero.hero-with-bg {
+    /* Image settings */
+    background-size: cover !important;
+    background-position: center !important;
+    background-attachment: fixed; 
+    
+    /* Layout settings */
+    padding: 140px 20px;
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: white;
+}
+
+.hero-container {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.badge-outline {
+    display: inline-block;
+    padding: 8px 20px;
+    border: 1px solid var(--accent-blue);
+    color: var(--accent-blue);
+    border-radius: 100px;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 25px;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.hero-title {
+    font-size: clamp(32px, 5vw, 64px);
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 25px;
+    text-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+.text-accent {
+    color: var(--accent-blue);
+}
+
+.hero-subtitle {
+    font-size: 19px;
+    line-height: 1.6;
+    color: #f3f4f6;
+    max-width: 750px;
+    margin: 0 auto 50px auto;
+}
+
+/* Glassmorphism Effect for Stats */
+.hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 60px;
+    padding: 30px;
+    background: rgba(255, 255, 255, 0.1); 
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px); /* For Safari support */
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-number {
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--accent-blue);
+}
+
+.stat-label {
+    font-size: 13px;
+    color: #e5e7eb;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+@media (max-width: 768px) {
+    .hero-stats {
+        flex-direction: column;
+        gap: 30px;
+    }
+    .about-hero.hero-with-bg {
+        padding: 80px 20px;
+        background-attachment: scroll;
+    }
+}

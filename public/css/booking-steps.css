@@ -1,0 +1,141 @@
+:root {
+    --primary: #1a3a3a;
+    --accent: #00d4ff;
+    --text: #64748b;
+}
+
+.booking-journey {
+    padding: 100px 20px;
+    background: #fdfdfd;
+}
+
+.journey-container {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.journey-header {
+    text-align: center;
+    margin-bottom: 80px;
+}
+
+.badge-new {
+    background: var(--primary);
+    color: var(--accent);
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.text-gradient {
+    background: linear-gradient(to right, #1a3a3a, #3e8686);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* The Flow Path */
+.flow-wrapper {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    gap: 20px;
+}
+
+.flow-line {
+    position: absolute;
+    top: 25px;
+    left: 5%;
+    right: 5%;
+    height: 2px;
+    background: #e2e8f0;
+    z-index: 1;
+}
+
+.flow-step {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+}
+
+.flow-node {
+    width: 50px;
+    height: 50px;
+    background: white;
+    border: 2px solid #e2e8f0;
+    color: var(--primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    margin-bottom: 25px;
+    transition: 0.3s;
+}
+
+.flow-content {
+    text-align: center;
+    padding: 0 10px;
+}
+
+.flow-icon {
+    font-size: 24px;
+    color: var(--accent);
+    margin-bottom: 15px;
+}
+
+.flow-step h3 {
+    color: var(--primary);
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.flow-step p {
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.5;
+}
+
+/* Hover Effect */
+.flow-step:hover .flow-node {
+    border-color: var(--accent);
+    background: var(--primary);
+    color: var(--accent);
+    box-shadow: 0 0 15px rgba(0, 212, 255, 0.4);
+}
+
+/* --- MOBILE RESPONSIVE --- */
+@media (max-width: 850px) {
+    .flow-wrapper {
+        flex-direction: column;
+        gap: 50px;
+        align-items: flex-start;
+        padding-left: 30px;
+    }
+
+    .flow-line {
+        width: 2px;
+        height: 80%;
+        top: 10%;
+        left: 54px;
+    }
+
+    .flow-step {
+        flex-direction: row;
+        text-align: left;
+        gap: 30px;
+    }
+
+    .flow-content {
+        text-align: left;
+    }
+
+    .flow-node {
+        margin-bottom: 0;
+        flex-shrink: 0;
+    }
+}

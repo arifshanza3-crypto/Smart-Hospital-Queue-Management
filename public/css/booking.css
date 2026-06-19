@@ -1,0 +1,114 @@
+:root {
+    --dark-green: #1a3a3a;
+    --accent-blue: #00d4ff;
+    --white: #ffffff;
+}
+
+.booking-hero {
+    padding: 120px 20px;
+    text-align: center;
+    color: var(--white);
+    position: relative;
+}
+
+.booking-hero-content {
+    max-width: 850px;
+    margin: 0 auto;
+}
+
+.booking-badge {
+    background: rgba(0, 212, 255, 0.15);
+    color: var(--accent-blue);
+    padding: 8px 20px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.booking-hero h1 {
+    font-size: clamp(34px, 5vw, 58px);
+    margin: 25px 0;
+    font-weight: 800;
+}
+
+.text-accent {
+    color: var(--accent-blue);
+}
+
+.booking-hero p {
+    font-size: 18px;
+    color: #cbd5e1;
+    margin-bottom: 40px;
+    line-height: 1.6;
+}
+
+/* Search Box Design */
+.hero-search-box {
+    background: white;
+    padding: 10px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    max-width: 650px;
+    margin: 0 auto;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+}
+
+.search-input {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.search-input i {
+    color: #64748b;
+    margin-right: 15px;
+}
+
+.search-input input {
+    border: none;
+    outline: none;
+    width: 100%;
+    font-size: 16px;
+    color: var(--dark-green);
+}
+
+.btn-search {
+    background: var(--dark-green);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-search:hover {
+    background: #2a5a5a;
+    transform: scale(1.02);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero-search-box {
+        flex-direction: column;
+        gap: 10px;
+        background: transparent;
+        box-shadow: none;
+    }
+    
+    .search-input {
+        background: white;
+        padding: 15px 20px;
+        border-radius: 12px;
+        width: 100%;
+    }
+    
+    .btn-search {
+        width: 100%;
+    }
+}

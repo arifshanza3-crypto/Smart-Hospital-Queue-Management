@@ -1,0 +1,99 @@
+@extends('Layout.staff_app')
+@section('title', 'Staff Portal - Smart Queue Management')
+@section('content')
+    <link rel="stylesheet" href="{{ asset('css/Staff.css') }}">
+
+    <section class="hero-header" style="background-color: #0b2e33;">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <span class="badge-top">Staff Portal</span>
+                    <h1>Smart Queue Management</h1>
+                    <p>Real-time oversight of physical walk-ins and digital bookings. Optimize patient flow with a single click.</p>
+                </div>
+                <div class="hero-actions">
+                    <button class="btn btn-primary" onclick="openModal('patientModal')">+ Add Physical Patient</button>
+                    <button class="btn btn-secondary" onclick="openModal('timeModal')">⏱ Set Global Time</button>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-label">Total in Queue</span>
+                    <h2 id="stat-total">0</h2>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Now Serving</span>
+                    <h2 id="stat-serving">--</h2>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Total Pending Wait</span>
+                    <h2 id="stat-avg-time">0m</h2>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <main class="container">
+        <div class="data-card">
+            <table class="queue-table">
+                <thead>
+                    <tr>
+                        <th>Token #</th>
+                        <th>Patient Info</th>
+                        <th>Type</th>
+                        <th>Est. Time</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="queue-body"></tbody>
+            </table>
+        </div>
+    </main>
+
+    <div id="patientModal" class="modal">
+        <div class="modal-content">
+            <h3>Add New Patient</h3>
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="p_name" placeholder="Enter name...">
+            </div>
+            <div class="form-group">
+                <label>Age</label>
+                <input type="number" id="p_age" placeholder="Enter age...">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-text" onclick="closeModal('patientModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="submitPatient()">Add to Queue</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="timeModal" class="modal">
+        <div class="modal-content">
+            <h3>Set Global Est. Time</h3>
+            <div class="form-group">
+                <label>Minutes per patient</label>
+                <input type="number" id="global_min" value="15">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-text" onclick="closeModal('timeModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="submitGlobalTime()">Update All</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <h3>Queue Positioning</h3>
+            <div id="detail-content" style="margin-top:20px; line-height: 1.8;">
+                </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="closeModal('detailModal')">Got it</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ asset('js/Staff.js') }}"></script>
+@endsection
