@@ -5,17 +5,21 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Staff;
+use App\Models\Doctor; // Ensure your Doctor Eloquent model is imported
 use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
 {
     public function dashboard()
     {
+        // Fetch data so the view variables are present and do not error out
+        $doctors = class_exists(\App\Models\Doctor::class) ? Doctor::all() : collect();
+
         $pendingStaff = User::where('role', 'staff')
                             ->where('status', 'pending')
                             ->get();
         
-        return view('Pages.Admin.Doctor_management', compact('pendingStaff'));
+        return view('Pages.Admin.Doctor_management', compact('pendingStaff', 'doctors'));
     }
     
     public function approveStaff($id)
@@ -26,11 +30,9 @@ class AdminController extends Controller
             return back()->with('error', 'Only staff members can be approved');
         }
         
-        // Check if already in staff table
         $existingStaff = Staff::where('employee_id', $user->employee_id)->first();
         
         if (!$existingStaff) {
-            // MOVE data to staff table
             Staff::create([
                 'full_name' => $user->full_name,
                 'employee_id' => $user->employee_id,
@@ -41,7 +43,6 @@ class AdminController extends Controller
             ]);
         }
         
-        // Update user status to approved
         $user->status = 'approved';
         $user->save();
         
