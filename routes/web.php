@@ -12,22 +12,6 @@ use App\Http\Controllers\PatientController;
 use App\Http\Controllers\AdminController;
 
 // Test route
-Route::get('/test', function () {
-    return "Test page working!";
-});
-
-// 🏠 Catch default Laravel authentication redirects to prevent 404 errors
-Route::get('/home', function () {
-    if (auth()->check()) {
-        if (auth()->user()->role === 'admin') {
-            return redirect('Admin\Doctor_management');
-        }
-        if (auth()->user()->role === 'staff') {
-            return redirect('/staff/dashboard');
-        }
-    }
-    return redirect('/');
-});
 
 // Main website routes
 Route::get('/', [PageController::class, 'home']);
@@ -57,12 +41,14 @@ Route::get('/forgot-password', [AuthController::class, 'showForgotForm'])->name(
 Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email');
 Route::get('/reset-password/{token}', [AuthController::class, 'showResetForm'])->name('password.reset');
 Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
-
-// ADMIN ROUTES
+ 
+Route::get('/admin-test-page', function () {
+    return "Admin test page working!";
+});
+// ✅ ADMIN ROUTES (FIXED)
 Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
     
-    // Admin Controller Routes
-    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+    // Admin Dashboard
     Route::get('/doctor-management', [AdminController::class, 'dashboard'])->name('doctor-management');
     Route::post('/approve-staff/{id}', [AdminController::class, 'approveStaff'])->name('approve-staff');
     Route::post('/reject-staff/{id}', [AdminController::class, 'rejectStaff'])->name('reject-staff');

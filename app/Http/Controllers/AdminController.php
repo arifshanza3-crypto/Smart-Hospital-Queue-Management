@@ -5,16 +5,14 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Staff;
-use App\Models\Doctor; // Ensure your Doctor Eloquent model is imported
+use App\Models\Doctor;
 use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
 {
     public function dashboard()
     {
-        // Fetch data so the view variables are present and do not error out
-        $doctors = class_exists(\App\Models\Doctor::class) ? Doctor::all() : collect();
-
+        $doctors = Doctor::all();
         $pendingStaff = User::where('role', 'staff')
                             ->where('status', 'pending')
                             ->get();
