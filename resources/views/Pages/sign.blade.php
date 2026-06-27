@@ -6,6 +6,7 @@
 <link rel="stylesheet" href="{{ asset('css/sign.css') }}">
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 <div id="successModal" class="modal-overlay d-none">
     <div class="success-card">
         <div class="loader-ring"></div>
@@ -20,6 +21,69 @@
 =======
 <div class="signup-viewport">
 >>>>>>> 3f9cfec078e8d9879dc8f908935c7d8b28740f60
+=======
+<style>
+    /* Make all labels bright white */
+    .form-label {
+        color: #ffffff !important;
+        font-weight: 500;
+    }
+
+    /* Make all input fields bright with white text */
+    .custom-input {
+        background: #2a2a4a !important;
+        border: 1px solid #4a4a8a !important;
+        color: #ffffff !important;
+        font-size: 16px !important;
+        padding: 12px !important;
+    }
+
+    .custom-input::placeholder {
+        color: #aaaacc !important;
+        opacity: 1 !important;
+    }
+
+    .custom-input:focus {
+        background: #3a3a5a !important;
+        border-color: #00d4ff !important;
+        color: #ffffff !important;
+        box-shadow: 0 0 15px rgba(0, 212, 255, 0.3) !important;
+    }
+
+    /* Make select options bright */
+    .custom-input option {
+        background: #1a1a2e !important;
+        color: #ffffff !important;
+    }
+
+    /* Make placeholder text bright */
+    .custom-input::placeholder {
+        color: #bbbbdd !important;
+    }
+
+    /* Alert messages bright */
+    .alert {
+        font-weight: 500;
+    }
+
+    /* Link color bright */
+    .text-accent-cyan {
+        color: #00d4ff !important;
+        font-weight: 600;
+    }
+
+    .text-accent-cyan:hover {
+        color: #66e5ff !important;
+    }
+
+    /* Small text bright */
+    .text-white-50 {
+        color: #ccccdd !important;
+    }
+</style>
+
+<div class="signup-viewport">
+>>>>>>> ad8262ee5046eced21425c2cc6aa14495d6f4a02
     <div class="signup-page-wrapper">
         <div class="signup-card">
             <div class="text-center mb-4">
@@ -29,10 +93,13 @@
             </div>
 
 <<<<<<< HEAD
+<<<<<<< HEAD
             <form id="signupForm" action="/signup-process" method="POST">
                 @csrf
                 <hr class="role-divider">
 =======
+=======
+>>>>>>> ad8262ee5046eced21425c2cc6aa14495d6f4a02
             @if(session('error'))
                 <div class="alert alert-danger">{{ session('error') }}</div>
             @endif
@@ -62,16 +129,23 @@
                     </select>
                 </div>
 
+<<<<<<< HEAD
                 <!-- Common Fields (Patient + Staff both have these) -->
                 <div class="mb-3">
                     <input type="text" name="full_name" class="form-control custom-input" placeholder="Full Name" required>
                 </div>
 >>>>>>> 3f9cfec078e8d9879dc8f908935c7d8b28740f60
+=======
+                <div class="mb-3">
+                    <input type="text" name="full_name" class="form-control custom-input" placeholder="Full Name" required>
+                </div>
+>>>>>>> ad8262ee5046eced21425c2cc6aa14495d6f4a02
 
                 <div class="mb-3">
                     <input type="email" name="email" class="form-control custom-input" placeholder="Email Address" required>
                 </div>
 
+<<<<<<< HEAD
 <<<<<<< HEAD
                 <div id="dynamic-fields">
                     <div id="patient-fields">
@@ -100,6 +174,8 @@
                         <input type="password" name="password_confirmation" class="form-control custom-input" placeholder="Confirm" required>
                     </div>
 =======
+=======
+>>>>>>> ad8262ee5046eced21425c2cc6aa14495d6f4a02
                 <!-- Staff Only Field (Hidden by default) -->
                 <div id="staffEmployeeField" style="display: none;">
                     <div class="mb-3">
@@ -113,17 +189,24 @@
 
                 <div class="mb-3">
                     <input type="password" name="password_confirmation" class="form-control custom-input" placeholder="Confirm Password" required>
+<<<<<<< HEAD
 >>>>>>> 3f9cfec078e8d9879dc8f908935c7d8b28740f60
+=======
+>>>>>>> ad8262ee5046eced21425c2cc6aa14495d6f4a02
                 </div>
 
                 <button type="submit" class="btn btn-signup-submit w-100 mt-3">Create Account</button>
                 
                 <div class="text-center mt-4">
 <<<<<<< HEAD
+<<<<<<< HEAD
                     <p class="text-white-50 small">Already have an account? <a href="/login" class="text-accent-cyan text-decoration-none fw-bold">Login</a></p>
 =======
                     <p class="text-white-50 small">Already have an account? <a href="{{ route('login') }}" class="text-accent-cyan">Login</a></p>
 >>>>>>> 3f9cfec078e8d9879dc8f908935c7d8b28740f60
+=======
+                    <p class="text-white-50 small">Already have an account? <a href="{{ route('login') }}" class="text-accent-cyan">Login</a></p>
+>>>>>>> ad8262ee5046eced21425c2cc6aa14495d6f4a02
                 </div>
             </form>
         </div>
@@ -131,8 +214,11 @@
 </div>
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 <script src="{{ asset('js/sign.js') }}"></script>
 =======
+=======
+>>>>>>> ad8262ee5046eced21425c2cc6aa14495d6f4a02
 <script>
     document.getElementById('roleSelect').addEventListener('change', function() {
         const role = this.value;
@@ -148,5 +234,8 @@
     });
 </script>
 
+<<<<<<< HEAD
 >>>>>>> 3f9cfec078e8d9879dc8f908935c7d8b28740f60
+=======
+>>>>>>> ad8262ee5046eced21425c2cc6aa14495d6f4a02
 @endsection

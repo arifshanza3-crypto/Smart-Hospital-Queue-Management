@@ -17,7 +17,10 @@
                 <p class="text-white-50">Efficiently managing your time</p>
             </div>
 
+<<<<<<< HEAD
             <form id="loginForm">
+=======
+>>>>>>> ad8262ee5046eced21425c2cc6aa14495d6f4a02
             @if(session('error'))
                 <div class="alert alert-danger">{{ session('error') }}</div>
             @endif
@@ -37,6 +40,10 @@
                         <option value="admin">Admin</option>
                     </select>
                 </div>
+<<<<<<< HEAD
+=======
+
+>>>>>>> ad8262ee5046eced21425c2cc6aa14495d6f4a02
                 <!-- Patient Fields (visible when role = patient) -->
                 <div id="patient-fields">
                     <div class="mb-3">
@@ -66,13 +73,26 @@
                     <input type="password" name="password" class="form-control custom-input" placeholder="••••••••" required>
                 </div>
 
+<<<<<<< HEAD
+=======
+                <!-- ✅ FORGOT PASSWORD LINK - CENTER -->
+                <div class="text-center mt-2 mb-3">
+                    <a href="#" class="text-accent-cyan text-decoration-none small" id="forgotPasswordLink">
+                        Forgot Password?
+                    </a>
+                </div>
+
+>>>>>>> ad8262ee5046eced21425c2cc6aa14495d6f4a02
                 <button type="submit" class="btn btn-login-submit w-100 mt-2">Sign In</button>
                 
                 <div class="text-center mt-4">
                     <p class="text-white-50 small">
                         Don't have an account? 
                         <a href="/signup" class="text-accent-cyan text-decoration-none fw-bold">Sign Up Now</a>
+<<<<<<< HEAD
                         <a href="{{ route('register') }}" class="text-accent-cyan text-decoration-none fw-bold">Sign Up Now</a>
+=======
+>>>>>>> ad8262ee5046eced21425c2cc6aa14495d6f4a02
                     </p>
                 </div>
             </form>

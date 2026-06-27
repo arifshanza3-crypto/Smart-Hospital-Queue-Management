@@ -5,17 +5,29 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Staff;
+<<<<<<< HEAD
+=======
+use App\Models\Doctor;
+>>>>>>> ad8262ee5046eced21425c2cc6aa14495d6f4a02
 use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
 {
     public function dashboard()
     {
+<<<<<<< HEAD
+=======
+        $doctors = Doctor::all();
+>>>>>>> ad8262ee5046eced21425c2cc6aa14495d6f4a02
         $pendingStaff = User::where('role', 'staff')
                             ->where('status', 'pending')
                             ->get();
         
+<<<<<<< HEAD
         return view('Pages.Admin.Doctor_management', compact('pendingStaff'));
+=======
+        return view('Pages.Admin.Doctor_management', compact('pendingStaff', 'doctors'));
+>>>>>>> ad8262ee5046eced21425c2cc6aa14495d6f4a02
     }
     
     public function approveStaff($id)
@@ -26,11 +38,17 @@ class AdminController extends Controller
             return back()->with('error', 'Only staff members can be approved');
         }
         
+<<<<<<< HEAD
         // Check if already in staff table
         $existingStaff = Staff::where('employee_id', $user->employee_id)->first();
         
         if (!$existingStaff) {
             // MOVE data to staff table
+=======
+        $existingStaff = Staff::where('employee_id', $user->employee_id)->first();
+        
+        if (!$existingStaff) {
+>>>>>>> ad8262ee5046eced21425c2cc6aa14495d6f4a02
             Staff::create([
                 'full_name' => $user->full_name,
                 'employee_id' => $user->employee_id,
@@ -41,7 +59,10 @@ class AdminController extends Controller
             ]);
         }
         
+<<<<<<< HEAD
         // Update user status to approved
+=======
+>>>>>>> ad8262ee5046eced21425c2cc6aa14495d6f4a02
         $user->status = 'approved';
         $user->save();
         
