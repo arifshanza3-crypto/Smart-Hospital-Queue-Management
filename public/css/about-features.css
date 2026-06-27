@@ -1,0 +1,102 @@
+:root {
+    --dark-green: #1a3a3a;
+    --bg-light: #3e8686;
+    --accent-blue: #00d4ff;
+    --card-bg: #ffffff;
+}
+
+.features-section {
+    padding: 100px 20px;
+    background-color: #f8fafc; 
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.tagline {
+    color: var(--bg-light);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-size: 14px;
+}
+
+.section-title {
+    font-size: 36px;
+    color: var(--dark-green);
+    margin: 10px 0 20px;
+    font-weight: 800;
+}
+
+.section-desc {
+    color: #64748b;
+    max-width: 600px;
+    margin: 0 auto;
+    font-size: 18px;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+}
+
+.feature-card {
+    background: var(--card-bg);
+    padding: 40px;
+    border-radius: 24px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    border: 1px solid #e2e8f0;
+    text-align: left;
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+    border-color: var(--accent-blue);
+    box-shadow: 0 20px 40px rgba(0, 212, 255, 0.1);
+}
+
+/* Icon Box Styling */
+.icon-box {
+    width: 64px;
+    height: 64px;
+    background: rgba(0, 212, 255, 0.1);
+    color: var(--accent-blue);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 25px;
+}
+
+/* This is the part that was missing */
+.icon-box i {
+    font-size: 28px;
+    display: block;
+}
+
+.feature-card h3 {
+    font-size: 22px;
+    color: var(--dark-green);
+    margin-bottom: 15px;
+    font-weight: 700;
+}
+
+.feature-card p {
+    color: #64748b;
+    line-height: 1.6;
+    font-size: 15px;
+}
+
+@media (max-width: 768px) {
+    .features-section { padding: 60px 20px; }
+    .section-title { font-size: 28px; }
+}

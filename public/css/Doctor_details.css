@@ -1,0 +1,244 @@
+/* ==========================================================================
+   Doctors Section & Card Grid
+   ========================================================================== */
+
+.doctors-section {
+    background: #0b2e33;
+    padding: 60px 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    border-top: 10px solid #FFFFFF;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 50px;
+    color: #FFFFFF;
+}
+
+.dr-item-card {
+    background: #3e8686;
+    border-radius: 15px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 10px #00d4ff;
+}
+
+.dr-item-card:hover {
+    transform: translateY(-10px);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+/* --- Card Image & Hover Effects --- */
+.dr-card-img {
+    height: 320px;
+    position: relative;
+    overflow: hidden;
+}
+
+.dr-card-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: 0.5s;
+}
+
+.dr-item-card:hover .dr-card-img img {
+    transform: scale(1.1);
+}
+
+.status-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: bold;
+    color: white;
+}
+
+.dr-card-body {
+    padding: 25px;
+}
+
+/* ==========================================================================
+   Pop-Up Modal (Overlay & Content)
+   ========================================================================== */
+
+.dr-popup-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 10000;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(8px);
+}
+
+.dr-popup-content {
+    background: #0b2e33;
+    width: 95%;
+    max-width: 850px;
+    border-radius: 25px;
+    border: 1px solid #00d4ff;
+    position: relative;
+    overflow: hidden;
+    animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes modalPop {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* --- Modal Layout --- */
+.dr-popup-flex {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.dr-popup-image-container {
+    flex: 1;
+    min-width: 320px;
+    height: 450px;
+    position: relative;
+    background: #072529;
+}
+
+#modalImg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: none;
+}
+
+.dr-popup-details {
+    flex: 1.2;
+    padding: 45px;
+    color: white;
+}
+
+.dr-popup-close {
+    position: absolute;
+    top: 15px;
+    right: 25px;
+    font-size: 40px;
+    color: white;
+    cursor: pointer;
+    z-index: 11;
+    transition: 0.3s;
+}
+
+.dr-popup-close:hover {
+    color: #00d4ff;
+}
+
+/* --- Modal Typography --- */
+.pop-title {
+    color: #00d4ff;
+    font-weight: 800;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.pop-info p {
+    margin: 12px 0;
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+.pop-info strong {
+    color: #00d4ff;
+    width: 120px;
+    display: inline-block;
+}
+
+/* --- Action Button --- */
+.join-btn {
+    width: 100%;
+    background: #00d4ff;
+    border: none;
+    padding: 16px;
+    border-radius: 12px;
+    font-weight: 800;
+    color: #0b2e33;
+    cursor: pointer;
+    margin-top: 25px;
+    text-transform: uppercase;
+    transition: 0.3s;
+}
+
+.join-btn:hover {
+    background: white;
+    transform: scale(1.02);
+}
+
+/* ==========================================================================
+   Refined Loader & Animations
+   ========================================================================== */
+
+.dr-loader {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(0, 212, 255, 0.1);
+    border-top: 5px solid #00d4ff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -25px 0 0 -25px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+.view-all-container {
+    margin-top: 50px;
+    margin-bottom: 20px;
+}
+
+.view-all-btn {
+    display: inline-block;
+    padding: 15px 40px;
+    background: transparent;
+    color: #00d4ff;
+    border: 2px solid #00d4ff;
+    border-radius: 50px;
+    font-weight: 700;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+}
+
+.view-all-btn span {
+    margin-left: 10px;
+    transition: margin 0.3s ease;
+}
+
+.view-all-btn:hover {
+    background: #00d4ff;
+    color: #0b2e33;
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
+    transform: translateY(-3px);
+}
+
+.view-all-btn:hover span {
+    margin-left: 20px;
+}

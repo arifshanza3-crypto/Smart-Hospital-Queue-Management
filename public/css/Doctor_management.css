@@ -1,0 +1,100 @@
+<<<<<<< HEAD
+.status-active {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status-inactive {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status-on-duty {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+=======
+/* Sidebar aur Navbar ke gap ko handle karne ke liye */
+/* This wrapper handles the horizontal offset */
+.main-wrapper {
+    margin-left: 280px; /* Exact width of your sidebar */
+    width: calc(100% - 280px);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Adjust your Admin Navbar so it doesn't overlap */
+.admin-navbar {
+    width: 100% !important; /* It now fills the remaining width */
+    margin-top: 20px;
+    padding-right: 20px;
+}
+
+/* Ensure the white section fills the screen correctly */
+.content-area {
+    padding: 20px;
+    flex-grow: 1;
+    background-color: #ffffff;
+}
+.main-wrapper {
+    margin-left: 300px !important; 
+    margin-top: 100px !important;  
+    padding: 20px !important;
+    display: block !important;    
+    background: transparent !important;
+}
+
+.doctor-card {
+    background: rgba(62, 134, 134, 0.1) !important;
+    border: 1px solid #00d4ff !important;
+    border-radius: 15px !important;
+    padding: 20px !important;
+}
+
+.custom-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    color: white !important;
+}
+
+.custom-table th {
+    background: #00d4ff !important;
+    color: #0b2e33 !important;
+    padding: 12px !important;
+    text-align: left !important;
+}
+
+.custom-table td {
+    padding: 12px !important;
+    border-bottom: 1px solid #3e8686 !important;
+}
+
+.btn-add {
+    background: #00d4ff !important;
+    color: #0b2e33 !important;
+    padding: 10px 20px !important;
+    border: none !important;
+    border-radius: 8px !important;
+    font-weight: bold !important;
+    cursor: pointer !important;
+    margin-bottom: 20px !important;
+}
+
+/* Icons Colors */
+.view-icon { color: #00d4ff; margin-right: 10px; cursor: pointer; }
+.edit-icon { color: #ffc107; margin-right: 10px; cursor: pointer; }
+.delete-icon { color: #ff4d4d; cursor: pointer; }
+>>>>>>> 3f9cfec078e8d9879dc8f908935c7d8b28740f60
