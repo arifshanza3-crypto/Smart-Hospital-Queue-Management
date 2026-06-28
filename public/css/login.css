@@ -71,7 +71,14 @@ body {
     color: white !important;
     border-radius: 15px !important;
     padding: 15px !important;
-    appearance: none; /* Removes default browser arrow to style it better */
+    appearance: none;
+}
+
+/* ✅ BRIGHT PLACEHOLDER - Easy to see */
+.custom-input::placeholder {
+    color: #b8c8e8 !important;
+    opacity: 1 !important;
+    font-weight: 400;
 }
 
 /* Fix for the Dropdown background and text color */
@@ -82,9 +89,8 @@ select.custom-input {
     background-size: 16px 12px !important;
 }
 
-/* Ensuring the dropdown options are readable */
 .custom-input option {
-    background-color: #1a3a3a !important; /* Matches your theme dark green */
+    background-color: #1a3a3a !important;
     color: white !important;
     padding: 10px;
 }
@@ -111,19 +117,32 @@ select.custom-input {
     color: #00d4ff; 
 }
 
-/* ✅ FORGOT PASSWORD LINK STYLES */
-.forgot-password-link {
-    color: #00d4ff !important;
+/* ✅ FORGOT PASSWORD BUTTON - Last position */
+.forgot-password-btn {
+    display: inline-block;
+    color: #88aacc !important;
     text-decoration: none !important;
     font-size: 14px;
     font-weight: 500;
+    padding: 6px 18px;
+    border-radius: 20px;
+    border: 1px solid rgba(0, 212, 255, 0.15);
     transition: all 0.3s ease;
+    background: rgba(0, 212, 255, 0.03);
+    margin-top: 4px;
 }
 
-.forgot-password-link:hover {
-    color: #66e5ff !important;
-    text-decoration: underline !important;
-    text-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+.forgot-password-btn i {
+    margin-right: 6px;
+    color: #00d4ff;
+}
+
+.forgot-password-btn:hover {
+    color: #ffffff !important;
+    border-color: #00d4ff;
+    background: rgba(0, 212, 255, 0.12);
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.08);
+    transform: translateY(-2px);
 }
 
 /* ✅ CENTER ALIGNMENT */

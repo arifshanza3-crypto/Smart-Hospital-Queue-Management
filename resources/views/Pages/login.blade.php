@@ -31,22 +31,13 @@
                 <div class="mb-3">
                     <label class="form-label text-white-50 small text-uppercase fw-bold">Login As</label>
                     <select name="role" id="userRole" class="form-control custom-input" required>
-                        <!-- <option value="patient" selected>Patient</option> -->
                         <option value="staff">Staff</option>
                         <option value="admin">Admin</option>
                     </select>
                 </div>
 
-                <!-- Patient Fields (visible when role = patient) -->
-                <div id="patient-fields">
-                    <div class="mb-3">
-                        <label class="form-label text-white-50 small">Email Address</label>
-                        <input type="email" name="email" class="form-control custom-input" placeholder="Enter your email" value="{{ old('email') }}">
-                    </div>
-                </div>
-
                 <!-- Admin Fields (visible when role = admin) -->
-                <div id="admin-fields" style="display: none;">
+                <div id="admin-fields">
                     <div class="mb-3">
                         <label class="form-label text-white-50 small">Email Address</label>
                         <input type="email" name="email" class="form-control custom-input" placeholder="Enter your email" value="{{ old('email') }}">
@@ -66,21 +57,22 @@
                     <input type="password" name="password" class="form-control custom-input" placeholder="••••••••" required>
                 </div>
 
-                <!-- ✅ FORGOT PASSWORD LINK - CENTER -->
-                <div class="text-center mt-2 mb-3">
-                    <a href="#" class="text-accent-cyan text-decoration-none small" id="forgotPasswordLink">
-                        Forgot Password?
-                    </a>
-                </div>
-
                 <button type="submit" class="btn btn-login-submit w-100 mt-2">Sign In</button>
-                
+
                 <div class="text-center mt-4">
                     <p class="text-white-50 small">
                         Don't have an account? 
                         <a href="/signup" class="text-accent-cyan text-decoration-none fw-bold">Sign Up Now</a>
                     </p>
                 </div>
+
+                <!-- ✅ FORGOT PASSWORD - LAST (Below Sign Up) -->
+                <div class="text-center mt-3">
+                    <a href="{{ route('password.request') }}" class="forgot-password-btn">
+                        <i class="fas fa-key"></i> Forgot Password?
+                    </a>
+                </div>
+
             </form>
         </div>
     </div>
@@ -90,24 +82,15 @@
 <script>
     document.getElementById('userRole').addEventListener('change', function() {
         const role = this.value;
-        const patientFields = document.getElementById('patient-fields');
         const adminFields = document.getElementById('admin-fields');
         const staffFields = document.getElementById('staff-fields');
         
-        // if (role === 'patient') {
-        //     patientFields.style.display = 'block';
-        //     adminFields.style.display = 'none';
-        //     staffFields.style.display = 'none';
-        //     document.querySelector('input[name="email"]').required = true;
-        //     document.querySelector('input[name="employee_id"]').required = false;
-        } else if (role === 'admin') {
-            patientFields.style.display = 'none';
+        if (role === 'admin') {
             adminFields.style.display = 'block';
             staffFields.style.display = 'none';
             document.querySelector('input[name="email"]').required = true;
             document.querySelector('input[name="employee_id"]').required = false;
         } else if (role === 'staff') {
-            patientFields.style.display = 'none';
             adminFields.style.display = 'none';
             staffFields.style.display = 'block';
             document.querySelector('input[name="email"]').required = false;

@@ -7,8 +7,8 @@ use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\QueueReportController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\TokenController;  // ✅ ADD THIS
-use App\Http\Controllers\AdminController;  // ✅ ADD THIS (if not already)
+use App\Http\Controllers\TokenController;
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\StaffController;
 
 // Test route
@@ -25,7 +25,7 @@ Route::get('/booking', [PageController::class, 'booking']);
 Route::get('/Doctors', [PageController::class, 'Doctors']);
 Route::get('/Staff', [PageController::class, 'Staff']);
 
-// ✅ TOKEN ROUTES (ADD THESE)
+// Token Routes
 Route::get('/Token_form', [TokenController::class, 'showForm'])->name('token.form');
 Route::post('/token/generate', [TokenController::class, 'generateToken'])->name('token.generate');
 Route::get('/Status', [PageController::class, 'Status'])->name('status.page');
@@ -38,6 +38,12 @@ Route::get('/signup', [PageController::class, 'sign'])->name('signup');
 Route::get('/register', [PageController::class, 'sign'])->name('register');
 Route::post('/signup', [AuthController::class, 'signup'])->name('signup.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// ✅ FORGOT PASSWORD ROUTES (ADDED)
+Route::get('/forgot-password', [AuthController::class, 'showForgotForm'])->name('password.request');
+Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email');
+Route::get('/reset-password/{token}', [AuthController::class, 'showResetForm'])->name('password.reset');
+Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 
 // Staff Routes
 Route::get('/Staff', [StaffController::class, 'dashboard'])->name('staff.dashboard');
@@ -99,10 +105,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/export/csv', [QueueReportController::class, 'export'])->name('export');
     });
 
-    // Settings Routes (Add this inside admin group)
+    // Settings Routes
     Route::prefix('settings')->name('settings.')->group(function () {
         Route::get('/', [\App\Http\Controllers\Admin\SettingController::class, 'index'])->name('index');
         Route::put('/update', [\App\Http\Controllers\Admin\SettingController::class, 'update'])->name('update');
-        // Backup and restore routes REMOVED
     });
 });
