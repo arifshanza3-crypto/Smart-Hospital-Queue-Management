@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\QueueReportController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TokenController;  // ✅ ADD THIS
 use App\Http\Controllers\AdminController;  // ✅ ADD THIS (if not already)
+use App\Http\Controllers\StaffController;
 
 // Test route
 Route::get('/test', function () {
@@ -37,6 +38,13 @@ Route::get('/signup', [PageController::class, 'sign'])->name('signup');
 Route::get('/register', [PageController::class, 'sign'])->name('register');
 Route::post('/signup', [AuthController::class, 'signup'])->name('signup.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// Staff Routes
+Route::get('/Staff', [StaffController::class, 'dashboard'])->name('staff.dashboard');
+Route::post('/staff/add-patient', [StaffController::class, 'addPatient'])->name('staff.add-patient');
+Route::patch('/staff/patient/{id}/serve', [StaffController::class, 'serve'])->name('staff.serve');
+Route::patch('/staff/patient/{id}/complete', [StaffController::class, 'complete'])->name('staff.complete');
+Route::patch('/staff/patient/{id}/cancel', [StaffController::class, 'cancel'])->name('staff.cancel');
 
 // Admin Routes
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -91,9 +99,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/export/csv', [QueueReportController::class, 'export'])->name('export');
     });
 
-    // Settings Routes
+    // Settings Routes (Add this inside admin group)
     Route::prefix('settings')->name('settings.')->group(function () {
         Route::get('/', [\App\Http\Controllers\Admin\SettingController::class, 'index'])->name('index');
         Route::put('/update', [\App\Http\Controllers\Admin\SettingController::class, 'update'])->name('update');
+        // Backup and restore routes REMOVED
     });
 });

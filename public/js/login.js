@@ -1,12 +1,20 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // ✅ Get all elements
     const loginForm = document.getElementById('loginForm');
     const submitBtn = document.querySelector('.btn-login-submit');
     const userRoleSelect = document.getElementById('userRole');
     const identifierLabel = document.getElementById('identifierLabel');
     const identifierInput = document.getElementById('identifierInput');
+    const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+
+    // ✅ Debug - Check if elements exist
+    console.log('login.js loaded successfully');
+    console.log('forgotPasswordLink:', forgotPasswordLink);
 
     // Function to update fields based on role
     const updateFormFields = (role) => {
+        if (!identifierLabel || !identifierInput) return;
+        
         if (role === 'patient') {
             identifierLabel.innerText = 'Email Address';
             identifierInput.type = 'email';
@@ -23,30 +31,51 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     // Listen for dropdown changes
-    userRoleSelect.addEventListener('change', function() {
-        updateFormFields(this.value);
-    });
+    if (userRoleSelect) {
+        userRoleSelect.addEventListener('change', function() {
+            updateFormFields(this.value);
+        });
+    }
+
+    // ✅ FORGOT PASSWORD FUNCTIONALITY
+    if (forgotPasswordLink) {
+        forgotPasswordLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            console.log('Forgot password clicked');
+            
+            // ✅ Direct redirect to forgot password page
+            window.location.href = '/forgot-password';
+        });
+    } else {
+        console.error('Forgot password link not found! Check ID: forgotPasswordLink');
+    }
 
     // Handle Form Submission
-    loginForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const selectedRole = userRoleSelect.value;
+    if (loginForm) {
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const selectedRole = userRoleSelect ? userRoleSelect.value : 'patient';
 
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Authenticating...';
-        submitBtn.style.opacity = '0.8';
-
-        setTimeout(() => {
-            if (selectedRole === 'patient') {
-                window.location.href = "/";
-            } else if (selectedRole === 'staff') {
-                window.location.href = "/staff";
-            } else if (selectedRole === 'admin') {
-                window.location.href = "/admin";
+            if (submitBtn) {
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Authenticating...';
+                submitBtn.style.opacity = '0.8';
             }
-        }, 1200);
-    });
 
-    // Background Particles Logic (Same as before)
+            setTimeout(() => {
+                if (selectedRole === 'patient') {
+                    window.location.href = "/";
+                } else if (selectedRole === 'staff') {
+                    window.location.href = "/staff";
+                } else if (selectedRole === 'admin') {
+                    window.location.href = "/admin";
+                }
+            }, 1200);
+        });
+    }
+
+    // Background Particles Logic
     const container = document.querySelector('.particles-container');
     if (container) {
         for (let i = 0; i < 15; i++) {
