@@ -1,0 +1,114 @@
+:root {
+  --primary-green: #10b981;
+  --dark-green: #1a3a3a;
+  --bg-light: #3e8686;
+  --accent-blue: #00d4ff;
+}
+
+.stack-section {
+  border-top: 10px solid var(--bg-light);
+  padding: 80px 40px; 
+  background-color: var(--bg-light);
+  font-family: 'Inter', sans-serif;
+}
+
+.header-content {
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto 60px auto;
+  color: white;
+}
+
+.badge {
+  display: inline-block;
+  border: 2px solid #064e3b;
+  padding: 8px 24px;
+  border-radius: 100px;
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #064e3b;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* --- THE FIX IS HERE --- */
+.stack-container {
+  max-width: 1000px; 
+  margin: 0 auto;    
+  display: flex;
+  flex-direction: column;
+}
+
+.card {
+  position: sticky;
+  top: 50px; 
+  padding-bottom: 100px; 
+  background: #3e8686;
+  width: 100%;      
+}
+/* ----------------------- */
+
+.card-inner {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 40px;
+  background: var(--dark-green);
+  border-radius: 40px; 
+  padding: 60px;
+  align-items: center;
+  min-height: 400px;
+  border: 4px solid var(--accent-blue);
+  overflow: hidden;
+  transition: transform 0.1s ease-out, opacity 0.1s ease-out;
+}
+
+.card-image img {
+  width: 100%;
+  height: 350px;
+  object-fit: cover;
+  border-radius: 24px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.tag {
+  background: rgba(0, 212, 255, 0.1);
+  color: var(--accent-blue);
+  padding: 8px 18px;
+  border-radius: 100px;
+  font-size: 14px;
+  font-weight: 600;
+  border: 1px solid var(--accent-blue);
+  display: inline-block;
+  margin-bottom: 15px;
+}
+
+h2 { 
+  font-size: 36px; 
+  color: #ffffff; 
+  margin: 15px 0; 
+  font-weight: 700;
+}
+
+p { 
+  color: #d1d5db; 
+  line-height: 1.7; 
+  font-size: 18px;
+}
+
+/* Responsive adjustment */
+@media (max-width: 768px) {
+  .stack-section {
+    padding: 60px 20px; 
+  }
+
+  .card-inner {
+    grid-template-columns: 1fr;
+    padding: 30px;
+    text-align: center;
+  }
+  
+  .card-image {
+    order: -1; 
+  }
+}

@@ -1,0 +1,48 @@
+/* --- NO TOKEN STATE STYLING --- */
+.no-token-state {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.icon-box-glow {
+    width: 100px;
+    height: 100px;
+    background: rgba(0, 212, 255, 0.1);
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(0, 212, 255, 0.3);
+    box-shadow: 0 0 30px rgba(0, 212, 255, 0.1);
+}
+
+.btn-get-token {
+    display: inline-block;
+    background: linear-gradient(135deg, #00d4ff, #0088ff);
+    color: #ffffff;
+    text-decoration: none;
+    padding: 18px 45px;
+    border-radius: 50px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: 0.4s ease;
+    box-shadow: 0 10px 20px rgba(0, 212, 255, 0.3);
+}
+
+.btn-get-token:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 212, 255, 0.5);
+    color: #ffffff;
+}
+
+/* Re-ensuring the section background is white */
+.token-status-section {
+    background-color: #ffffff;
+    min-height: 60vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

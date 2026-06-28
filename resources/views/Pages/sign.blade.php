@@ -1,0 +1,152 @@
+@extends('layout.app')
+
+@section('title', 'Sign Up - SMART QUEUE')
+
+@section('content')
+<link rel="stylesheet" href="{{ asset('css/sign.css') }}">
+
+<<<<<<< HEAD
+<div id="successModal" class="modal-overlay d-none">
+    <div class="success-card">
+        <div class="loader-ring"></div>
+        <h3 class="text-white fw-bold mt-4">Account Created!</h3>
+        <p class="text-accent-cyan fw-medium">Stay patient, Page is Loading...</p>
+    </div>
+</div>
+
+<div class="signup-viewport">
+    <div class="mesh-bg"></div>
+
+=======
+<div class="signup-viewport">
+>>>>>>> 3f9cfec078e8d9879dc8f908935c7d8b28740f60
+    <div class="signup-page-wrapper">
+        <div class="signup-card">
+            <div class="text-center mb-4">
+                <img src="{{ asset('Assert/logo.png') }}" alt="Logo" class="signup-logo-massive mb-3">
+                <h2 class="text-white fw-bold">Sign Up</h2>
+                <p class="text-white-50">Create your account to join the queue</p>
+            </div>
+
+<<<<<<< HEAD
+            <form id="signupForm" action="/signup-process" method="POST">
+                @csrf
+                <hr class="role-divider">
+=======
+            @if(session('error'))
+                <div class="alert alert-danger">{{ session('error') }}</div>
+            @endif
+
+            @if(session('success'))
+                <div class="alert alert-success">{{ session('success') }}</div>
+            @endif
+
+            @if($errors->any())
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <form method="POST" action="{{ route('register.post') }}" id="signupForm">
+                @csrf
+                
+                <div class="mb-3">
+                    <label class="form-label text-white-50">Register As</label>
+                    <select name="role" id="roleSelect" class="form-control custom-input" required>
+                        <option value="patient">Patient</option>
+                        <option value="staff">Staff</option>
+                    </select>
+                </div>
+
+                <!-- Common Fields (Patient + Staff both have these) -->
+                <div class="mb-3">
+                    <input type="text" name="full_name" class="form-control custom-input" placeholder="Full Name" required>
+                </div>
+>>>>>>> 3f9cfec078e8d9879dc8f908935c7d8b28740f60
+
+                <div class="mb-3">
+                    <input type="email" name="email" class="form-control custom-input" placeholder="Email Address" required>
+                </div>
+
+<<<<<<< HEAD
+                <div id="dynamic-fields">
+                    <div id="patient-fields">
+                        <div class="mb-3"><input type="text" class="form-control custom-input" placeholder="Full Name"></div>
+                        <div class="mb-3"><input type="number" class="form-control custom-input" placeholder="Phone Number"></div>
+                    </div>
+
+                    <div id="doctor-fields" class="d-none">
+                        <div class="row g-2">
+                            <div class="col-md-6 mb-3"><input type="text" class="form-control custom-input" placeholder="Doctor Name"></div>
+                            <div class="col-md-6 mb-3"><input type="text" class="form-control custom-input" placeholder="Medical ID"></div>
+                        </div>
+                    </div>
+
+                    <div id="staff-fields" class="d-none">
+                        <div class="mb-3"><input type="text" class="form-control custom-input" placeholder="Staff Name"></div>
+                        <div class="mb-3"><input type="text" class="form-control custom-input" placeholder="Employee ID"></div>
+                    </div>
+                </div>
+
+                <div class="row g-2">
+                    <div class="col-md-6 mb-3">
+                        <input type="password" name="password" class="form-control custom-input" placeholder="Password" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <input type="password" name="password_confirmation" class="form-control custom-input" placeholder="Confirm" required>
+                    </div>
+=======
+                <!-- Staff Only Field (Hidden by default) -->
+                <div id="staffEmployeeField" style="display: none;">
+                    <div class="mb-3">
+                        <input type="text" name="employee_id" class="form-control custom-input" placeholder="Employee ID">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <input type="password" name="password" class="form-control custom-input" placeholder="Password" required>
+                </div>
+
+                <div class="mb-3">
+                    <input type="password" name="password_confirmation" class="form-control custom-input" placeholder="Confirm Password" required>
+>>>>>>> 3f9cfec078e8d9879dc8f908935c7d8b28740f60
+                </div>
+
+                <button type="submit" class="btn btn-signup-submit w-100 mt-3">Create Account</button>
+                
+                <div class="text-center mt-4">
+<<<<<<< HEAD
+                    <p class="text-white-50 small">Already have an account? <a href="/login" class="text-accent-cyan text-decoration-none fw-bold">Login</a></p>
+=======
+                    <p class="text-white-50 small">Already have an account? <a href="{{ route('login') }}" class="text-accent-cyan">Login</a></p>
+>>>>>>> 3f9cfec078e8d9879dc8f908935c7d8b28740f60
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<<<<<<< HEAD
+<script src="{{ asset('js/sign.js') }}"></script>
+=======
+<script>
+    document.getElementById('roleSelect').addEventListener('change', function() {
+        const role = this.value;
+        const staffField = document.getElementById('staffEmployeeField');
+        
+        if (role === 'staff') {
+            staffField.style.display = 'block';
+            document.querySelector('input[name="employee_id"]').required = true;
+        } else {
+            staffField.style.display = 'none';
+            document.querySelector('input[name="employee_id"]').required = false;
+        }
+    });
+</script>
+
+>>>>>>> 3f9cfec078e8d9879dc8f908935c7d8b28740f60
+@endsection

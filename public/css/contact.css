@@ -1,0 +1,78 @@
+:root {
+    --dark: #1a3a3a;
+    --teal: #3e8686;
+    --accent: #00d4ff;
+    --glass: rgba(255, 255, 255, 0.9);
+}
+
+.contact-modern-page {
+    background: #f0f4f4;
+    padding-bottom: 80px;
+}
+
+.contact-premium-hero {
+    position: relative;
+    padding: 120px 20px 200px; /* Increased padding for better visual depth */
+    text-align: center;
+    color: white;
+    overflow: hidden;
+}
+
+/* Glassmorphism for the contact cards */
+.contact-quick-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+    margin-top: 60px;
+    position: relative;
+    z-index: 5;
+}
+
+.q-card {
+    background: var(--glass);
+    backdrop-filter: blur(15px);
+    padding: 40px;
+    border-radius: 24px;
+    color: var(--dark);
+    transition: 0.4s ease;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+}
+
+.q-card:hover {
+    transform: translateY(-10px);
+    background: white;
+    box-shadow: 0 20px 40px rgba(0, 212, 255, 0.2);
+}
+
+.q-icon {
+    font-size: 32px;
+    color: var(--accent);
+    margin-bottom: 15px;
+}
+
+.gradient-text {
+    background: linear-gradient(to right, #00d4ff, #80eaff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+}
+
+/* Form positioning */
+.form-wrapper {
+    max-width: 1000px;
+    margin: -100px auto 0;
+    padding: 0 20px;
+    position: relative;
+    z-index: 10;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .contact-premium-hero {
+        padding: 80px 20px 120px;
+    }
+    .form-wrapper {
+        margin-top: -50px;
+    }
+}

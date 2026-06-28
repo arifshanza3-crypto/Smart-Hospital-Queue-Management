@@ -1,0 +1,115 @@
+/* --- Background Setup --- */
+.status-viewport {
+    background: #0a1113;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+    color: white;
+}
+
+.mesh-bg {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: radial-gradient(circle at 10% 20%, #1a3a3a 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, #3e8686 0%, transparent 40%);
+    filter: blur(100px);
+    z-index: 0;
+}
+
+/* --- HERO SECTION --- */
+.hero-section {
+    position: relative;
+    padding: 100px 20px 40px;
+    z-index: 2;
+}
+
+.hero-badge {
+    display: inline-block;
+    padding: 6px 15px;
+    background: rgba(0, 212, 255, 0.1);
+    border: 1px solid #00d4ff;
+    color: #00d4ff;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+}
+
+.hero-title {
+    font-size: 4rem;
+    font-weight: 900;
+    letter-spacing: -2px;
+    margin-bottom: 10px;
+}
+
+.hero-subtitle {
+    font-size: 1.2rem;
+    color: rgba(255,255,255,0.6);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* --- COMPONENTS --- */
+.component-display {
+    position: relative;
+    z-index: 2;
+    padding-bottom: 100px;
+}
+
+.status-card {
+    background: rgba(11, 46, 51, 0.4);
+    backdrop-filter: blur(30px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 40px;
+    padding: 50px;
+    max-width: 550px;
+    margin: 0 auto;
+    text-align: center;
+    box-shadow: 0 40px 100px rgba(0,0,0,0.5);
+}
+
+.component-label {
+    display: block;
+    font-size: 11px;
+    color: #00d4ff;
+    text-transform: uppercase;
+    margin-bottom: 30px;
+    letter-spacing: 3px;
+    opacity: 0.7;
+}
+
+.token-big-number {
+    font-size: 6rem;
+    font-weight: 900;
+    line-height: 1;
+    background: linear-gradient(to bottom, #fff, #00d4ff);
+    -webkit-text-fill-color: transparent;
+}
+
+/* --- MECHANISM BUTTON --- */
+.mechanism-demo-trigger {
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+}
+
+.btn-mechanism {
+    background: #00d4ff;
+    color: #0b2e33;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 50px;
+    font-weight: 800;
+    text-transform: uppercase;
+    box-shadow: 0 10px 30px rgba(0, 212, 255, 0.4);
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-mechanism:hover {
+    background: white;
+    transform: scale(1.05);
+}
