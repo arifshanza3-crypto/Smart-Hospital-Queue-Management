@@ -63,6 +63,20 @@
     width: 100%;
 }
 
+/* ✅ DROPDOWN OPTIONS STYLING (Background match karo) */
+select.token-input option {
+    background: #1a1a2e !important;
+    color: #ffffff !important;
+    padding: 10px 15px;
+}
+
+/* ✅ DROPDOWN PAR CLICK KARNE PAR OPTIONS KA BACKGROUND */
+select.token-input option:hover,
+select.token-input option:checked {
+    background: #00d4ff !important;
+    color: #000000 !important;
+}
+
 .validation-error { color: #ff4b2b; font-size: 12px; margin-top: 8px; font-weight: 600; }
 
 /* --- Generate Button --- */

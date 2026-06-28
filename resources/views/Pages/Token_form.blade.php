@@ -46,8 +46,9 @@
 
                 <div class="input-container">
                     <label class="input-label">Department</label>
+                    <!-- ✅ NORMAL DROPDOWN (size attribute hata diya) -->
                     <select name="department" class="form-control token-input" required>
-                        <option value="">Select Department</option>
+                        <option value="" disabled selected>Select Department</option>
                         <option value="OPD">OPD</option>
                         <option value="Lab">Lab</option>
                         <option value="Pharmacy">Pharmacy</option>
