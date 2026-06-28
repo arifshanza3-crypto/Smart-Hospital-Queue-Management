@@ -7,7 +7,7 @@
         <div class="container">
             <div class="hero-content">
                 <div class="hero-text">
-                    <span class="badge-top">Staff Portal</span>
+                    <span class="badge-top">Staff Dashboard</span>
                     <h1>Smart Queue Management</h1>
                     <p>Real-time oversight of physical walk-ins and digital bookings. Optimize patient flow with a single click.</p>
                 </div>
