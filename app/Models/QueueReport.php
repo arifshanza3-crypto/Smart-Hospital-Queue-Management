@@ -11,10 +11,7 @@ class QueueReport extends Model
 
     protected $table = 'queue_reports';
     
-<<<<<<< HEAD
     // ✅ SIRF EK BAAR fillable array - Duplicate nahi hona chahiye
-=======
->>>>>>> ad8262ee5046eced21425c2cc6aa14495d6f4a02
     protected $fillable = [
         'token_number',
         'patient_name',
@@ -22,10 +19,7 @@ class QueueReport extends Model
         'doctor_name',
         'department',
         'status',
-<<<<<<< HEAD
         'type',
-=======
->>>>>>> ad8262ee5046eced21425c2cc6aa14495d6f4a02
         'waiting_time',
         'service_time',
         'completed_at',
