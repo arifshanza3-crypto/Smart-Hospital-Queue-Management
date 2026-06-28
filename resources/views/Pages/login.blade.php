@@ -31,7 +31,7 @@
                 <div class="mb-3">
                     <label class="form-label text-white-50 small text-uppercase fw-bold">Login As</label>
                     <select name="role" id="userRole" class="form-control custom-input" required>
-                        <option value="patient" selected>Patient</option>
+                        <!-- <option value="patient" selected>Patient</option> -->
                         <option value="staff">Staff</option>
                         <option value="admin">Admin</option>
                     </select>
@@ -94,12 +94,12 @@
         const adminFields = document.getElementById('admin-fields');
         const staffFields = document.getElementById('staff-fields');
         
-        if (role === 'patient') {
-            patientFields.style.display = 'block';
-            adminFields.style.display = 'none';
-            staffFields.style.display = 'none';
-            document.querySelector('input[name="email"]').required = true;
-            document.querySelector('input[name="employee_id"]').required = false;
+        // if (role === 'patient') {
+        //     patientFields.style.display = 'block';
+        //     adminFields.style.display = 'none';
+        //     staffFields.style.display = 'none';
+        //     document.querySelector('input[name="email"]').required = true;
+        //     document.querySelector('input[name="employee_id"]').required = false;
         } else if (role === 'admin') {
             patientFields.style.display = 'none';
             adminFields.style.display = 'block';
