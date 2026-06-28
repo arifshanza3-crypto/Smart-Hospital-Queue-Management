@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-<<<<<<< HEAD
 use App\Models\Token;
 use Illuminate\Support\Facades\Log;
 
@@ -36,31 +35,6 @@ class TokenController extends Controller
 
         $lastToken = Token::orderBy('id', 'desc')->first();
 
-=======
-use Illuminate\Support\Facades\Auth;
-use App\Models\Token;
-
-class TokenController extends Controller
-{
-    public function generateToken(Request $request)
-    {
-        // Check if user is logged in
-        $patientId = Auth::id();
-        
-        if (!$patientId) {
-            return back()->with('error', 'Please login first');
-        }
-        
-        // Validate form data
-        $request->validate([
-            'full_name' => 'required|string',
-            'email' => 'required|email'
-        ]);
-        
-        // Generate token number
-        $lastToken = Token::orderBy('id', 'desc')->first();
-        
->>>>>>> dd270c6b25ecbed4a506a00e6cb776eb298c5d16
         if ($lastToken && $lastToken->token_number) {
             $lastNumber = intval(substr($lastToken->token_number, 4));
             $newNumber = $lastNumber + 1;
@@ -68,7 +42,6 @@ class TokenController extends Controller
         } else {
             $tokenNumber = 'TKN-001';
         }
-<<<<<<< HEAD
 
         $position = Token::where('department', $request->department)
                          ->whereIn('status', ['waiting', 'calling'])
@@ -144,27 +117,4 @@ class TokenController extends Controller
             'serving' => $serving ? $serving->token_number : '--'
         ]);
     }
-=======
-        
-        // Save token
-        try {
-            $token = Token::create([
-                'token_number' => $tokenNumber,
-                'patient_id' => $patientId,
-                'department' => 'General',
-                'status' => 'waiting',
-                'full_name' => $request->full_name,
-                'email' => $request->email,
-                'type' => 'Online',
-                'est_time' => 15,
-                'created_at' => now()
-            ]);
-            
-            return redirect('/Status')->with('success', 'Token generated! Your Token: ' . $tokenNumber);
-            
-        } catch (\Exception $e) {
-            return back()->with('error', 'Database Error: ' . $e->getMessage());
-        }
-    }
->>>>>>> dd270c6b25ecbed4a506a00e6cb776eb298c5d16
 }

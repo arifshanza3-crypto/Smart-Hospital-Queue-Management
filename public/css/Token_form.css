@@ -63,14 +63,41 @@
     width: 100%;
 }
 
-/* ✅ DROPDOWN OPTIONS STYLING (Background match karo) */
+/* ✅ BRIGHT PLACEHOLDERS - Easy to see */
+.token-input::placeholder {
+    color: #c0c0e0 !important;
+    opacity: 1 !important;
+    font-weight: 400;
+    font-size: 15px;
+}
+
+/* ✅ DROPDOWN SAME AS INPUTS */
+select.token-input {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #ffffff !important;
+    border-radius: 15px !important;
+    padding: 15px 20px !important;
+    width: 100%;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
+}
+
 select.token-input option {
     background: #1a1a2e !important;
     color: #ffffff !important;
     padding: 10px 15px;
 }
 
-/* ✅ DROPDOWN PAR CLICK KARNE PAR OPTIONS KA BACKGROUND */
+select.token-input {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='white' d='M6 8L1 3h10z'/%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 15px center !important;
+    background-size: 12px !important;
+}
+
 select.token-input option:hover,
 select.token-input option:checked {
     background: #00d4ff !important;
