@@ -24,12 +24,26 @@ class AuthController extends Controller
             }
             return redirect()->intended('/');
         }
+         if ($request->role === 'staff') {
+        $request->validate([
+            'employee_id' => 'required|string',
+            'password' => 'required',
+        ]);
 
+        // Find user by employee_id (assuming you have an employee_id column)
+        $user = User::where('employee_id', $request->employee_id)->first();
+
+        if ($user && Hash::check($request->password, $user->password)) {
+            Auth::login($user);
+            $request->session()->regenerate();
+            
+            return redirect('/staff'); // ✅ Staff redirect
+        }   
         return back()->withErrors([
             'email' => 'The provided credentials do not match our records.',
         ])->onlyInput('email');
     }
-
+    }
     public function signup(Request $request)
     {
         $validated = $request->validate([
