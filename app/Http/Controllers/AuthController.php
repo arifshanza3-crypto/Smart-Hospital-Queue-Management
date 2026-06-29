@@ -11,38 +11,22 @@ use App\Models\User;
 
 class AuthController extends Controller
 {
-    // ✅ FIXED: Login method for both Admin and Staff
+    // ✅ Login method for Admin and Staff
     public function login(Request $request)
     {
-        // Validate based on role
+        // Admin login (using email + password)
         if ($request->role === 'admin') {
             $credentials = $request->validate([
                 'email' => 'required|email',
                 'password' => 'required',
             ]);
 
-<<<<<<< HEAD
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
-            
-            $user = Auth::user();
-            
-            if ($user->role === 'admin') {
-                return redirect('/admin/doctor-management');
-            }
-            
-            if ($user->role === 'staff') {
-                return redirect('/staff/dashboard');
-            }
-            
-            return redirect('/');
-=======
             if (Auth::attempt($credentials)) {
                 $request->session()->regenerate();
                 $user = Auth::user();
                 
                 if ($user->role === 'admin') {
-                    return redirect('/admin/doctor-management'); // ✅ Correct redirect
+                    return redirect('/admin/doctor-management');
                 }
                 
                 return redirect('/');
@@ -51,24 +35,22 @@ class AuthController extends Controller
             return back()->withErrors([
                 'email' => 'Invalid admin credentials.',
             ])->onlyInput('email');
->>>>>>> ca4fbdc795d112985a4e7ec317add8b20c7be9e0
         }
 
-        // Staff login (using employee_id)
+        // Staff login (using employee_id + password)
         if ($request->role === 'staff') {
             $request->validate([
                 'employee_id' => 'required|string',
                 'password' => 'required',
             ]);
 
-            // Find user by employee_id
             $user = User::where('employee_id', $request->employee_id)->first();
 
             if ($user && Hash::check($request->password, $user->password)) {
                 Auth::login($user);
                 $request->session()->regenerate();
                 
-                return redirect('/staff/dashboard'); // ✅ Staff redirect
+                return redirect('/staff/dashboard');
             }
 
             return back()->withErrors([
