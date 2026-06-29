@@ -39,7 +39,7 @@
                 <div class="mb-3">
                     <label class="form-label text-white-50">Register As</label>
                     <select name="role" id="roleSelect" class="form-control custom-input" required>
-                        <option value="patient">Patient</option>
+                        <!-- <option value="patient">Patient</option> -->
                         <option value="staff">Staff</option>
                     </select>
                 </div>
