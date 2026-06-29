@@ -16,14 +16,19 @@ Route::get('/test', function () {
     return "Test page working!";
 });
 
+// ✅ ADMIN REDIRECT
+Route::get('/admin', function () {
+    return redirect('/admin/doctor-management');
+})->name('admin.dashboard');
+
 // Main website routes
-Route::get('/', [PageController::class, 'home']);
-Route::get('/about', [PageController::class, 'about']);
-Route::get('/services', [PageController::class, 'services']);
-Route::get('/contact', [PageController::class, 'contact']);
-Route::get('/booking', [PageController::class, 'booking']);
-Route::get('/Doctors', [PageController::class, 'Doctors']);
-Route::get('/Staff', [PageController::class, 'Staff']);
+Route::get('/', [PageController::class, 'home'])->name('home');
+Route::get('/about', [PageController::class, 'about'])->name('about');
+Route::get('/services', [PageController::class, 'services'])->name('services');
+Route::get('/contact', [PageController::class, 'contact'])->name('contact');
+Route::get('/booking', [PageController::class, 'booking'])->name('booking');
+Route::get('/Doctors', [PageController::class, 'Doctors'])->name('doctors');
+Route::get('/Staff', [PageController::class, 'Staff'])->name('staff.page');
 
 // Token Routes
 Route::get('/Token_form', [TokenController::class, 'showForm'])->name('token.form');
@@ -31,7 +36,9 @@ Route::post('/token/generate', [TokenController::class, 'generateToken'])->name(
 Route::get('/Status', [PageController::class, 'Status'])->name('status.page');
 Route::get('/patient/token-status', [TokenController::class, 'getTokenStatus'])->name('patient.token-status');
 
-// Authentication Routes
+// =============================================
+// ✅ AUTHENTICATION ROUTES (Login, Signup, Logout)
+// =============================================
 Route::get('/login', [PageController::class, 'login'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::get('/signup', [PageController::class, 'sign'])->name('signup');
@@ -39,20 +46,37 @@ Route::get('/register', [PageController::class, 'sign'])->name('register');
 Route::post('/signup', [AuthController::class, 'signup'])->name('signup.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// ✅ FORGOT PASSWORD ROUTES (ADDED)
+// =============================================
+// ✅ FORGOT PASSWORD ROUTES
+// =============================================
 Route::get('/forgot-password', [AuthController::class, 'showForgotForm'])->name('password.request');
 Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email');
 Route::get('/reset-password/{token}', [AuthController::class, 'showResetForm'])->name('password.reset');
 Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 
-// Staff Routes
-Route::get('/Staff', [StaffController::class, 'dashboard'])->name('staff.dashboard');
-Route::post('/staff/add-patient', [StaffController::class, 'addPatient'])->name('staff.add-patient');
-Route::patch('/staff/patient/{id}/serve', [StaffController::class, 'serve'])->name('staff.serve');
-Route::patch('/staff/patient/{id}/complete', [StaffController::class, 'complete'])->name('staff.complete');
-Route::patch('/staff/patient/{id}/cancel', [StaffController::class, 'cancel'])->name('staff.cancel');
+// =============================================
+// ✅ STAFF ROUTES
+// =============================================
+Route::prefix('staff')->name('staff.')->group(function () {
+    // Staff Dashboard
+    Route::get('/dashboard', [StaffController::class, 'dashboard'])->name('dashboard');
+    
+    // Staff Page (Public View)
+    Route::get('/page', [PageController::class, 'Staff'])->name('page');
+    
+    // Patient Management
+    Route::post('/add-patient', [StaffController::class, 'addPatient'])->name('add-patient');
+    Route::patch('/patient/{id}/serve', [StaffController::class, 'serve'])->name('serve');
+    Route::patch('/patient/{id}/complete', [StaffController::class, 'complete'])->name('complete');
+    Route::patch('/patient/{id}/cancel', [StaffController::class, 'cancel'])->name('cancel');
+    
+    // Get Patients List (AJAX)
+    Route::get('/patients', [StaffController::class, 'getPatients'])->name('patients');
+});
 
-// Admin Routes
+// =============================================
+// ✅ ADMIN ROUTES
+// =============================================
 Route::prefix('admin')->name('admin.')->group(function () {
     
     // Dashboard & Static Pages
