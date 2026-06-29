@@ -5,66 +5,6 @@
 @section('content')
 <link rel="stylesheet" href="{{ asset('css/sign.css') }}">
 
-<style>
-    /* Make all labels bright white */
-    .form-label {
-        color: #ffffff !important;
-        font-weight: 500;
-    }
-
-    /* Make all input fields bright with white text */
-    .custom-input {
-        background: #2a2a4a !important;
-        border: 1px solid #4a4a8a !important;
-        color: #ffffff !important;
-        font-size: 16px !important;
-        padding: 12px !important;
-    }
-
-    .custom-input::placeholder {
-        color: #aaaacc !important;
-        opacity: 1 !important;
-    }
-
-    .custom-input:focus {
-        background: #3a3a5a !important;
-        border-color: #00d4ff !important;
-        color: #ffffff !important;
-        box-shadow: 0 0 15px rgba(0, 212, 255, 0.3) !important;
-    }
-
-    /* Make select options bright */
-    .custom-input option {
-        background: #1a1a2e !important;
-        color: #ffffff !important;
-    }
-
-    /* Make placeholder text bright */
-    .custom-input::placeholder {
-        color: #bbbbdd !important;
-    }
-
-    /* Alert messages bright */
-    .alert {
-        font-weight: 500;
-    }
-
-    /* Link color bright */
-    .text-accent-cyan {
-        color: #00d4ff !important;
-        font-weight: 600;
-    }
-
-    .text-accent-cyan:hover {
-        color: #66e5ff !important;
-    }
-
-    /* Small text bright */
-    .text-white-50 {
-        color: #ccccdd !important;
-    }
-</style>
-
 <div class="signup-viewport">
     <div class="signup-page-wrapper">
         <div class="signup-card">
@@ -92,7 +32,8 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('register.post') }}" id="signupForm">
+            <!-- ✅ FORM ACTION CHANGED TO signup.post -->
+            <form method="POST" action="{{ route('signup.post') }}" id="signupForm">
                 @csrf
                 
                 <div class="mb-3">
@@ -136,6 +77,7 @@
     </div>
 </div>
 
+<script src="{{ asset('js/sign.js') }}"></script>
 <script>
     document.getElementById('roleSelect').addEventListener('change', function() {
         const role = this.value;
