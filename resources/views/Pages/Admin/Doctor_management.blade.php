@@ -48,7 +48,7 @@
         <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
             <thead>
                 <tr style="background: #0f3460; color: white; text-align: left;">
-                    <th style="padding: 12px;">Name</th>
+                    <th style="padding: 12px;">Employee Name</th>
                     <th style="padding: 12px;">Email</th>
                     <th style="padding: 12px;">Employee ID</th>
                     <th style="padding: 12px;">Status</th>
