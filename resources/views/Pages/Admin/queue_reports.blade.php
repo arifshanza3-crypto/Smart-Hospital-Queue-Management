@@ -111,17 +111,17 @@
         <div class="stat-card" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); padding: 20px; border-radius: 15px; color: white;">
             <i class="fas fa-check-circle" style="font-size: 35px; opacity: 0.9;"></i>
             <div style="font-size: 32px; font-weight: bold; margin-top: 10px;">{{ $completedToday }}</div>
-            <div style="opacity: 0.9;">Completed Today</div>
+            <div style="opacity: 0.9;">Complete Today</div>
         </div>
         <div class="stat-card" style="background: linear-gradient(135deg, #00d4ff 0%, #0b2e33 100%); padding: 20px; border-radius: 15px; color: white;">
             <i class="fas fa-clock" style="font-size: 35px; opacity: 0.9;"></i>
             <div style="font-size: 32px; font-weight: bold; margin-top: 10px;">{{ round($avgWaitingTime) }} min</div>
-            <div style="opacity: 0.9;">Avg Waiting Time</div>
+            <div style="opacity: 0.9;">Average Waiting Time</div>
         </div>
         <div class="stat-card" style="background: linear-gradient(135deg, #17a2b8 0%, #00c4ff 100%); padding: 20px; border-radius: 15px; color: white;">
             <i class="fas fa-chart-line" style="font-size: 35px; opacity: 0.9;"></i>
             <div style="font-size: 32px; font-weight: bold; margin-top: 10px;">{{ round($avgServiceTime) }} min</div>
-            <div style="opacity: 0.9;">Avg Service Time</div>
+            <div style="opacity: 0.9;">Average Service Time</div>
         </div>
     </div>
 
