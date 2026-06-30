@@ -44,42 +44,59 @@ class AuthController extends Controller
                 'password' => 'required',
             ]);
 
-            $user = User::where('employee_id', $request->employee_id)->first();
+            $user = User::where('employee_id', $request->employee_id)
+                        ->where('role', 'staff')
+                        ->first();
 
-            if ($user && Hash::check($request->password, $user->password)) {
+            if (!$user) {
+                return back()->withErrors([
+                    'employee_id' => 'Invalid employee ID.',
+                ])->onlyInput('employee_id');
+            }
+
+            // ✅ Check if staff is approved
+            if ($user->status === 'pending') {
+                return back()->with('error', 'Your account is pending admin approval.');
+            }
+
+            if ($user->status === 'rejected') {
+                return back()->with('error', 'Your account has been rejected. Contact admin.');
+            }
+
+            if (Hash::check($request->password, $user->password)) {
                 Auth::login($user);
                 $request->session()->regenerate();
-                
                 return redirect('/staff/dashboard');
             }
 
             return back()->withErrors([
-                'employee_id' => 'Invalid staff credentials.',
+                'employee_id' => 'Invalid credentials.',
             ])->onlyInput('employee_id');
         }
 
         return back()->withErrors(['error' => 'Invalid login attempt.']);
     }
 
+    // ✅ Staff Signup (status = pending)
     public function signup(Request $request)
     {
-        $validated = $request->validate([
+        $request->validate([
             'full_name' => 'required|string|max:255',
             'email' => 'required|email|unique:users',
-            'password' => 'required|min:8|confirmed',
+            'employee_id' => 'required|unique:users',
+            'password' => 'required|min:6|confirmed',
         ]);
 
         $user = User::create([
             'full_name' => $request->full_name,
             'email' => $request->email,
+            'employee_id' => $request->employee_id,
             'password' => Hash::make($request->password),
-            'role' => 'patient',
-            'status' => 'approved'
+            'role' => 'staff',
+            'status' => 'pending'  // ✅ Admin approval needed
         ]);
 
-        Auth::login($user);
-
-        return redirect('/');
+        return redirect('/login')->with('success', 'Registration successful! Waiting for admin approval.');
     }
 
     public function logout(Request $request)

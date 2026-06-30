@@ -32,15 +32,14 @@
                 </div>
             @endif
 
-            <!-- ✅ FORM ACTION CHANGED TO signup.post -->
             <form method="POST" action="{{ route('signup.post') }}" id="signupForm">
                 @csrf
                 
+                <!-- ✅ Role Selection - Sirf Staff -->
                 <div class="mb-3">
                     <label class="form-label text-white-50">Register As</label>
                     <select name="role" id="roleSelect" class="form-control custom-input" required>
-                        <!-- <option value="patient">Patient</option> -->
-                        <option value="staff">Staff</option>
+                        <option value="staff" selected>Staff</option>
                     </select>
                 </div>
 
@@ -52,11 +51,9 @@
                     <input type="email" name="email" class="form-control custom-input" placeholder="Email Address" required>
                 </div>
 
-                <!-- Staff Only Field (Hidden by default) -->
-                <div id="staffEmployeeField" style="display: none;">
-                    <div class="mb-3">
-                        <input type="text" name="employee_id" class="form-control custom-input" placeholder="Employee ID">
-                    </div>
+                <!-- ✅ Employee ID Field -->
+                <div class="mb-3">
+                    <input type="text" name="employee_id" class="form-control custom-input" placeholder="Employee ID" required>
                 </div>
 
                 <div class="mb-3">
@@ -77,8 +74,8 @@
     </div>
 </div>
 
-<script src="{{ asset('js/sign.js') }}"></script>
 <script>
+    // ✅ Role select change handler (Sirf Staff)
     document.getElementById('roleSelect').addEventListener('change', function() {
         const role = this.value;
         const staffField = document.getElementById('staffEmployeeField');

@@ -11,14 +11,15 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     protected $fillable = [
-        'name',
+        'full_name',        // ✅ Added (instead of name)
+        'employee_id',      // ✅ Added (for staff)
         'email',
         'password',
         'role',
         'phone',
         'address',
         'profile_image',
-        'status'
+        'status'            // ✅ Added (pending, approved, rejected)
     ];
 
     protected $hidden = [
@@ -30,7 +31,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    // Helper methods
+    // ✅ Helper methods
     public function isAdmin()
     {
         return $this->role === 'admin';
@@ -41,9 +42,24 @@ class User extends Authenticatable
         return $this->role === 'staff';
     }
 
-    public function isActive()
+    public function isPatient()
     {
-        return $this->status === 'active';
+        return $this->role === 'patient';
+    }
+
+    public function isPending()
+    {
+        return $this->status === 'pending';
+    }
+
+    public function isApproved()
+    {
+        return $this->status === 'approved';
+    }
+
+    public function isRejected()
+    {
+        return $this->status === 'rejected';
     }
 
     public function getProfileImageUrlAttribute()
@@ -51,6 +67,12 @@ class User extends Authenticatable
         if ($this->profile_image) {
             return asset('storage/' . $this->profile_image);
         }
-        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&background=00d4ff&color=fff';
+        return 'https://ui-avatars.com/api/?name=' . urlencode($this->full_name ?? $this->name) . '&background=00d4ff&color=fff';
+    }
+
+    // ✅ Alias for name (if needed)
+    public function getNameAttribute()
+    {
+        return $this->full_name;
     }
 }

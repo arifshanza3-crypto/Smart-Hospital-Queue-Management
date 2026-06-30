@@ -75,16 +75,23 @@ Route::prefix('staff')->name('staff.')->group(function () {
 });
 
 // =============================================
-// ✅ ADMIN ROUTES
+// ✅ ADMIN ROUTES (With Staff Approval)
 // =============================================
 Route::prefix('admin')->name('admin.')->group(function () {
+    
+    // ✅ Admin Dashboard (Pending Staff Approvals)
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+    Route::get('/doctor-management', [AdminController::class, 'dashboard'])->name('doctor-management');
+    
+    // ✅ Staff Approval Routes
+    Route::post('/approve-staff/{id}', [AdminController::class, 'approveStaff'])->name('approve-staff');
+    Route::post('/reject-staff/{id}', [AdminController::class, 'rejectStaff'])->name('reject-staff');
     
     // Dashboard & Static Pages
     Route::get('/report', [QueueReportController::class, 'index'])->name('report');
     Route::get('/settings', [PageController::class, 'settings'])->name('settings');
     Route::get('/user-management', [PageController::class, 'user_management'])->name('user-management');
     Route::get('/services-management', [ServiceController::class, 'index'])->name('services-management');
-    Route::get('/doctor-management', [DoctorController::class, 'index'])->name('doctor-management');
 
     // Doctor Management Routes
     Route::prefix('doctors')->name('doctors.')->group(function () {

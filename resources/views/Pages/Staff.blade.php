@@ -1,82 +1,99 @@
-@extends('layout.app')
-
-@section('title', 'Status - SMART QUEUE')
-
+@extends('Layout.staff_app')
+@section('title', 'Staff Portal - Smart Queue Management')
 @section('content')
-<link rel="stylesheet" href="{{ asset('css/status.css') }}">
-<meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="stylesheet" href="{{ asset('css/Staff.css') }}">
 
-<div class="container" style="margin-top: 50px;">
-    <div class="token-status-card" style="background: #1a1a2e; border: 1px solid #00d4ff; border-radius: 20px; padding: 30px; max-width: 500px; margin: auto; text-align: center;">
-        <h3 style="color: #00d4ff;">Token Status</h3>
-        
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin: 20px 0;">
-            <div>
-                <span style="color: #aaa;">Your Number</span>
-                <h2 id="tokenNumber" style="color: #00d4ff;">--</h2>
+    <section class="hero-header" style="background-color: #0b2e33;">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <span class="badge-top">Staff Portal</span>
+                    <h1>Smart Queue Management</h1>
+                    <p>Real-time oversight of physical walk-ins and digital bookings. Optimize patient flow with a single click.</p>
+                </div>
+                <div class="hero-actions">
+                    <button class="btn btn-primary" onclick="openModal('patientModal')">+ Add Physical Patient</button>
+                    <button class="btn btn-secondary" onclick="openModal('timeModal')">⏱ Set Global Time</button>
+                </div>
             </div>
-            <div>
-                <span style="color: #aaa;">Serving</span>
-                <h2 id="serving" style="color: #28a745;">--</h2>
-            </div>
-            <div>
-                <span style="color: #aaa;">Wait Time</span>
-                <h2 id="waitTime" style="color: #ffc107;">0m</h2>
+
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-label">Total in Queue</span>
+                    <h2 id="stat-total">0</h2>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Now Serving</span>
+                    <h2 id="stat-serving">--</h2>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Total Pending Wait</span>
+                    <h2 id="stat-avg-time">0m</h2>
+                </div>
             </div>
         </div>
-        
-        <div>
-            <span style="color: #aaa;">Your Position in Queue</span>
-            <h3 id="position" style="color: #00d4ff;">0</h3>
+    </section>
+
+    <main class="container">
+        <div class="data-card">
+            <table class="queue-table">
+                <thead>
+                    <tr>
+                        <th>Token #</th>
+                        <th>Patient Info</th>
+                        <th>Type</th>
+                        <th>Est. Time</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="queue-body"></tbody>
+            </table>
         </div>
-        
-        <div style="margin-top: 15px;">
-            <span id="statusBadge" style="padding: 8px 20px; border-radius: 20px; background: #ffc107; color: #000;">Waiting</span>
+    </main>
+
+    <div id="patientModal" class="modal">
+        <div class="modal-content">
+            <h3>Add New Patient</h3>
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="p_name" placeholder="Enter name...">
+            </div>
+            <div class="form-group">
+                <label>Age</label>
+                <input type="number" id="p_age" placeholder="Enter age...">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-text" onclick="closeModal('patientModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="submitPatient()">Add to Queue</button>
+            </div>
         </div>
     </div>
-</div>
 
-<script>
-function loadTokenStatus() {
-    fetch('/patient/token-status')
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                document.getElementById('tokenNumber').innerText = data.token_number || '--';
-                document.getElementById('serving').innerText = data.serving || '--';
-                document.getElementById('waitTime').innerHTML = (data.estimated_time || 0) + 'm';
-                document.getElementById('position').innerText = data.position || '0';
-                
-                const badge = document.getElementById('statusBadge');
-                if (data.status === 'waiting') {
-                    badge.innerText = '⏳ Waiting';
-                    badge.style.background = '#ffc107';
-                } else if (data.status === 'calling') {
-                    badge.innerText = '📞 Your Turn!';
-                    badge.style.background = '#17a2b8';
-                    badge.style.color = '#fff';
-                } else if (data.status === 'serving') {
-                    badge.innerText = '🩺 Being Served';
-                    badge.style.background = '#28a745';
-                    badge.style.color = '#fff';
-                }
-            } else {
-                document.getElementById('tokenNumber').innerText = '--';
-                document.getElementById('serving').innerText = '--';
-                document.getElementById('waitTime').innerHTML = '0m';
-                document.getElementById('position').innerText = '0';
-                document.getElementById('statusBadge').innerText = 'No Active Token';
-                document.getElementById('statusBadge').style.background = '#6c757d';
-                document.getElementById('statusBadge').style.color = '#fff';
-            }
-        })
-        .catch(error => console.error('Error:', error));
-}
+    <div id="timeModal" class="modal">
+        <div class="modal-content">
+            <h3>Set Global Est. Time</h3>
+            <div class="form-group">
+                <label>Minutes per patient</label>
+                <input type="number" id="global_min" value="15">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-text" onclick="closeModal('timeModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="submitGlobalTime()">Update All</button>
+            </div>
+        </div>
+    </div>
 
-document.addEventListener('DOMContentLoaded', function() {
-    loadTokenStatus();
-    setInterval(loadTokenStatus, 5000);
-});
-</script>
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <h3>Queue Positioning</h3>
+            <div id="detail-content" style="margin-top:20px; line-height: 1.8;">
+                </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="closeModal('detailModal')">Got it</button>
+            </div>
+        </div>
+    </div>
 
+    <script src="{{ asset('js/Staff.js') }}"></script>
 @endsection
