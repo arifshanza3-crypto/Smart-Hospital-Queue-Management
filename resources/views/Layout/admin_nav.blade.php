@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <nav class="admin-nav">
     <div class="nav-left">
         <div class="nav-title">
@@ -137,73 +136,3 @@
         cursor: pointer;
     }
 </style>
-=======
-<nav style="
-    position: fixed;
-    top: 15px;
-    left: 300px; /* Moves it away from the 280px sidebar */
-    right: 20px;
-    height: 75px;
-    background-color: #0b2e33; 
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 30px;
-    border: 1px solid #3e8686;
-    border-radius: 20px;
-    z-index: 1000;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-">
-
-    <div style="display: flex; align-items: center; gap: 40px;">
-        <div style="display: flex; flex-direction: column;">
-            <span style="font-size: 11px; color: #00d4ff; text-transform: uppercase; letter-spacing: 2px; font-weight: 700;">
-                System Overview
-            </span>
-            <span style="font-size: 22px; font-weight: 800; color: #00d4ff;">
-                Admin Dashboard
-            </span>
-        </div>
-    </div>
-
-    <div style="display: flex; align-items: center; gap: 25px;">
-        <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #00d4ff; font-weight: 600;">
-            <span style="width: 8px; height: 8px; background: #00d4ff; border-radius: 50%; box-shadow: 0 0 8px #00d4ff;"></span>
-            Live
-        </div>
-
-        <div style="position: relative; color: #00d4ff; cursor: pointer;">
-            <i class="fas fa-bell" style="font-size: 20px;"></i>
-            <span style="
-                position: absolute; 
-                top: -5px; 
-                right: -5px; 
-                background: #ff4d4d; 
-                color: white; 
-                font-size: 9px; 
-                padding: 2px 5px; 
-                border-radius: 50%; 
-                font-weight: bold;
-                border: 1px solid #0b2e33;
-            ">3</span>
-        </div>
-
-        <div style="padding-left: 20px; border-left: 1px solid rgba(62, 134, 134, 0.5);">
-            <div style="
-                width: 42px; 
-                height: 42px; 
-                border-radius: 50%; 
-                border: 2px solid #00d4ff; 
-                display: flex; 
-                align-items: center; 
-                justify-content: center; 
-                background: rgba(0, 212, 255, 0.1); 
-                color: #00d4ff; 
-                font-weight: bold;
-                cursor: pointer;
-            ">AD</div>
-        </div>
-    </div>
-</nav>
->>>>>>> 3f9cfec078e8d9879dc8f908935c7d8b28740f60
