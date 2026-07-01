@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Log;
 
 class TokenController extends Controller
 {
-    // ✅ Show token form
     public function showForm()
     {
         return view('Pages.Token_form');
@@ -53,7 +52,7 @@ class TokenController extends Controller
             $token = Token::create([
                 'token_number' => $tokenNumber,
                 'patient_id' => null,
-                'patient_name' => $request->patient_name,
+                'patient_name' => $request->patient_name,  // ✅ 'patient_name' use karo
                 'phone' => $request->phone,
                 'email' => $request->email,
                 'department' => $request->department,
@@ -67,7 +66,7 @@ class TokenController extends Controller
 
             session(['current_token' => $tokenNumber]);
 
-            return redirect('/Status')->with('success', 'Token generated! Your Token: ' . $tokenNumber);
+            return redirect('/Status?token=' . $tokenNumber)->with('success', 'Token generated! Your Token: ' . $tokenNumber);
 
         } catch (\Exception $e) {
             Log::error('Token save error: ' . $e->getMessage());
@@ -75,9 +74,9 @@ class TokenController extends Controller
         }
     }
 
-    public function getTokenStatus()
+    public function getTokenStatus(Request $request)
     {
-        $tokenNumber = session('current_token');
+        $tokenNumber = $request->query('token') ?? session('current_token');
 
         if (!$tokenNumber) {
             return response()->json([
@@ -106,15 +105,24 @@ class TokenController extends Controller
                         ->where('status', 'serving')
                         ->first();
 
+        $totalWaiting = Token::where('department', $token->department)
+                             ->whereIn('status', ['waiting', 'calling'])
+                             ->count();
+        
+        $progress = $totalWaiting > 0 ? (($totalWaiting - $position + 1) / $totalWaiting * 100) : 100;
+        $progress = min(100, max(0, $progress));
+
         return response()->json([
             'success' => true,
             'token_number' => $token->token_number,
-            'patient_name' => $token->patient_name,
+            'patient_name' => $token->patient_name ?? 'N/A',  // ✅ 'patient_name' use karo
             'department' => $token->department,
             'status' => $token->status,
             'position' => $position,
             'estimated_time' => $estimatedTime,
-            'serving' => $serving ? $serving->token_number : '--'
+            'serving' => $serving ? $serving->token_number : '--',
+            'progress' => round($progress, 0),
+            'created_at' => $token->created_at ? $token->created_at->format('h:i A') : '--'
         ]);
     }
 }

@@ -1,4 +1,5 @@
 <?php
+// app/Models/Token.php
 
 namespace App\Models;
 
@@ -14,10 +15,10 @@ class Token extends Model
         'patient_id',
         'department',
         'status',
-        'full_name',
+        'patient_name',    // ✅ YEH ADD KARO (pehle missing tha)
+        'phone',
         'email',
-        'type',
-        'est_time',
+        'estimated_time',   // ✅ YEH BHI ADD KARO
         'position',
         'called_at',
         'completed_at'

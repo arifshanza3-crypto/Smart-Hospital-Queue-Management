@@ -1,115 +1,295 @@
-/* --- Background Setup --- */
-.status-viewport {
-    background: #0a1113;
-    min-height: 100vh;
+/* ============================================ */
+/* PATIENT STATUS - Yellow/Golden Theme        */
+/* ============================================ */
+
+/* --- Patient Token Card --- */
+.patient-token-card {
+    max-width: 100%;
+    background: linear-gradient(145deg, #ffffff, #fffbeb);
+    border-radius: 16px;
+    padding: 24px 28px 20px;
+    box-shadow: 0 4px 25px rgba(255, 215, 0, 0.12);
+    border: 1px solid rgba(255, 215, 0, 0.15);
     position: relative;
-    overflow-x: hidden;
-    color: white;
+    overflow: hidden;
 }
 
-.mesh-bg {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: radial-gradient(circle at 10% 20%, #1a3a3a 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, #3e8686 0%, transparent 40%);
-    filter: blur(100px);
-    z-index: 0;
+/* Golden top border animation */
+.patient-token-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #f59e0b, #ffd700, #f59e0b);
+    background-size: 200% 100%;
+    animation: goldShimmer 3s ease infinite;
 }
 
-/* --- HERO SECTION --- */
-.hero-section {
-    position: relative;
-    padding: 100px 20px 40px;
-    z-index: 2;
+@keyframes goldShimmer {
+    0%, 100% { background-position: 0% 0%; }
+    50% { background-position: 100% 0%; }
 }
 
-.hero-badge {
-    display: inline-block;
-    padding: 6px 15px;
-    background: rgba(0, 212, 255, 0.1);
-    border: 1px solid #00d4ff;
-    color: #00d4ff;
-    border-radius: 50px;
-    font-size: 12px;
-    font-weight: 800;
-    text-transform: uppercase;
-    margin-bottom: 20px;
-}
-
-.hero-title {
-    font-size: 4rem;
-    font-weight: 900;
-    letter-spacing: -2px;
-    margin-bottom: 10px;
-}
-
-.hero-subtitle {
-    font-size: 1.2rem;
-    color: rgba(255,255,255,0.6);
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-/* --- COMPONENTS --- */
-.component-display {
-    position: relative;
-    z-index: 2;
-    padding-bottom: 100px;
-}
-
-.status-card {
-    background: rgba(11, 46, 51, 0.4);
-    backdrop-filter: blur(30px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 40px;
-    padding: 50px;
-    max-width: 550px;
-    margin: 0 auto;
+/* --- Token Header --- */
+.token-header {
     text-align: center;
-    box-shadow: 0 40px 100px rgba(0,0,0,0.5);
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(255, 215, 0, 0.15);
+    margin-bottom: 14px;
 }
 
-.component-label {
+.token-label {
     display: block;
-    font-size: 11px;
-    color: #00d4ff;
-    text-transform: uppercase;
-    margin-bottom: 30px;
+    font-size: 10px;
+    color: #b8860b;
+    font-weight: 700;
     letter-spacing: 3px;
-    opacity: 0.7;
-}
-
-.token-big-number {
-    font-size: 6rem;
-    font-weight: 900;
-    line-height: 1;
-    background: linear-gradient(to bottom, #fff, #00d4ff);
-    -webkit-text-fill-color: transparent;
-}
-
-/* --- MECHANISM BUTTON --- */
-.mechanism-demo-trigger {
-    position: fixed;
-    bottom: 40px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 100;
-}
-
-.btn-mechanism {
-    background: #00d4ff;
-    color: #0b2e33;
-    border: none;
-    padding: 15px 30px;
-    border-radius: 50px;
-    font-weight: 800;
     text-transform: uppercase;
-    box-shadow: 0 10px 30px rgba(0, 212, 255, 0.4);
-    cursor: pointer;
-    transition: 0.3s;
+    margin-bottom: 2px;
 }
 
-.btn-mechanism:hover {
-    background: white;
-    transform: scale(1.05);
+.token-number {
+    font-size: 32px;
+    font-weight: 800;
+    display: block;
+    letter-spacing: 1px;
+    background: linear-gradient(135deg, #b8860b, #f59e0b, #ffd700);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.token-badge {
+    display: inline-block;
+    padding: 2px 16px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    color: white;
+    background: #f59e0b;
+    margin-top: 4px;
+    box-shadow: 0 2px 10px rgba(245, 158, 11, 0.3);
+}
+
+/* --- Token Details Grid --- */
+.token-details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px 20px;
+    margin-bottom: 12px;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(255, 215, 0, 0.08);
+}
+
+.detail-item.full-width {
+    grid-column: 1 / -1;
+}
+
+.detail-item .label {
+    font-size: 9px;
+    color: #b8860b;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.detail-item .value {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a1a2e;
+    margin-top: 1px;
+}
+
+/* --- Status Badges --- */
+.status-badge {
+    padding: 1px 12px;
+    border-radius: 10px;
+    font-size: 11px;
+    display: inline-block;
+    font-weight: 600;
+    width: fit-content;
+}
+
+.status-waiting {
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #f59e0b;
+}
+
+.status-serving {
+    background: #dbeafe;
+    color: #1e40af;
+    border: 1px solid #3b82f6;
+}
+
+.status-completed {
+    background: #d1fae5;
+    color: #065f46;
+    border: 1px solid #10b981;
+}
+
+.status-cancelled {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #ef4444;
+}
+
+/* --- Progress Bar --- */
+.progress-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0 12px;
+    padding: 8px 12px;
+    background: #fffbeb;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 215, 0, 0.1);
+}
+
+.progress-bar {
+    flex: 1;
+    height: 5px;
+    background: #fef3c7;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #b8860b, #f59e0b, #ffd700);
+    transition: width 0.6s ease;
+    border-radius: 10px;
+    position: relative;
+}
+
+/* Progress shimmer effect */
+.progress-fill::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: 0;
+    right: 0;
+    bottom: -2px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+.progress-text {
+    font-size: 12px;
+    font-weight: 700;
+    color: #b8860b;
+    min-width: 35px;
+    text-align: right;
+}
+
+/* --- Buttons --- */
+.token-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 2px;
+}
+
+.btn-refresh,
+.btn-home {
+    flex: 1;
+    padding: 8px 14px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    text-decoration: none;
+}
+
+.btn-refresh {
+    background: linear-gradient(135deg, #b8860b, #f59e0b);
+    color: white;
+    box-shadow: 0 2px 12px rgba(245, 158, 11, 0.25);
+}
+
+.btn-refresh:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(245, 158, 11, 0.35);
+}
+
+.btn-home {
+    background: #fffbeb;
+    color: #b8860b;
+    border: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+.btn-home:hover {
+    background: #fef3c7;
+    border-color: #f59e0b;
+}
+
+/* --- Last Updated --- */
+.last-updated {
+    text-align: center;
+    margin-top: 10px;
+    color: #b8860b;
+    font-size: 10px;
+    font-weight: 500;
+    opacity: 0.6;
+}
+
+/* --- Animation --- */
+#patient-token-display {
+    animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* --- Responsive - Mobile --- */
+@media (max-width: 480px) {
+    .patient-token-card {
+        padding: 18px 16px 16px;
+        margin: 0 4px;
+        border-radius: 14px;
+    }
+
+    .token-number {
+        font-size: 26px;
+    }
+
+    .token-details-grid {
+        gap: 0 12px;
+    }
+
+    .detail-item .value {
+        font-size: 13px;
+    }
+
+    .token-actions {
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .btn-refresh,
+    .btn-home {
+        padding: 8px;
+    }
 }
