@@ -1,64 +1,181 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const target = document.getElementById('mechanism-target');
-    const toggleBtn = document.getElementById('switchStateBtn');
-    
-    // Initial State: No Token
-    let hasToken = false;
+/**
+ * Patient Token Status - JavaScript
+ * Handles fetching and updating token status in real-time
+ */
 
-    // "Get_token" Component Logic
-    function showGetTokenComponent() {
-        target.innerHTML = `
-            <div class="status-card">
-                <span class="component-label">Component: Get_token</span>
-                <h2 class="fw-bold text-white">Ready to join?</h2>
-                <p class="text-white-50 mt-3 mb-4">No active token was found for your session.</p>
-                <button onclick="window.location.href='/token-form'" class="btn btn-outline-info px-5 py-3" style="border-radius: 15px; font-weight: 800; border-width: 2px;">
-                    Generate New Token
-                </button>
-            </div>
-        `;
-    }
+(function() {
+    'use strict';
 
-    // "Token_detail" Component Logic
-    function showTokenDetailComponent() {
-        target.innerHTML = `
-            <div class="status-card">
-                <span class="component-label">Component: Token_detail</span>
-                <div class="mb-2" style="color: #00ff88; font-weight: 800; font-size: 14px;">
-                    <span style="display: inline-block; width: 10px; height: 10px; background: #00ff88; border-radius: 50%; margin-right: 8px;"></span>
-                    ACTIVE IN QUEUE
-                </div>
-                <h3 class="text-white-50">Your Number</h3>
-                <div class="token-big-number">11</div>
-                <hr style="border-color: rgba(255,255,255,0.1); margin: 30px 0;">
-                <div class="d-flex justify-content-between text-start">
-                    <div>
-                        <small class="text-white-50 d-block">Serving</small>
-                        <span class="h4 fw-bold text-accent-cyan">08</span>
-                    </div>
-                    <div class="text-end">
-                        <small class="text-white-50 d-block">Wait Time</small>
-                        <span class="h4 fw-bold text-white">~12m</span>
-                    </div>
-                </div>
-            </div>
-        `;
-    }
+    // Get token from Blade (passed via PHP)
+    const tokenNumberElement = document.getElementById('patientTokenNumber');
+    const tokenNumber = tokenNumberElement ? tokenNumberElement.textContent : null;
 
-    // Load initial component
-    showGetTokenComponent();
-
-    // The "Mechanism" Swapper
-    toggleBtn.addEventListener('click', function() {
-        hasToken = !hasToken;
-        if(hasToken) {
-            showTokenDetailComponent();
-            this.innerText = "System: Token Generated";
-            this.style.background = "#fff";
-        } else {
-            showGetTokenComponent();
-            this.innerText = "Toggle Generation Logic";
-            this.style.background = "#00d4ff";
+    /**
+     * Main function to fetch token status from server
+     */
+    function fetchTokenStatus() {
+        // If no token number, show error
+        if (!tokenNumber || tokenNumber === '--' || tokenNumber === 'No Token') {
+            const badge = document.getElementById('tokenBadge');
+            if (badge) {
+                badge.textContent = '✕ Invalid';
+                badge.style.background = '#dc3545';
+                badge.style.color = 'white';
+            }
+            return;
         }
-    });
-});
+
+        // Fetch token status from API
+        fetch(`/patient/token-status?token=${encodeURIComponent(tokenNumber)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    updatePatientUI(data);
+                } else {
+                    showError('Token not found');
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching token status:', error);
+                showError('Error loading');
+            });
+    }
+
+    /**
+     * Update UI with token data
+     */
+    function updatePatientUI(data) {
+        // Update basic info
+        setElementText('patientTokenNumber', data.token_number || '--');
+        setElementText('patientName', data.patient_name || '--');
+        setElementText('patientDepartment', data.department || '--');
+        setElementText('patientPosition', '#' + (data.position || '--'));
+        setElementText('patientWaitTime', data.estimated_time ? data.estimated_time + 'm' : '--');
+        setElementText('patientServing', data.serving || '--');
+        setElementText('patientTime', data.created_at || '--');
+
+        // Update status badge
+        updateStatusBadge(data.status || 'waiting');
+
+        // Update progress
+        const progress = data.progress || 0;
+        const progressFill = document.getElementById('patientProgress');
+        const progressText = document.getElementById('progressText');
+        if (progressFill) progressFill.style.width = progress + '%';
+        if (progressText) progressText.textContent = progress + '%';
+
+        // Update last updated time
+        const lastUpdated = document.getElementById('lastUpdated');
+        if (lastUpdated) {
+            lastUpdated.textContent = new Date().toLocaleTimeString();
+        }
+    }
+
+    /**
+     * Update status badge based on token status
+     */
+    function updateStatusBadge(status) {
+        const statusBadge = document.getElementById('patientStatus');
+        const badge = document.getElementById('tokenBadge');
+
+        if (!statusBadge) return;
+
+        // Reset classes
+        statusBadge.className = 'value status-badge';
+        if (badge) badge.style.color = 'white';
+
+        // Set status specific styles
+        const statusLower = status.toLowerCase();
+        switch (statusLower) {
+            case 'serving':
+            case 'calling':
+                statusBadge.classList.add('status-serving');
+                statusBadge.textContent = 'In Progress';
+                if (badge) {
+                    badge.textContent = '● In Progress';
+                    badge.style.background = '#4a6cf7';
+                }
+                break;
+
+            case 'completed':
+                statusBadge.classList.add('status-completed');
+                statusBadge.textContent = 'Completed';
+                if (badge) {
+                    badge.textContent = '● Completed';
+                    badge.style.background = '#22c55e';
+                }
+                break;
+
+            case 'cancelled':
+                statusBadge.classList.add('status-cancelled');
+                statusBadge.textContent = 'Cancelled';
+                if (badge) {
+                    badge.textContent = '● Cancelled';
+                    badge.style.background = '#ef4444';
+                }
+                break;
+
+            default: // waiting
+                statusBadge.classList.add('status-waiting');
+                statusBadge.textContent = 'Waiting';
+                if (badge) {
+                    badge.textContent = '● Waiting';
+                    badge.style.background = '#f59e0b';
+                }
+                break;
+        }
+    }
+
+    /**
+     * Helper: Set element text content safely
+     */
+    function setElementText(id, text) {
+        const element = document.getElementById(id);
+        if (element) {
+            element.textContent = text;
+        }
+    }
+
+    /**
+     * Show error message
+     */
+    function showError(message) {
+        const statusBadge = document.getElementById('patientStatus');
+        if (statusBadge) {
+            statusBadge.textContent = message;
+            statusBadge.className = 'value status-badge status-cancelled';
+        }
+
+        const badge = document.getElementById('tokenBadge');
+        if (badge) {
+            badge.textContent = '✕ Error';
+            badge.style.background = '#dc3545';
+            badge.style.color = 'white';
+        }
+    }
+
+    /**
+     * Manual refresh function (called from button)
+     */
+    window.refreshStatus = function() {
+        fetchTokenStatus();
+    };
+
+    // Make fetchTokenStatus globally accessible for inline onclick
+    window.fetchTokenStatus = fetchTokenStatus;
+
+    // ============================================ //
+    // AUTO-REFRESH SETUP                          //
+    // ============================================ //
+
+    // Initial fetch when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', fetchTokenStatus);
+    } else {
+        fetchTokenStatus();
+    }
+
+    // Auto-refresh every 10 seconds
+    setInterval(fetchTokenStatus, 10000);
+
+})();
