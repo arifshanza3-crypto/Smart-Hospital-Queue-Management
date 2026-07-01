@@ -37,7 +37,7 @@ Route::get('/Status', [PageController::class, 'Status'])->name('status.page');
 Route::get('/patient/token-status', [TokenController::class, 'getTokenStatus'])->name('patient.token-status');
 
 // =============================================
-// ✅ AUTHENTICATION ROUTES (Login, Signup, Logout)
+// ✅ AUTHENTICATION ROUTES
 // =============================================
 Route::get('/login', [PageController::class, 'login'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
@@ -55,7 +55,7 @@ Route::get('/reset-password/{token}', [AuthController::class, 'showResetForm'])-
 Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 
 // =============================================
-// ✅ STAFF ROUTES
+// ✅ STAFF ROUTES (UPDATED)
 // =============================================
 Route::prefix('staff')->name('staff.')->group(function () {
     // Staff Dashboard
@@ -64,14 +64,17 @@ Route::prefix('staff')->name('staff.')->group(function () {
     // Staff Page (Public View)
     Route::get('/page', [PageController::class, 'Staff'])->name('page');
     
-    // Patient Management
+    // ✅ Patient Management (Updated)
     Route::post('/add-patient', [StaffController::class, 'addPatient'])->name('add-patient');
-    Route::patch('/patient/{id}/serve', [StaffController::class, 'serve'])->name('serve');
-    Route::patch('/patient/{id}/complete', [StaffController::class, 'complete'])->name('complete');
-    Route::patch('/patient/{id}/cancel', [StaffController::class, 'cancel'])->name('cancel');
+    Route::post('/start-serving', [StaffController::class, 'startServing'])->name('start-serving');
+    Route::post('/complete-service', [StaffController::class, 'completeService'])->name('complete-service');
+    Route::post('/cancel-token', [StaffController::class, 'cancelToken'])->name('cancel-token');
+    Route::post('/call-next', [StaffController::class, 'callNext'])->name('call-next');
+    Route::post('/cancel-patient', [StaffController::class, 'cancelPatient'])->name('cancel-patient');
+    Route::post('/set-global-time', [StaffController::class, 'setGlobalTime'])->name('set-global-time');
     
-    // Get Patients List (AJAX)
-    Route::get('/patients', [StaffController::class, 'getPatients'])->name('patients');
+    // ✅ Get Patients List (AJAX)
+    Route::get('/get-queue', [StaffController::class, 'getQueue'])->name('get-queue');
 });
 
 // =============================================

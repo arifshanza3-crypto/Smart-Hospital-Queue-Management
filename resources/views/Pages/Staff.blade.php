@@ -2,6 +2,7 @@
 @section('title', 'Staff Portal - Smart Queue Management')
 @section('content')
     <link rel="stylesheet" href="{{ asset('css/Staff.css') }}">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <section class="hero-header" style="background-color: #0b2e33;">
         <div class="container">
@@ -52,6 +53,19 @@
         </div>
     </main>
 
+    <!-- Timer Modal -->
+    <div id="timerModal" class="modal" style="display: none;">
+        <div class="modal-content" style="text-align: center;">
+            <h3>⏰ Waiting for Patient</h3>
+            <div id="timerDisplay" style="font-size: 48px; font-weight: bold; margin: 20px 0;">05:00</div>
+            <p>Patient has <span id="minutesLeft">5</span> minutes to arrive</p>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="extendTimer()">⏰ Extend (2 min)</button>
+                <button class="btn btn-danger" onclick="cancelCurrentPatient()">❌ Cancel & Next</button>
+            </div>
+        </div>
+    </div>
+
     <div id="patientModal" class="modal">
         <div class="modal-content">
             <h3>Add New Patient</h3>
@@ -87,8 +101,7 @@
     <div id="detailModal" class="modal">
         <div class="modal-content">
             <h3>Queue Positioning</h3>
-            <div id="detail-content" style="margin-top:20px; line-height: 1.8;">
-                </div>
+            <div id="detail-content" style="margin-top:20px; line-height: 1.8;"></div>
             <div class="modal-footer">
                 <button class="btn btn-primary" onclick="closeModal('detailModal')">Got it</button>
             </div>

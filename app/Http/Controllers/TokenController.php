@@ -65,9 +65,11 @@ class TokenController extends Controller
 
             Log::info('Token saved: ' . $tokenNumber);
 
+            // ✅ CHANGE: Session mein token save karein
             session(['current_token' => $tokenNumber]);
 
-            return redirect('/Status')->with('success', 'Token generated! Your Token: ' . $tokenNumber);
+            // ✅ CHANGE: Redirect to Status with token parameter
+            return redirect('/Status?token=' . $tokenNumber)->with('success', 'Token generated! Your Token: ' . $tokenNumber);
 
         } catch (\Exception $e) {
             Log::error('Token save error: ' . $e->getMessage());
@@ -75,9 +77,11 @@ class TokenController extends Controller
         }
     }
 
-    public function getTokenStatus()
+    // ✅ CHANGE: Get token status from URL parameter
+    public function getTokenStatus(Request $request)
     {
-        $tokenNumber = session('current_token');
+        // ✅ First check URL parameter, then session
+        $tokenNumber = $request->query('token') ?? session('current_token');
 
         if (!$tokenNumber) {
             return response()->json([
@@ -106,6 +110,14 @@ class TokenController extends Controller
                         ->where('status', 'serving')
                         ->first();
 
+        // ✅ Calculate progress
+        $totalWaiting = Token::where('department', $token->department)
+                             ->whereIn('status', ['waiting', 'calling'])
+                             ->count();
+        
+        $progress = $totalWaiting > 0 ? (($totalWaiting - $position + 1) / $totalWaiting * 100) : 100;
+        $progress = min(100, max(0, $progress));
+
         return response()->json([
             'success' => true,
             'token_number' => $token->token_number,
@@ -114,7 +126,9 @@ class TokenController extends Controller
             'status' => $token->status,
             'position' => $position,
             'estimated_time' => $estimatedTime,
-            'serving' => $serving ? $serving->token_number : '--'
+            'serving' => $serving ? $serving->token_number : '--',
+            'progress' => round($progress, 0),
+            'created_at' => $token->created_at ? $token->created_at->format('h:i A') : '--'
         ]);
     }
 }
