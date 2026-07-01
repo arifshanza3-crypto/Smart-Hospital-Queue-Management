@@ -3,7 +3,6 @@
 @section('content')
     <link rel="stylesheet" href="{{ asset('css/Staff.css') }}">
 
-    {{-- ✅ CHECK: Agar URL mein token hai toh patient view --}}
     @php
         $isPatientView = request()->has('token');
         $patientToken = request()->query('token');
@@ -11,68 +10,78 @@
 
     @if($isPatientView)
         {{-- ============================================ --}}
-        {{-- ✅ PATIENT VIEW - Sirf Apna Token --}}
+        {{-- ✅ PATIENT VIEW - Compact & Matching Style --}}
         {{-- ============================================ --}}
-        <section class="hero-header" style="background-color: #0b2e33;">
+        <section class="hero-header" style="background: linear-gradient(135deg, #0b2e33 0%, #1a5a63 100%);">
             <div class="container">
                 <div class="hero-content">
                     <div class="hero-text">
-                        <span class="badge-top">Patient Portal</span>
-                        <h1>Your Token Status</h1>
-                        <p>Real-time update of your queue position</p>
+                        <span class="badge-top" style="background: rgba(255,255,255,0.15); color: #8ab4b8;">Patient Portal</span>
+                        <h1 style="color: white;">Your Token Status</h1>
+                        <p style="color: rgba(255,255,255,0.8);">Real-time update of your queue position</p>
                     </div>
                 </div>
             </div>
         </section>
 
         <main class="container">
-            <div class="data-card">
+            <div class="data-card" style="background: transparent; box-shadow: none; padding: 0;">
                 <div id="patient-token-display">
                     <div class="patient-token-card">
+                        {{-- Token Header --}}
                         <div class="token-header">
                             <span class="token-label">Your Token</span>
                             <span class="token-number" id="patientTokenNumber">{{ $patientToken ?? '--' }}</span>
+                            <span class="token-badge" id="tokenBadge">● Active</span>
                         </div>
-                        <div class="token-details">
-                            <div class="detail-row">
-                                <span class="label">Patient Name</span>
+
+                        {{-- Token Details - Compact Grid --}}
+                        <div class="token-details-grid">
+                            <div class="detail-item">
+                                <span class="label">Patient</span>
                                 <span class="value" id="patientName">--</span>
                             </div>
-                            <div class="detail-row">
+                            <div class="detail-item">
                                 <span class="label">Department</span>
                                 <span class="value" id="patientDepartment">--</span>
                             </div>
-                            <div class="detail-row">
+                            <div class="detail-item">
                                 <span class="label">Status</span>
                                 <span class="value status-badge" id="patientStatus">Waiting</span>
                             </div>
-                            <div class="detail-row">
-                                <span class="label">Position in Queue</span>
+                            <div class="detail-item">
+                                <span class="label">Position</span>
                                 <span class="value" id="patientPosition">--</span>
                             </div>
-                            <div class="detail-row">
-                                <span class="label">Estimated Wait</span>
+                            <div class="detail-item">
+                                <span class="label">Est. Wait</span>
                                 <span class="value" id="patientWaitTime">--</span>
                             </div>
-                            <div class="detail-row">
-                                <span class="label">Currently Serving</span>
+                            <div class="detail-item">
+                                <span class="label">Serving</span>
                                 <span class="value" id="patientServing">--</span>
                             </div>
-                            <div class="detail-row">
-                                <span class="label">Token Generated</span>
+                            <div class="detail-item full-width">
+                                <span class="label">Generated</span>
                                 <span class="value" id="patientTime">--</span>
                             </div>
                         </div>
+
+                        {{-- Progress Bar --}}
                         <div class="progress-container">
                             <div class="progress-bar">
                                 <div class="progress-fill" id="patientProgress" style="width: 0%"></div>
                             </div>
                             <span class="progress-text" id="progressText">0%</span>
                         </div>
+
+                        {{-- Buttons --}}
                         <div class="token-actions">
-                            <button class="btn-refresh" onclick="fetchTokenStatus()">🔄 Refresh</button>
-                            <a href="/" class="btn-home">🏠 Back to Home</a>
+                            <button class="btn-refresh" onclick="fetchTokenStatus()"> Refresh</button>
+                            <a href="/" class="btn-home">Home</a>
                         </div>
+
+                        {{-- Last Updated --}}
                         <div class="last-updated">
                             Last updated: <span id="lastUpdated">--</span>
                         </div>
@@ -81,13 +90,15 @@
             </div>
         </main>
 
-        {{-- ✅ Patient View JavaScript --}}
+        {{-- ✅ JavaScript --}}
         <script>
             const tokenNumber = '{{ $patientToken }}';
             
             function fetchTokenStatus() {
                 if (!tokenNumber) {
                     document.getElementById('patientTokenNumber').textContent = 'No Token';
+                    document.getElementById('tokenBadge').textContent = '● Invalid';
+                    document.getElementById('tokenBadge').style.color = '#dc3545';
                     return;
                 }
 
@@ -97,233 +108,317 @@
                         if (data.success) {
                             updatePatientUI(data);
                         } else {
+                            document.getElementById('patientTokenNumber').textContent = tokenNumber;
                             document.getElementById('patientStatus').textContent = 'Not Found';
-                            document.getElementById('patientStatus').className = 'value status-badge status-completed';
+                            document.getElementById('patientStatus').className = 'value status-badge status-cancelled';
+                            document.getElementById('tokenBadge').textContent = '● Invalid';
+                            document.getElementById('tokenBadge').style.color = '#dc3545';
                         }
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        document.getElementById('patientStatus').textContent = 'Error Loading';
+                        document.getElementById('patientStatus').textContent = 'Error';
+                        document.getElementById('patientStatus').className = 'value status-badge status-cancelled';
                     });
             }
 
             function updatePatientUI(data) {
+                document.getElementById('patientTokenNumber').textContent = data.token_number || '--';
                 document.getElementById('patientName').textContent = data.patient_name || '--';
                 document.getElementById('patientDepartment').textContent = data.department || '--';
-                document.getElementById('patientPosition').textContent = data.position || '--';
-                document.getElementById('patientWaitTime').textContent = data.estimated_time ? data.estimated_time + ' min' : '--';
+                document.getElementById('patientPosition').textContent = '#' + (data.position || '--');
+                document.getElementById('patientWaitTime').textContent = data.estimated_time ? data.estimated_time + 'm' : '--';
                 document.getElementById('patientServing').textContent = data.serving || '--';
                 document.getElementById('patientTime').textContent = data.created_at || '--';
                 
-                // Update status badge
+                // Update status
                 const statusBadge = document.getElementById('patientStatus');
                 const status = data.status || 'waiting';
                 statusBadge.textContent = status.charAt(0).toUpperCase() + status.slice(1);
                 statusBadge.className = 'value status-badge';
+                const badge = document.getElementById('tokenBadge');
+                
                 if (status === 'serving' || status === 'calling') {
                     statusBadge.classList.add('status-serving');
-                } else if (status === 'completed' || status === 'cancelled') {
+                    badge.textContent = '● In Progress';
+                    badge.style.color = '#28a745';
+                } else if (status === 'completed') {
                     statusBadge.classList.add('status-completed');
+                    badge.textContent = '● Completed';
+                    badge.style.color = '#28a745';
+                } else if (status === 'cancelled') {
+                    statusBadge.classList.add('status-cancelled');
+                    badge.textContent = '● Cancelled';
+                    badge.style.color = '#dc3545';
                 } else {
                     statusBadge.classList.add('status-waiting');
+                    badge.textContent = '● Waiting';
+                    badge.style.color = '#f57c00';
                 }
 
-                // Update progress
+                // Progress
                 const progress = data.progress || 0;
                 document.getElementById('patientProgress').style.width = progress + '%';
                 document.getElementById('progressText').textContent = progress + '%';
 
-                // Update last updated time
                 document.getElementById('lastUpdated').textContent = new Date().toLocaleTimeString();
             }
 
-            // Initial fetch
             fetchTokenStatus();
-
-            // Auto-refresh every 10 seconds
             setInterval(fetchTokenStatus, 10000);
         </script>
 
-        {{-- ✅ Patient CSS --}}
+        {{-- ✅ Compact CSS --}}
         <style>
             .patient-token-card {
-                max-width: 550px;
+                max-width: 480px;
                 margin: 0 auto;
-                background: white;
-                border-radius: 16px;
-                padding: 30px;
-                box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+                background: rgba(255, 255, 255, 0.08);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                border-radius: 18px;
+                padding: 25px 28px 20px;
+                border: 1px solid rgba(255, 255, 255, 0.12);
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
             }
-            
+
             .token-header {
                 text-align: center;
-                padding-bottom: 20px;
-                border-bottom: 2px solid #f0f0f0;
-                margin-bottom: 20px;
+                padding-bottom: 15px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+                margin-bottom: 15px;
             }
-            
+
             .token-label {
                 display: block;
-                font-size: 14px;
-                color: #888;
-                margin-bottom: 5px;
-            }
-            
-            .token-number {
-                font-size: 36px;
-                font-weight: bold;
-                color: #0b2e33;
-            }
-            
-            .detail-row {
-                display: flex;
-                justify-content: space-between;
-                padding: 12px 0;
-                border-bottom: 1px solid #f5f5f5;
-            }
-            
-            .detail-row:last-child {
-                border-bottom: none;
-            }
-            
-            .detail-row .label {
-                color: #666;
-                font-weight: 500;
-            }
-            
-            .detail-row .value {
+                font-size: 11px;
+                color: rgba(255, 255, 255, 0.5);
                 font-weight: 600;
-                color: #333;
+                letter-spacing: 2px;
+                text-transform: uppercase;
+                margin-bottom: 4px;
             }
-            
-            .status-badge {
-                padding: 4px 12px;
-                border-radius: 20px;
-                font-size: 14px;
+
+            .token-number {
+                font-size: 34px;
+                font-weight: 800;
+                color: #ffffff;
+                letter-spacing: 1px;
+                display: block;
+            }
+
+            .token-badge {
                 display: inline-block;
+                font-size: 11px;
+                font-weight: 600;
+                color: #f57c00;
+                margin-top: 4px;
+                letter-spacing: 0.5px;
             }
-            
+
+            .token-details-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 6px 20px;
+                margin-bottom: 15px;
+            }
+
+            .detail-item {
+                display: flex;
+                flex-direction: column;
+                padding: 5px 0;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            }
+
+            .detail-item.full-width {
+                grid-column: 1 / -1;
+            }
+
+            .detail-item .label {
+                font-size: 10px;
+                color: rgba(255, 255, 255, 0.4);
+                font-weight: 500;
+                letter-spacing: 0.5px;
+                text-transform: uppercase;
+            }
+
+            .detail-item .value {
+                font-size: 14px;
+                font-weight: 600;
+                color: rgba(255, 255, 255, 0.9);
+                margin-top: 1px;
+            }
+
+            .status-badge {
+                padding: 2px 12px;
+                border-radius: 12px;
+                font-size: 12px;
+                display: inline-block;
+                font-weight: 600;
+                width: fit-content;
+            }
+
             .status-waiting {
-                background: #fff3cd;
-                color: #856404;
+                background: rgba(255, 193, 7, 0.2);
+                color: #ffc107;
+                border: 1px solid rgba(255, 193, 7, 0.3);
             }
-            
+
             .status-serving {
-                background: #cce5ff;
-                color: #004085;
+                background: rgba(33, 150, 243, 0.2);
+                color: #42a5f5;
+                border: 1px solid rgba(33, 150, 243, 0.3);
             }
-            
+
             .status-completed {
-                background: #d4edda;
-                color: #155724;
+                background: rgba(76, 175, 80, 0.2);
+                color: #66bb6a;
+                border: 1px solid rgba(76, 175, 80, 0.3);
             }
-            
+
+            .status-cancelled {
+                background: rgba(244, 67, 54, 0.2);
+                color: #ef5350;
+                border: 1px solid rgba(244, 67, 54, 0.3);
+            }
+
             .progress-container {
-                margin: 20px 0;
                 display: flex;
                 align-items: center;
-                gap: 15px;
+                gap: 12px;
+                margin: 12px 0 15px;
+                padding: 10px 14px;
+                background: rgba(255, 255, 255, 0.05);
+                border-radius: 10px;
             }
-            
+
             .progress-bar {
                 flex: 1;
-                height: 8px;
-                background: #e0e0e0;
+                height: 5px;
+                background: rgba(255, 255, 255, 0.1);
                 border-radius: 10px;
                 overflow: hidden;
             }
-            
+
             .progress-fill {
                 height: 100%;
-                background: linear-gradient(90deg, #0b2e33, #1a7a82);
-                transition: width 0.5s ease;
+                background: linear-gradient(90deg, #1a7a82, #2aaab5, #4dd0e1);
+                transition: width 0.6s ease;
                 border-radius: 10px;
             }
-            
+
             .progress-text {
-                font-weight: 600;
-                color: #0b2e33;
-                min-width: 45px;
+                font-size: 12px;
+                font-weight: 700;
+                color: rgba(255, 255, 255, 0.7);
+                min-width: 38px;
+                text-align: right;
             }
-            
+
             .token-actions {
                 display: flex;
                 gap: 10px;
-                margin-top: 20px;
+                margin-top: 3px;
             }
-            
+
             .btn-refresh, .btn-home {
                 flex: 1;
-                padding: 12px;
+                padding: 10px 16px;
                 border: none;
-                border-radius: 8px;
-                font-weight: 500;
+                border-radius: 10px;
+                font-weight: 600;
+                font-size: 13px;
                 cursor: pointer;
                 transition: all 0.3s ease;
                 text-align: center;
                 text-decoration: none;
-                font-size: 14px;
             }
-            
+
             .btn-refresh {
-                background: #0b2e33;
+                background: rgba(255, 255, 255, 0.12);
                 color: white;
+                border: 1px solid rgba(255, 255, 255, 0.15);
             }
-            
+
             .btn-refresh:hover {
-                background: #1a4a52;
-                transform: scale(1.02);
+                background: rgba(255, 255, 255, 0.2);
+                transform: translateY(-1px);
             }
-            
+
             .btn-home {
-                background: #e0e0e0;
-                color: #333;
+                background: rgba(255, 255, 255, 0.06);
+                color: rgba(255, 255, 255, 0.7);
+                border: 1px solid rgba(255, 255, 255, 0.08);
             }
-            
+
             .btn-home:hover {
-                background: #d0d0d0;
-                transform: scale(1.02);
+                background: rgba(255, 255, 255, 0.12);
+                color: white;
+                transform: translateY(-1px);
             }
-            
+
             .last-updated {
                 text-align: center;
-                margin-top: 15px;
-                color: #999;
-                font-size: 12px;
+                margin-top: 12px;
+                color: rgba(255, 255, 255, 0.3);
+                font-size: 10px;
+                font-weight: 500;
+                letter-spacing: 0.3px;
             }
 
             #patient-token-display {
-                animation: fadeIn 0.5s ease;
+                animation: fadeUp 0.5s ease;
             }
 
-            @keyframes fadeIn {
-                from { opacity: 0; transform: translateY(20px); }
-                to { opacity: 1; transform: translateY(0); }
-            }
-
-            /* Responsive */
-            @media (max-width: 600px) {
-                .patient-token-card {
-                    padding: 20px;
+            @keyframes fadeUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
                 }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            /* Mobile */
+            @media (max-width: 520px) {
+                .patient-token-card {
+                    padding: 20px 16px 16px;
+                    margin: 8px;
+                    border-radius: 14px;
+                }
+
                 .token-number {
                     font-size: 28px;
                 }
-                .detail-row {
-                    flex-direction: column;
-                    gap: 5px;
+
+                .token-details-grid {
+                    grid-template-columns: 1fr 1fr;
+                    gap: 4px 12px;
                 }
+
+                .detail-item .value {
+                    font-size: 13px;
+                }
+
                 .token-actions {
                     flex-direction: column;
+                    gap: 8px;
+                }
+
+                .btn-refresh, .btn-home {
+                    padding: 10px;
+                    font-size: 13px;
                 }
             }
         </style>
 
     @else
         {{-- ============================================ --}}
-        {{-- ✅ STAFF VIEW - Full Table (Existing Code) --}}
+        {{-- ✅ STAFF VIEW - Full Table --}}
         {{-- ============================================ --}}
-        <section class="hero-header" style="background-color: #0b2e33;">
+        <section class="hero-header" style="background: linear-gradient(135deg, #0b2e33 0%, #1a5a63 100%);">
             <div class="container">
                 <div class="hero-content">
                     <div class="hero-text">

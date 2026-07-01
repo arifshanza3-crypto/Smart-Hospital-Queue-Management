@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Log;
 
 class TokenController extends Controller
 {
-    // ✅ Show token form
     public function showForm()
     {
         return view('Pages.Token_form');
@@ -53,7 +52,7 @@ class TokenController extends Controller
             $token = Token::create([
                 'token_number' => $tokenNumber,
                 'patient_id' => null,
-                'patient_name' => $request->patient_name,
+                'patient_name' => $request->patient_name,  // ✅ 'patient_name' use karo
                 'phone' => $request->phone,
                 'email' => $request->email,
                 'department' => $request->department,
@@ -65,10 +64,8 @@ class TokenController extends Controller
 
             Log::info('Token saved: ' . $tokenNumber);
 
-            // ✅ CHANGE: Session mein token save karein
             session(['current_token' => $tokenNumber]);
 
-            // ✅ CHANGE: Redirect to Status with token parameter
             return redirect('/Status?token=' . $tokenNumber)->with('success', 'Token generated! Your Token: ' . $tokenNumber);
 
         } catch (\Exception $e) {
@@ -77,10 +74,8 @@ class TokenController extends Controller
         }
     }
 
-    // ✅ CHANGE: Get token status from URL parameter
     public function getTokenStatus(Request $request)
     {
-        // ✅ First check URL parameter, then session
         $tokenNumber = $request->query('token') ?? session('current_token');
 
         if (!$tokenNumber) {
@@ -110,7 +105,6 @@ class TokenController extends Controller
                         ->where('status', 'serving')
                         ->first();
 
-        // ✅ Calculate progress
         $totalWaiting = Token::where('department', $token->department)
                              ->whereIn('status', ['waiting', 'calling'])
                              ->count();
@@ -121,7 +115,7 @@ class TokenController extends Controller
         return response()->json([
             'success' => true,
             'token_number' => $token->token_number,
-            'patient_name' => $token->patient_name,
+            'patient_name' => $token->patient_name ?? 'N/A',  // ✅ 'patient_name' use karo
             'department' => $token->department,
             'status' => $token->status,
             'position' => $position,
