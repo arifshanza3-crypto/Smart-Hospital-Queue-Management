@@ -1,45 +1,29 @@
-// ============================================ //
-// STAFF.JS - COMPLETE FIXED VERSION           //
-// ============================================ //
-
 let timerInterval = null;
 let currentToken = null;
 let timeLeft = 300;
 
-// ============================================ //
-// CSRF TOKEN HELPER                            //
-// ============================================ //
+// ========== CSRF TOKEN HELPER ==========
 function getCSRFToken() {
     return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 }
 
-// ============================================ //
-// TOAST NOTIFICATION                           //
-// ============================================ //
+// ========== TOAST NOTIFICATION ==========
 function showToast(message, type = 'success') {
     const toast = document.createElement('div');
-    const colors = {
-        success: '#28a745',
-        error: '#dc3545',
-        warning: '#ffc107'
-    };
     toast.style.cssText = `
         position: fixed; bottom: 20px; right: 20px;
-        background: ${colors[type] || colors.success};
+        background: ${type === 'error' ? '#dc3545' : type === 'warning' ? '#ffc107' : '#28a745'};
         color: ${type === 'warning' ? '#000' : '#fff'};
-        padding: 12px 24px; border-radius: 8px;
+        padding: 12px 20px; border-radius: 8px;
         z-index: 10000; animation: slideIn 0.3s ease;
         box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        font-weight: 600;
     `;
     toast.innerHTML = message;
     document.body.appendChild(toast);
     setTimeout(() => toast.remove(), 3000);
 }
 
-// ============================================ //
-// TIMER FUNCTIONS                              //
-// ============================================ //
+// ========== TIMER FUNCTIONS ==========
 function updateTimerDisplay() {
     const minutes = Math.floor(timeLeft / 60);
     const seconds = timeLeft % 60;
@@ -84,10 +68,7 @@ function cancelPatientTimeout() {
 function cancelPatientAndCallNext() {
     fetch('/staff/cancel-patient', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': getCSRFToken()
-        },
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': getCSRFToken() },
         body: JSON.stringify({ token_id: currentToken.id })
     })
     .then(response => response.json())
@@ -100,9 +81,7 @@ function cancelPatientAndCallNext() {
     });
 }
 
-// ============================================ //
-// QUEUE FUNCTIONS                              //
-// ============================================ //
+// ========== QUEUE FUNCTIONS ==========
 function loadQueue() {
     fetch('/staff/get-queue')
         .then(response => response.json())
@@ -110,8 +89,6 @@ function loadQueue() {
             if (data.success) {
                 updateQueueTable(data.queue);
                 updateStats(data.total, data.serving, data.avgWait);
-            } else {
-                console.error('Error loading queue:', data.message);
             }
         })
         .catch(error => console.error('Error:', error));
@@ -144,7 +121,16 @@ function updateQueueTable(queue) {
         else if (statusText === 'completed') statusClass = 'status-completed';
         else if (statusText === 'missed') statusClass = 'status-missed';
 
-        // Determine actions based on status
+        // ✅ TYPE DISPLAY
+        let typeDisplay = patient.type || 'online';
+        let typeText = '';
+        if (typeDisplay === 'physical') {
+            typeText = 'Physical';
+        } else {
+            typeText = 'Online';
+        }
+
+        // Actions based on status
         let actionsHtml = '';
         if (statusText === 'waiting') {
             actionsHtml = `<button class="btn-queue" onclick="startServing(${patient.id}, '${patient.token_number}')">📞 Call</button>`;
@@ -165,7 +151,7 @@ function updateQueueTable(queue) {
                 <strong>${patient.patient_name || 'N/A'}</strong><br>
                 <small style="color: rgba(255,255,255,0.5);">Age: ${patient.age || 'N/A'}</small>
             </td>
-            <td><span class="badge">${patient.type || 'online'}</span></td>
+            <td><span class="badge">${typeText}</span></td>
             <td>${patient.estimated_time || 15} min</td>
             <td><span class="status-badge ${statusClass}">${statusText.toUpperCase()}</span></td>
             <td>${actionsHtml}</td>
@@ -179,23 +165,18 @@ function updateStats(total, serving, avgWait) {
     document.getElementById('stat-avg-time').innerText = (avgWait || 0) + 'm';
 }
 
-// ============================================ //
-// PATIENT FUNCTIONS                            //
-// ============================================ //
+// ========== PATIENT FUNCTIONS ==========
 function startServing(tokenId, tokenNumber) {
     fetch('/staff/start-serving', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': getCSRFToken()
-        },
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': getCSRFToken() },
         body: JSON.stringify({ token_id: tokenId })
     })
     .then(response => response.json())
     .then(data => {
-        if (data.success) {
-            startTimer(tokenId, tokenNumber);
-            loadQueue();
+        if (data.success) { 
+            startTimer(tokenId, tokenNumber); 
+            loadQueue(); 
             showToast('Calling patient #' + tokenNumber, 'warning');
         } else {
             showToast(data.message || 'Error calling patient', 'error');
@@ -210,10 +191,7 @@ function startServing(tokenId, tokenNumber) {
 function completeService(tokenId, tokenNumber) {
     fetch('/staff/complete-service', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': getCSRFToken()
-        },
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': getCSRFToken() },
         body: JSON.stringify({ token_id: tokenId })
     })
     .then(response => response.json())
@@ -235,10 +213,7 @@ function cancelToken(tokenId, tokenNumber) {
     if (confirm('Cancel patient #' + tokenNumber + '?')) {
         fetch('/staff/cancel-token', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': getCSRFToken()
-            },
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': getCSRFToken() },
             body: JSON.stringify({ token_id: tokenId })
         })
         .then(response => response.json())
@@ -257,9 +232,23 @@ function cancelToken(tokenId, tokenNumber) {
     }
 }
 
-// ============================================ //
-// ✅ SUBMIT PATIENT - FIXED                    //
-// ============================================ //
+// ========== MODAL FUNCTIONS ==========
+function openModal(id) {
+    const modal = document.getElementById(id);
+    if (modal) {
+        modal.style.display = 'flex';
+        if (id === 'patientModal') {
+            setTimeout(() => document.getElementById('p_name').focus(), 100);
+        }
+    }
+}
+
+function closeModal(id) {
+    const modal = document.getElementById(id);
+    if (modal) modal.style.display = 'none';
+}
+
+// ========== SUBMIT PATIENT - WITH DEPARTMENT ==========
 function submitPatient() {
     const name = document.getElementById('p_name').value.trim();
     const age = document.getElementById('p_age').value.trim();
@@ -290,8 +279,8 @@ function submitPatient() {
             'Content-Type': 'application/json',
             'X-CSRF-TOKEN': getCSRFToken()
         },
-        body: JSON.stringify({ 
-            name: name, 
+        body: JSON.stringify({
+            name: name,
             age: parseInt(age),
             department: department
         })
@@ -306,7 +295,6 @@ function submitPatient() {
             closeModal('patientModal');
             loadQueue();
             showToast('Patient added to queue! Token: #' + data.token_number, 'success');
-            // ✅ Clear form
             document.getElementById('p_name').value = '';
             document.getElementById('p_age').value = '';
         } else {
@@ -321,25 +309,6 @@ function submitPatient() {
     });
 }
 
-// ============================================ //
-// MODAL FUNCTIONS                              //
-// ============================================ //
-function openModal(id) {
-    const modal = document.getElementById(id);
-    if (modal) {
-        modal.style.display = 'flex';
-        // If patient modal, focus on name field
-        if (id === 'patientModal') {
-            setTimeout(() => document.getElementById('p_name').focus(), 100);
-        }
-    }
-}
-
-function closeModal(id) {
-    const modal = document.getElementById(id);
-    if (modal) modal.style.display = 'none';
-}
-
 function submitGlobalTime() {
     const minutes = document.getElementById('global_min').value;
     if (!minutes || parseInt(minutes) < 1) {
@@ -349,10 +318,7 @@ function submitGlobalTime() {
 
     fetch('/staff/set-global-time', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': getCSRFToken()
-        },
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': getCSRFToken() },
         body: JSON.stringify({ minutes: minutes })
     })
     .then(response => response.json())
@@ -388,31 +354,39 @@ function showQueueDetails(token) {
         });
 }
 
-// ============================================ //
-// CLOSE MODAL ON CLICK OUTSIDE                 //
-// ============================================ //
+// ========== CLOSE MODAL ON CLICK OUTSIDE ==========
 document.addEventListener('click', function(event) {
     if (event.target.classList.contains('modal')) {
         event.target.style.display = 'none';
     }
 });
 
-// ============================================ //
-// LOAD ON PAGE START                           //
-// ============================================ //
+// ========== LOAD ON PAGE START ==========
 document.addEventListener('DOMContentLoaded', function() {
     loadQueue();
     setInterval(loadQueue, 5000);
 });
 
-// ============================================ //
-// CSS ANIMATIONS & STYLES                      //
-// ============================================ //
+// ========== CSS ANIMATIONS & STYLES ==========
 const style = document.createElement('style');
 style.textContent = `
     @keyframes slideIn {
         from { transform: translateX(100%); opacity: 0; }
         to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    @keyframes scaleIn {
+        from { transform: scale(0.9); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+    .modal {
+        animation: fadeIn 0.3s ease;
+    }
+    .modal-content {
+        animation: scaleIn 0.3s ease;
     }
     .status-badge {
         display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold;
@@ -423,21 +397,5 @@ style.textContent = `
     .status-completed { background: #6c757d; color: #fff; }
     .status-missed { background: #dc3545; color: #fff; }
     .badge { background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 4px; font-size: 11px; }
-    
-    /* Modal animation */
-    .modal {
-        animation: fadeIn 0.3s ease;
-    }
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
-    .modal-content {
-        animation: scaleIn 0.3s ease;
-    }
-    @keyframes scaleIn {
-        from { transform: scale(0.9); opacity: 0; }
-        to { transform: scale(1); opacity: 1; }
-    }
 `;
 document.head.appendChild(style);

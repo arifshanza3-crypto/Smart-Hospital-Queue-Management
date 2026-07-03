@@ -1,5 +1,4 @@
 <?php
-// app/Models/Token.php
 
 namespace App\Models;
 
@@ -13,15 +12,17 @@ class Token extends Model
     protected $fillable = [
         'token_number',
         'patient_id',
-        'department',
-        'status',
-        'patient_name',    // ✅ YEH ADD KARO (pehle missing tha)
+        'patient_name',
         'phone',
         'email',
-        'estimated_time',   // ✅ YEH BHI ADD KARO
+        'department',
+        'type',              // ✅ Yeh hona chahiye
+        'status',
+        'estimated_time',
         'position',
         'called_at',
-        'completed_at'
+        'completed_at',
+        'age'                // ✅ Yeh bhi hona chahiye
     ];
     
     public function patient()

@@ -52,10 +52,11 @@ class TokenController extends Controller
             $token = Token::create([
                 'token_number' => $tokenNumber,
                 'patient_id' => null,
-                'patient_name' => $request->patient_name,  // ✅ 'patient_name' use karo
+                'patient_name' => $request->patient_name,
                 'phone' => $request->phone,
                 'email' => $request->email,
                 'department' => $request->department,
+                'type' => 'online',          // ✅ Added type = online
                 'status' => 'waiting',
                 'position' => $position,
                 'estimated_time' => $estimatedTime,
@@ -115,7 +116,7 @@ class TokenController extends Controller
         return response()->json([
             'success' => true,
             'token_number' => $token->token_number,
-            'patient_name' => $token->patient_name ?? 'N/A',  // ✅ 'patient_name' use karo
+            'patient_name' => $token->patient_name ?? 'N/A',
             'department' => $token->department,
             'status' => $token->status,
             'position' => $position,
