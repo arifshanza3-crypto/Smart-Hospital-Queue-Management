@@ -2,6 +2,7 @@
 @section('title', 'Staff Portal - Smart Queue Management')
 @section('content')
     <link rel="stylesheet" href="{{ asset('css/Staff.css') }}">
+    {{-- ✅ CSRF Token - Ensure it's properly set --}}
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <section class="hero-header" style="background-color: #0b2e33;">
@@ -66,16 +67,27 @@
         </div>
     </div>
 
+    {{-- ✅ PATIENT MODAL - FIXED --}}
     <div id="patientModal" class="modal">
         <div class="modal-content">
             <h3>Add New Patient</h3>
             <div class="form-group">
                 <label>Full Name</label>
-                <input type="text" id="p_name" placeholder="Enter name...">
+                <input type="text" id="p_name" placeholder="Enter name..." required>
             </div>
             <div class="form-group">
                 <label>Age</label>
-                <input type="number" id="p_age" placeholder="Enter age...">
+                <input type="number" id="p_age" placeholder="Enter age..." min="1" max="150">
+            </div>
+            {{-- ✅ Department Field Add Kiya --}}
+            <div class="form-group">
+                <label>Department</label>
+                <select id="p_department" style="width: 100%; padding: 12px; margin-top: 8px; border: 1px solid #00d4ff; border-radius: 8px; background: #0b2e33; color: #ffffff; outline: none;">
+                    <option value="OPD">OPD</option>
+                    <option value="Lab">Lab</option>
+                    <option value="Pharmacy">Pharmacy</option>
+                    <option value="Radiology">Radiology</option>
+                </select>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-text" onclick="closeModal('patientModal')">Cancel</button>
