@@ -12,7 +12,7 @@ class Doctor extends Model
     protected $table = 'doctors';
     
     protected $fillable = [
-        ' Doctor name',
+        'name',
         'specialization',
         'qualification',
         'email',

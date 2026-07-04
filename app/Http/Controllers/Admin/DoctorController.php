@@ -3,16 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Doctor;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 
 class DoctorController extends Controller
 {
     public function index()
     {
-        $doctors = Doctor::all();
+        $doctors = DB::table('doctors')->get();
         return view('Pages.Admin.Doctor_management', compact('doctors'));
     }
 
@@ -23,94 +21,59 @@ class DoctorController extends Controller
 
     public function store(Request $request)
     {
-        // Validate the request
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'specialization' => 'required|string|max:255',
-            'qualification' => 'nullable|string|max:255',
-            'email' => 'required|email|unique:doctors,email',
-            'phone' => 'required|string|max:20',
-            'status' => 'required|in:active,inactive,on_duty'
-        ]);
-
+        // SIMPLEST POSSIBLE INSERT - NO VALIDATION
         try {
-            // Simplified insert using Eloquent
-            $doctor = new Doctor();
-            $doctor->name = $request->name;
-            $doctor->specialization = $request->specialization;
-            $doctor->qualification = $request->qualification;
-            $doctor->email = $request->email;
-            $doctor->phone = $request->phone;
-            $doctor->status = $request->status;
-            $doctor->save();
+            $result = DB::table('doctors')->insert([
+                'name' => $request->input('name'),
+                'specialization' => $request->input('specialization'),
+                'qualification' => $request->input('qualification'),
+                'email' => $request->input('email'),
+                'phone' => $request->input('phone'),
+                'status' => $request->input('status', 'active'),
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
             
-            return redirect()->route('admin.doctors.index')
-                ->with('success', 'Doctor "' . $request->name . '" added successfully!');
-                
+            if ($result) {
+                return redirect()->route('admin.doctors.index')
+                    ->with('success', 'Doctor added successfully!');
+            } else {
+                return redirect()->back()->with('error', 'Insert failed!');
+            }
+            
         } catch (\Exception $e) {
-            return redirect()->back()
-                ->with('error', 'Error: ' . $e->getMessage())
-                ->withInput();
+            // Show exact error
+            return redirect()->back()->with('error', 'ERROR: ' . $e->getMessage());
         }
     }
 
     public function edit($id)
     {
-        try {
-            $doctor = Doctor::findOrFail($id);
-            return view('Layout.edit-doctor', compact('doctor'));
-        } catch (\Exception $e) {
-            return redirect()->route('admin.doctors.index')
-                ->with('error', 'Doctor not found!');
-        }
+        $doctor = DB::table('doctors')->where('id', $id)->first();
+        return view('Layout.edit-doctor', compact('doctor'));
     }
 
     public function update(Request $request, $id)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'specialization' => 'required|string|max:255',
-            'qualification' => 'nullable|string|max:255',
-            'email' => 'required|email|unique:doctors,email,' . $id,
-            'phone' => 'required|string|max:20',
-            'status' => 'required|in:active,inactive,on_duty'
-        ]);
+        DB::table('doctors')
+            ->where('id', $id)
+            ->update([
+                'name' => $request->name,
+                'specialization' => $request->specialization,
+                'qualification' => $request->qualification,
+                'email' => $request->email,
+                'phone' => $request->phone,
+                'status' => $request->status,
+                'updated_at' => now()
+            ]);
 
-        try {
-            $doctor = Doctor::findOrFail($id);
-            $doctor->name = $request->name;
-            $doctor->specialization = $request->specialization;
-            $doctor->qualification = $request->qualification;
-            $doctor->email = $request->email;
-            $doctor->phone = $request->phone;
-            $doctor->status = $request->status;
-            $doctor->save();
-            
-            return redirect()->route('admin.doctors.index')
-                ->with('success', 'Doctor updated successfully!');
-                
-        } catch (\Exception $e) {
-            return redirect()->back()
-                ->with('error', 'Error: ' . $e->getMessage())
-                ->withInput();
-        }
+        return redirect()->route('admin.doctors.index')
+            ->with('success', 'Doctor updated successfully!');
     }
 
     public function destroy($id)
     {
-        try {
-            $doctor = Doctor::findOrFail($id);
-            $doctor->delete();
-            
-            return response()->json([
-                'success' => true, 
-                'message' => 'Doctor deleted successfully!'
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false, 
-                'message' => 'Error deleting doctor!'
-            ], 500);
-        }
+        DB::table('doctors')->where('id', $id)->delete();
+        return response()->json(['success' => true]);
     }
 }

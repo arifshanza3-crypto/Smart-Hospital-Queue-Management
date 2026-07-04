@@ -16,10 +16,10 @@ Route::get('/test', function () {
     return "Test page working!";
 });
 
-// ✅ ADMIN REDIRECT
+// ✅ ADMIN REDIRECT - NAME BADLO (admin.dashboard se admin.redirect)
 Route::get('/admin', function () {
     return redirect('/admin/doctor-management');
-})->name('admin.dashboard');
+})->name('admin.redirect');
 
 // Main website routes
 Route::get('/', [PageController::class, 'home'])->name('home');
@@ -28,7 +28,9 @@ Route::get('/services', [PageController::class, 'services'])->name('services');
 Route::get('/contact', [PageController::class, 'contact'])->name('contact');
 Route::get('/booking', [PageController::class, 'booking'])->name('booking');
 Route::get('/Doctors', [PageController::class, 'Doctors'])->name('doctors');
-Route::get('/Staff', [PageController::class, 'Staff'])->name('staff.page');
+
+// ✅ STAFF ROUTE - SIRF EK BAAR
+Route::get('/Staff', [StaffController::class, 'dashboard'])->name('staff.page');
 
 // Token Routes
 Route::get('/Token_form', [TokenController::class, 'showForm'])->name('token.form');
@@ -55,16 +57,10 @@ Route::get('/reset-password/{token}', [AuthController::class, 'showResetForm'])-
 Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 
 // =============================================
-// ✅ STAFF ROUTES (UPDATED)
+// ✅ STAFF ROUTES
 // =============================================
 Route::prefix('staff')->name('staff.')->group(function () {
-    // Staff Dashboard
     Route::get('/dashboard', [StaffController::class, 'dashboard'])->name('dashboard');
-    
-    // Staff Page (Public View)
-    Route::get('/page', [PageController::class, 'Staff'])->name('page');
-    
-    // ✅ Patient Management (Updated)
     Route::post('/add-patient', [StaffController::class, 'addPatient'])->name('add-patient');
     Route::post('/start-serving', [StaffController::class, 'startServing'])->name('start-serving');
     Route::post('/complete-service', [StaffController::class, 'completeService'])->name('complete-service');
@@ -72,25 +68,23 @@ Route::prefix('staff')->name('staff.')->group(function () {
     Route::post('/call-next', [StaffController::class, 'callNext'])->name('call-next');
     Route::post('/cancel-patient', [StaffController::class, 'cancelPatient'])->name('cancel-patient');
     Route::post('/set-global-time', [StaffController::class, 'setGlobalTime'])->name('set-global-time');
-    
-    // ✅ Get Patients List (AJAX)
     Route::get('/get-queue', [StaffController::class, 'getQueue'])->name('get-queue');
 });
 
 // =============================================
-// ✅ ADMIN ROUTES (With Staff Approval)
+// ✅ ADMIN ROUTES
 // =============================================
 Route::prefix('admin')->name('admin.')->group(function () {
     
-    // ✅ Admin Dashboard (Pending Staff Approvals)
+    // ✅ Admin Dashboard - SIRF EK BAAR
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/doctor-management', [AdminController::class, 'dashboard'])->name('doctor-management');
     
-    // ✅ Staff Approval Routes
+    // Staff Approval Routes
     Route::post('/approve-staff/{id}', [AdminController::class, 'approveStaff'])->name('approve-staff');
     Route::post('/reject-staff/{id}', [AdminController::class, 'rejectStaff'])->name('reject-staff');
     
-    // Dashboard & Static Pages
+    // Static Pages
     Route::get('/report', [QueueReportController::class, 'index'])->name('report');
     Route::get('/settings', [PageController::class, 'settings'])->name('settings');
     Route::get('/user-management', [PageController::class, 'user_management'])->name('user-management');
