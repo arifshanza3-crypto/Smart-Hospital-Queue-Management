@@ -121,7 +121,7 @@ function updateQueueTable(queue) {
         else if (statusText === 'completed') statusClass = 'status-completed';
         else if (statusText === 'missed') statusClass = 'status-missed';
 
-        // ✅ TYPE DISPLAY
+        // TYPE DISPLAY
         let typeDisplay = patient.type || 'online';
         let typeText = '';
         if (typeDisplay === 'physical') {
@@ -133,7 +133,8 @@ function updateQueueTable(queue) {
         // Actions based on status
         let actionsHtml = '';
         if (statusText === 'waiting') {
-            actionsHtml = `<button class="btn-queue" onclick="startServing(${patient.id}, '${patient.token_number}')">📞 Call</button>`;
+            // ✅ "Call" ki jagah "Calling"
+            actionsHtml = `<button class="btn-queue" onclick="startServing(${patient.id}, '${patient.token_number}')">📞 Calling</button>`;
         } else if (statusText === 'calling') {
             actionsHtml = `
                 <button class="btn-queue" onclick="completeService(${patient.id}, '${patient.token_number}')">✅ Complete</button>
@@ -145,7 +146,6 @@ function updateQueueTable(queue) {
             actionsHtml = `<span style="color: rgba(255,255,255,0.3);">${statusText}</span>`;
         }
 
-        // ✅ Age removed from display
         row.innerHTML = `
             <td><strong style="color: #00d4ff;">#${patient.token_number}</strong></td>
             <td>
@@ -249,19 +249,17 @@ function closeModal(id) {
     if (modal) modal.style.display = 'none';
 }
 
-// ========== SUBMIT PATIENT - AGE REMOVED ==========
+// ========== SUBMIT PATIENT ==========
 function submitPatient() {
     const name = document.getElementById('p_name').value.trim();
     const department = document.getElementById('p_department')?.value || 'OPD';
     
-    // ✅ Validation - Sirf name check
     if (!name) {
         showToast('Please enter patient name', 'error');
         document.getElementById('p_name').focus();
         return;
     }
 
-    // ✅ Show loading state
     const btn = document.querySelector('#patientModal .btn-primary');
     const originalText = btn.innerHTML;
     btn.innerHTML = '⏳ Adding...';
@@ -276,12 +274,10 @@ function submitPatient() {
         body: JSON.stringify({
             name: name,
             department: department
-            // ❌ Age removed
         })
     })
     .then(response => response.json())
     .then(data => {
-        // ✅ Reset button
         btn.innerHTML = originalText;
         btn.disabled = false;
 
