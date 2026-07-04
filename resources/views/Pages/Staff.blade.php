@@ -36,6 +36,15 @@
     </section>
 
     <main class="container">
+        {{-- ✅ Department Tabs --}}
+        <div class="department-tabs" style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+            <button class="dept-tab active" data-dept="all" onclick="switchDepartment('all')" style="padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; background: #00d4ff; color: #0b2e33; font-weight: bold;">All Departments</button>
+            <button class="dept-tab" data-dept="OPD" onclick="switchDepartment('OPD')" style="padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; background: rgba(255,255,255,0.1); color: white;">🏥 OPD</button>
+            <button class="dept-tab" data-dept="Lab" onclick="switchDepartment('Lab')" style="padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; background: rgba(255,255,255,0.1); color: white;">🔬 Lab</button>
+            <button class="dept-tab" data-dept="Pharmacy" onclick="switchDepartment('Pharmacy')" style="padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; background: rgba(255,255,255,0.1); color: white;">💊 Pharmacy</button>
+            <button class="dept-tab" data-dept="Radiology" onclick="switchDepartment('Radiology')" style="padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; background: rgba(255,255,255,0.1); color: white;">🩻 Radiology</button>
+        </div>
+
         <div class="data-card">
             <table class="queue-table">
                 <thead>
@@ -66,16 +75,22 @@
         </div>
     </div>
 
+    <!-- Patient Modal -->
     <div id="patientModal" class="modal">
         <div class="modal-content">
             <h3>Add New Patient</h3>
             <div class="form-group">
                 <label>Full Name</label>
-                <input type="text" id="p_name" placeholder="Enter name...">
+                <input type="text" id="p_name" placeholder="Enter name..." required>
             </div>
             <div class="form-group">
-                <label>Age</label>
-                <input type="number" id="p_age" placeholder="Enter age...">
+                <label>Department</label>
+                <select id="p_department" style="width: 100%; padding: 12px; margin-top: 8px; border: 1px solid #00d4ff; border-radius: 8px; background: #0b2e33; color: #ffffff; outline: none;">
+                    <option value="OPD">OPD</option>
+                    <option value="Lab">Lab</option>
+                    <option value="Pharmacy">Pharmacy</option>
+                    <option value="Radiology">Radiology</option>
+                </select>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-text" onclick="closeModal('patientModal')">Cancel</button>

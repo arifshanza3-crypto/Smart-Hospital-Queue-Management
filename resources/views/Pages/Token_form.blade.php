@@ -33,14 +33,10 @@
                     <input type="text" name="patient_name" class="form-control token-input" placeholder="Enter your full name" required>
                 </div>
 
-                <div class="input-container">
-                    <label class="input-label">Phone Number</label>
-                    <input type="tel" name="phone" class="form-control token-input" placeholder="Enter phone number" required>
-                    <div id="errorMsg" class="validation-error d-none">Number must be 11 digits and start with 03</div>
-                </div>
+                {{-- ❌ Phone Number Field Removed --}}
 
                 <div class="input-container">
-                    <label class="input-label">Email (Optional)</label>
+                    <label class="input-label">Email</label>
                     <input type="email" name="email" class="form-control token-input" placeholder="Enter your email">
                 </div>
 
@@ -64,30 +60,12 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.querySelector('form');
-    const phoneInput = document.querySelector('input[name="phone"]');
-    const errorMsg = document.getElementById('errorMsg');
+    const emailInput = document.querySelector('input[name="email"]');
 
-    // Phone number validation
-    phoneInput.addEventListener('input', function(e) {
-        this.value = this.value.replace(/[^0-9]/g, '');
-        if (this.value.length > 11) {
-            this.value = this.value.slice(0, 11);
-        }
-    });
-
-    // Form validation
+    // Optional: Email validation on submit
     form.addEventListener('submit', function(e) {
-        const phoneVal = phoneInput.value;
-        const isValid = /^(03)\d{9}$/.test(phoneVal);
-
-        if (!isValid && phoneVal.length > 0) {
-            e.preventDefault();
-            errorMsg.classList.remove('d-none');
-            phoneInput.style.border = "1px solid #ff4b2b";
-        } else {
-            errorMsg.classList.add('d-none');
-            phoneInput.style.border = "1px solid rgba(255,255,255,0.1)";
-        }
+        // Email is optional, no validation needed
+        console.log('Form submitted');
     });
 });
 </script>

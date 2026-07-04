@@ -18,13 +18,15 @@ class TokenController extends Controller
         Log::info('Token controller reached');
         Log::info($request->all());
 
+        // ✅ Phone validation removed
         $request->validate([
             'patient_name' => 'required|string|max:255',
-            'phone' => 'required|string|max:15',
+            'email' => 'nullable|email|max:255',
             'department' => 'required|in:OPD,Lab,Pharmacy,Radiology'
         ]);
 
-        $existingToken = Token::where('phone', $request->phone)
+        // ✅ Phone check removed - checking by email instead
+        $existingToken = Token::where('email', $request->email)
                               ->whereIn('status', ['waiting', 'calling', 'serving'])
                               ->first();
 
@@ -52,10 +54,11 @@ class TokenController extends Controller
             $token = Token::create([
                 'token_number' => $tokenNumber,
                 'patient_id' => null,
-                'patient_name' => $request->patient_name,  // ✅ 'patient_name' use karo
-                'phone' => $request->phone,
+                'patient_name' => $request->patient_name,
+                'phone' => null,  // ✅ Phone null set karo
                 'email' => $request->email,
                 'department' => $request->department,
+                'type' => 'online',
                 'status' => 'waiting',
                 'position' => $position,
                 'estimated_time' => $estimatedTime,
@@ -115,7 +118,7 @@ class TokenController extends Controller
         return response()->json([
             'success' => true,
             'token_number' => $token->token_number,
-            'patient_name' => $token->patient_name ?? 'N/A',  // ✅ 'patient_name' use karo
+            'patient_name' => $token->patient_name ?? 'N/A',
             'department' => $token->department,
             'status' => $token->status,
             'position' => $position,

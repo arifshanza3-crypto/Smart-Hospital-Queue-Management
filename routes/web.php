@@ -61,6 +61,14 @@ Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('
 // =============================================
 Route::prefix('staff')->name('staff.')->group(function () {
     Route::get('/dashboard', [StaffController::class, 'dashboard'])->name('dashboard');
+<<<<<<< HEAD
+=======
+    
+    // Staff Page (Public View)
+    Route::get('/page', [PageController::class, 'Staff'])->name('page');
+    
+    // ✅ Patient Management
+>>>>>>> 22c31ee67fc6ecc036b296aaac25338f346e9b3b
     Route::post('/add-patient', [StaffController::class, 'addPatient'])->name('add-patient');
     Route::post('/start-serving', [StaffController::class, 'startServing'])->name('start-serving');
     Route::post('/complete-service', [StaffController::class, 'completeService'])->name('complete-service');
@@ -68,7 +76,14 @@ Route::prefix('staff')->name('staff.')->group(function () {
     Route::post('/call-next', [StaffController::class, 'callNext'])->name('call-next');
     Route::post('/cancel-patient', [StaffController::class, 'cancelPatient'])->name('cancel-patient');
     Route::post('/set-global-time', [StaffController::class, 'setGlobalTime'])->name('set-global-time');
+<<<<<<< HEAD
+=======
+    
+    // ✅ Get Queue Routes (AJAX)
+>>>>>>> 22c31ee67fc6ecc036b296aaac25338f346e9b3b
     Route::get('/get-queue', [StaffController::class, 'getQueue'])->name('get-queue');
+    Route::get('/get-department-queue', [StaffController::class, 'getDepartmentQueue'])->name('get-department-queue');
+    Route::get('/get-department-stats', [StaffController::class, 'getDepartmentStats'])->name('get-department-stats');
 });
 
 // =============================================

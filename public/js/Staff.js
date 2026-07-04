@@ -1,6 +1,12 @@
 let timerInterval = null;
 let currentToken = null;
 let timeLeft = 300;
+let currentDepartment = 'all';
+
+// ========== CSRF TOKEN HELPER ==========
+function getCSRFToken() {
+    return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+}
 
 // ========== TOAST NOTIFICATION ==========
 function showToast(message, type = 'success') {
@@ -16,6 +22,23 @@ function showToast(message, type = 'success') {
     toast.innerHTML = message;
     document.body.appendChild(toast);
     setTimeout(() => toast.remove(), 3000);
+}
+
+// ========== DEPARTMENT SWITCH ==========
+function switchDepartment(dept) {
+    currentDepartment = dept;
+    
+    // Update active tab
+    document.querySelectorAll('.dept-tab').forEach(tab => {
+        tab.style.background = 'rgba(255,255,255,0.1)';
+        tab.style.color = 'white';
+        if (tab.dataset.dept === dept) {
+            tab.style.background = '#00d4ff';
+            tab.style.color = '#0b2e33';
+        }
+    });
+    
+    loadQueue();
 }
 
 // ========== TIMER FUNCTIONS ==========
@@ -63,22 +86,42 @@ function cancelPatientTimeout() {
 function cancelPatientAndCallNext() {
     fetch('/staff/cancel-patient', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') },
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': getCSRFToken() },
         body: JSON.stringify({ token_id: currentToken.id })
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) { loadQueue(); showToast('Patient cancelled. Next patient called!', 'success'); }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showToast('Error cancelling patient', 'error');
     });
 }
 
 // ========== QUEUE FUNCTIONS ==========
 function loadQueue() {
-    fetch('/staff/get-queue')
+    let url = '/staff/get-queue';
+    if (currentDepartment !== 'all') {
+        url = '/staff/get-department-queue';
+    }
+    
+    fetch(url)
         .then(response => response.json())
         .then(data => {
-            updateQueueTable(data.queue);
-            updateStats(data.total, data.serving, data.avgWait);
+            if (data.success) {
+                if (currentDepartment === 'all') {
+                    updateQueueTable(data.queue);
+                    updateStats(data.total, data.serving, data.avgWait);
+                } else {
+                    // Department-wise data
+                    const deptData = data.departments[currentDepartment];
+                    if (deptData) {
+                        updateQueueTable(deptData.queue);
+                        updateStats(deptData.total, deptData.serving ? deptData.serving.token_number : '--', deptData.avgWait);
+                    }
+                }
+            }
         })
         .catch(error => console.error('Error:', error));
 }
@@ -88,57 +131,105 @@ function updateQueueTable(queue) {
     if (!tbody) return;
     tbody.innerHTML = '';
     
+    if (!queue || queue.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6" style="text-align: center; padding: 40px; color: rgba(255,255,255,0.4);">
+                    No patients in queue
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
     queue.forEach(patient => {
         const row = tbody.insertRow();
         let statusClass = '';
-        if (patient.status === 'waiting') statusClass = 'status-waiting';
-        else if (patient.status === 'calling') statusClass = 'status-calling';
-        else if (patient.status === 'serving') statusClass = 'status-serving';
-        else if (patient.status === 'completed') statusClass = 'status-completed';
-        else if (patient.status === 'missed') statusClass = 'status-missed';
+        let statusText = patient.status || 'waiting';
+        
+        if (statusText === 'waiting') statusClass = 'status-waiting';
+        else if (statusText === 'calling') statusClass = 'status-calling';
+        else if (statusText === 'serving') statusClass = 'status-serving';
+        else if (statusText === 'completed') statusClass = 'status-completed';
+        else if (statusText === 'missed') statusClass = 'status-missed';
+
+        // TYPE DISPLAY
+        let typeDisplay = patient.type || 'online';
+        let typeText = '';
+        if (typeDisplay === 'physical') {
+            typeText = 'Physical';
+        } else {
+            typeText = 'Online';
+        }
+
+        // Cancel button style
+        const cancelButtonStyle = `background: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;`;
+
+        // Actions based on status
+        let actionsHtml = '';
+        if (statusText === 'waiting') {
+            actionsHtml = `
+                <button class="btn-queue" onclick="startServing(${patient.id}, '${patient.token_number}')">📞 Calling</button>
+                <button class="btn-queue" onclick="cancelToken(${patient.id}, '${patient.token_number}')" style="${cancelButtonStyle}">✕ Cancel</button>
+            `;
+        } else if (statusText === 'calling') {
+            actionsHtml = `
+                <button class="btn-queue" onclick="completeService(${patient.id}, '${patient.token_number}')">✅ Complete</button>
+                <button class="btn-queue" onclick="cancelToken(${patient.id}, '${patient.token_number}')" style="${cancelButtonStyle}">❌ Cancel</button>
+            `;
+        } else if (statusText === 'serving') {
+            actionsHtml = `<button class="btn-queue" onclick="completeService(${patient.id}, '${patient.token_number}')">✅ Complete</button>`;
+        } else {
+            actionsHtml = `<span style="color: rgba(255,255,255,0.3);">${statusText}</span>`;
+        }
 
         row.innerHTML = `
-            <td><strong>#${patient.token_number}</strong></td>
-            <td>${patient.patient_name}<br><small>Age: ${patient.age || 'N/A'}</small></td>
-            <td><span class="badge">${patient.type || 'online'}</span></td>
-            <td>${patient.estimated_time || 15} min</td>
-            <td><span class="status-badge ${statusClass}">${patient.status}</span></td>
+            <td><strong style="color: #00d4ff;">#${patient.token_number}</strong></td>
             <td>
-                ${patient.status === 'waiting' ? 
-                    `<button class="btn-queue" onclick="startServing(${patient.id}, '${patient.token_number}')">📞 Call</button>` : ''}
-                ${patient.status === 'calling' ? 
-                    `<button class="btn-queue" onclick="completeService(${patient.id}, '${patient.token_number}')">✅ Complete</button>
-                     <button class="btn-queue" onclick="cancelToken(${patient.id}, '${patient.token_number}')">❌ Cancel</button>` : ''}
-                ${patient.status === 'serving' ? 
-                    `<button class="btn-queue" onclick="completeService(${patient.id}, '${patient.token_number}')">✅ Complete</button>` : ''}
+                <strong>${patient.patient_name || 'N/A'}</strong>
+                ${patient.department ? `<br><small style="color: rgba(255,255,255,0.5);">${patient.department}</small>` : ''}
             </td>
+            <td><span class="badge">${typeText}</span></td>
+            <td>${patient.estimated_time || 15} min</td>
+            <td><span class="status-badge ${statusClass}">${statusText.toUpperCase()}</span></td>
+            <td>${actionsHtml}</td>
         `;
     });
 }
 
 function updateStats(total, serving, avgWait) {
-    document.getElementById('stat-total').innerText = total;
+    document.getElementById('stat-total').innerText = total || 0;
     document.getElementById('stat-serving').innerText = serving || '--';
-    document.getElementById('stat-avg-time').innerText = avgWait + 'm';
+    document.getElementById('stat-avg-time').innerText = (avgWait || 0) + 'm';
 }
 
 // ========== PATIENT FUNCTIONS ==========
 function startServing(tokenId, tokenNumber) {
     fetch('/staff/start-serving', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') },
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': getCSRFToken() },
         body: JSON.stringify({ token_id: tokenId })
     })
     .then(response => response.json())
     .then(data => {
-        if (data.success) { startTimer(tokenId, tokenNumber); loadQueue(); }
+        if (data.success) { 
+            startTimer(tokenId, tokenNumber); 
+            loadQueue(); 
+            showToast('Calling patient #' + tokenNumber, 'warning');
+        } else {
+            showToast(data.message || 'Error calling patient', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showToast('Error calling patient', 'error');
     });
 }
 
 function completeService(tokenId, tokenNumber) {
     fetch('/staff/complete-service', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') },
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': getCSRFToken() },
         body: JSON.stringify({ token_id: tokenId })
     })
     .then(response => response.json())
@@ -146,7 +237,13 @@ function completeService(tokenId, tokenNumber) {
         if (data.success) {
             showToast('Patient #' + tokenNumber + ' completed!', 'success');
             loadQueue();
+        } else {
+            showToast(data.message || 'Error completing service', 'error');
         }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showToast('Error completing service', 'error');
     });
 }
 
@@ -154,7 +251,7 @@ function cancelToken(tokenId, tokenNumber) {
     if (confirm('Cancel patient #' + tokenNumber + '?')) {
         fetch('/staff/cancel-token', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') },
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': getCSRFToken() },
             body: JSON.stringify({ token_id: tokenId })
         })
         .then(response => response.json())
@@ -162,7 +259,13 @@ function cancelToken(tokenId, tokenNumber) {
             if (data.success) {
                 showToast('Patient #' + tokenNumber + ' cancelled', 'warning');
                 loadQueue();
+            } else {
+                showToast(data.message || 'Error cancelling patient', 'error');
             }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('Error cancelling patient', 'error');
         });
     }
 }
@@ -170,7 +273,12 @@ function cancelToken(tokenId, tokenNumber) {
 // ========== MODAL FUNCTIONS ==========
 function openModal(id) {
     const modal = document.getElementById(id);
-    if (modal) modal.style.display = 'flex';
+    if (modal) {
+        modal.style.display = 'flex';
+        if (id === 'patientModal') {
+            setTimeout(() => document.getElementById('p_name').focus(), 100);
+        }
+    }
 }
 
 function closeModal(id) {
@@ -179,32 +287,63 @@ function closeModal(id) {
 }
 
 function submitPatient() {
-    const name = document.getElementById('p_name').value;
-    const age = document.getElementById('p_age').value;
-    if (!name) return showToast('Please enter name', 'error');
+    const name = document.getElementById('p_name').value.trim();
+    const department = document.getElementById('p_department')?.value || 'OPD';
     
+    if (!name) {
+        showToast('Please enter patient name', 'error');
+        document.getElementById('p_name').focus();
+        return;
+    }
+
+    const btn = document.querySelector('#patientModal .btn-primary');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '⏳ Adding...';
+    btn.disabled = true;
+
     fetch('/staff/add-patient', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') },
-        body: JSON.stringify({ name: name, age: age })
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': getCSRFToken()
+        },
+        body: JSON.stringify({
+            name: name,
+            department: department
+        })
     })
     .then(response => response.json())
     .then(data => {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+
         if (data.success) {
             closeModal('patientModal');
             loadQueue();
-            showToast('Patient added to queue!', 'success');
+            showToast('Patient added to queue! Token: #' + data.token_number, 'success');
             document.getElementById('p_name').value = '';
-            document.getElementById('p_age').value = '';
+        } else {
+            showToast(data.message || 'Error adding patient', 'error');
         }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+        showToast('Error adding patient. Please try again.', 'error');
     });
 }
 
 function submitGlobalTime() {
     const minutes = document.getElementById('global_min').value;
+    if (!minutes || parseInt(minutes) < 1) {
+        showToast('Please enter valid minutes', 'error');
+        return;
+    }
+
     fetch('/staff/set-global-time', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') },
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': getCSRFToken() },
         body: JSON.stringify({ minutes: minutes })
     })
     .then(response => response.json())
@@ -213,12 +352,17 @@ function submitGlobalTime() {
             closeModal('timeModal');
             loadQueue();
             showToast('Global time updated!', 'success');
+        } else {
+            showToast(data.message || 'Error updating time', 'error');
         }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showToast('Error updating time', 'error');
     });
 }
 
 function showQueueDetails(token) {
-    // Fetch token details from server
     fetch('/staff/token-detail/' + token)
         .then(response => response.json())
         .then(data => {
@@ -235,18 +379,39 @@ function showQueueDetails(token) {
         });
 }
 
+// ========== CLOSE MODAL ON CLICK OUTSIDE ==========
+document.addEventListener('click', function(event) {
+    if (event.target.classList.contains('modal')) {
+        event.target.style.display = 'none';
+    }
+});
+
 // ========== LOAD ON PAGE START ==========
 document.addEventListener('DOMContentLoaded', function() {
     loadQueue();
     setInterval(loadQueue, 5000);
 });
 
-// Add CSS animation
+// ========== CSS ANIMATIONS & STYLES ==========
 const style = document.createElement('style');
 style.textContent = `
     @keyframes slideIn {
         from { transform: translateX(100%); opacity: 0; }
         to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    @keyframes scaleIn {
+        from { transform: scale(0.9); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+    .modal {
+        animation: fadeIn 0.3s ease;
+    }
+    .modal-content {
+        animation: scaleIn 0.3s ease;
     }
     .status-badge {
         display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold;
