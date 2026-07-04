@@ -230,7 +230,7 @@
                         </div>
                         
                         <div class="form-group">
-                            <label><i class="fas fa-clock"></i> Duration (minutes)</label>
+                            <label><i class="fas fa-clock"></i>Time Duration (minutes)</label>
                             <input type="number" name="duration" class="form-control" placeholder="30" value="{{ old('duration') }}">
                         </div>
                     </div>
@@ -248,7 +248,7 @@
                     </div>
                     
                     <div class="form-group">
-                        <label><i class="fas fa-align-left"></i> Description <span class="required">*</span></label>
+                        <label><i class="fas fa-align-left"></i>  Add Description <span class="required">*</span></label>
                         <textarea name="description" class="form-control" placeholder="Describe the service in detail..." required>{{ old('description') }}</textarea>
                     </div>
                     
