@@ -16,13 +16,13 @@ class Token extends Model
         'phone',
         'email',
         'department',
-        'type',              // ✅ Yeh hona chahiye
+        'type',
         'status',
         'estimated_time',
         'position',
         'called_at',
-        'completed_at',
-        'age'                // ✅ Yeh bhi hona chahiye
+        'completed_at'
+        // ❌ 'age' remove kar diya
     ];
     
     public function patient()

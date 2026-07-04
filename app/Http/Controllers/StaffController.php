@@ -42,7 +42,7 @@ class StaffController extends Controller
         }
     }
 
-    // ✅ Add Physical Patient
+    // ✅ Add Physical Patient - Age Removed
     public function addPatient(Request $request)
     {
         Log::info('Add patient called', $request->all());
@@ -50,7 +50,6 @@ class StaffController extends Controller
         try {
             $request->validate([
                 'name' => 'required|string|max:255',
-                'age' => 'nullable|integer|min:1|max:150',
                 'department' => 'nullable|string|max:50'
             ]);
 
@@ -72,12 +71,11 @@ class StaffController extends Controller
                              ->count() + 1;
             $estimatedTime = $position * 15;
 
-            // Save token
+            // Save token - Age removed
             $token = Token::create([
                 'token_number' => $tokenNumber,
                 'patient_id' => null,
                 'patient_name' => $request->name,
-                'age' => $request->age,
                 'department' => $department,
                 'status' => 'waiting',
                 'type' => 'physical',
@@ -138,7 +136,6 @@ class StaffController extends Controller
             $token->completed_at = now();
             $token->save();
 
-            // Auto call next
             $this->callNext();
 
             return response()->json(['success' => true]);

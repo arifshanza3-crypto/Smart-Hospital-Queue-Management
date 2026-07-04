@@ -145,11 +145,12 @@ function updateQueueTable(queue) {
             actionsHtml = `<span style="color: rgba(255,255,255,0.3);">${statusText}</span>`;
         }
 
+        // ✅ Age removed from display
         row.innerHTML = `
             <td><strong style="color: #00d4ff;">#${patient.token_number}</strong></td>
             <td>
-                <strong>${patient.patient_name || 'N/A'}</strong><br>
-                <small style="color: rgba(255,255,255,0.5);">Age: ${patient.age || 'N/A'}</small>
+                <strong>${patient.patient_name || 'N/A'}</strong>
+                ${patient.department ? `<br><small style="color: rgba(255,255,255,0.5);">${patient.department}</small>` : ''}
             </td>
             <td><span class="badge">${typeText}</span></td>
             <td>${patient.estimated_time || 15} min</td>
@@ -248,22 +249,15 @@ function closeModal(id) {
     if (modal) modal.style.display = 'none';
 }
 
-// ========== SUBMIT PATIENT - WITH DEPARTMENT ==========
+// ========== SUBMIT PATIENT - AGE REMOVED ==========
 function submitPatient() {
     const name = document.getElementById('p_name').value.trim();
-    const age = document.getElementById('p_age').value.trim();
     const department = document.getElementById('p_department')?.value || 'OPD';
     
-    // ✅ Validation
+    // ✅ Validation - Sirf name check
     if (!name) {
         showToast('Please enter patient name', 'error');
         document.getElementById('p_name').focus();
-        return;
-    }
-    
-    if (!age || parseInt(age) < 1) {
-        showToast('Please enter valid age', 'error');
-        document.getElementById('p_age').focus();
         return;
     }
 
@@ -281,8 +275,8 @@ function submitPatient() {
         },
         body: JSON.stringify({
             name: name,
-            age: parseInt(age),
             department: department
+            // ❌ Age removed
         })
     })
     .then(response => response.json())
@@ -296,7 +290,6 @@ function submitPatient() {
             loadQueue();
             showToast('Patient added to queue! Token: #' + data.token_number, 'success');
             document.getElementById('p_name').value = '';
-            document.getElementById('p_age').value = '';
         } else {
             showToast(data.message || 'Error adding patient', 'error');
         }

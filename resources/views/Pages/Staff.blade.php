@@ -67,7 +67,7 @@
         </div>
     </div>
 
-    {{-- ✅ PATIENT MODAL - FIXED --}}
+    {{-- ✅ PATIENT MODAL - Age Field Removed --}}
     <div id="patientModal" class="modal">
         <div class="modal-content">
             <h3>Add New Patient</h3>
@@ -75,11 +75,7 @@
                 <label>Full Name</label>
                 <input type="text" id="p_name" placeholder="Enter name..." required>
             </div>
-            <div class="form-group">
-                <label>Age</label>
-                <input type="number" id="p_age" placeholder="Enter age..." min="1" max="150">
-            </div>
-            {{-- ✅ Department Field Add Kiya --}}
+            {{-- ❌ Age Field Removed --}}
             <div class="form-group">
                 <label>Department</label>
                 <select id="p_department" style="width: 100%; padding: 12px; margin-top: 8px; border: 1px solid #00d4ff; border-radius: 8px; background: #0b2e33; color: #ffffff; outline: none;">
