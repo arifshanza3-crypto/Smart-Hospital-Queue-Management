@@ -130,15 +130,20 @@ function updateQueueTable(queue) {
             typeText = 'Online';
         }
 
+        // ✅ Cancel button ka style same rakho
+        const cancelButtonStyle = `background: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;`;
+
         // Actions based on status
         let actionsHtml = '';
         if (statusText === 'waiting') {
-            // ✅ "Call" ki jagah "Calling"
-            actionsHtml = `<button class="btn-queue" onclick="startServing(${patient.id}, '${patient.token_number}')">📞 Calling</button>`;
+            actionsHtml = `
+                <button class="btn-queue" onclick="startServing(${patient.id}, '${patient.token_number}')">📞 Calling</button>
+                <button class="btn-queue" onclick="cancelToken(${patient.id}, '${patient.token_number}')" style="${cancelButtonStyle}">✕ Cancel</button>
+            `;
         } else if (statusText === 'calling') {
             actionsHtml = `
                 <button class="btn-queue" onclick="completeService(${patient.id}, '${patient.token_number}')">✅ Complete</button>
-                <button class="btn-queue" onclick="cancelToken(${patient.id}, '${patient.token_number}')">❌ Cancel</button>
+                <button class="btn-queue" onclick="cancelToken(${patient.id}, '${patient.token_number}')" style="${cancelButtonStyle}">❌ Cancel</button>
             `;
         } else if (statusText === 'serving') {
             actionsHtml = `<button class="btn-queue" onclick="completeService(${patient.id}, '${patient.token_number}')">✅ Complete</button>`;
