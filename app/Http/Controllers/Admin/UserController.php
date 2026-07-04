@@ -14,32 +14,22 @@ class UserController extends Controller
     /**
      * Display user management page
      */
-    public function index()
-    {
-        try {
-            $users = User::orderBy('name')->get();
-            
-            // Statistics
-            $total = $users->count();
-            $active = $users->where('status', 'active')->count();
-            $inactive = $users->where('status', 'inactive')->count();
-            $admins = $users->where('role', 'admin')->count();
-            $staff = $users->where('role', 'staff')->count();
-            $regular = $users->where('role', 'user')->count();
-            
-            return view('admin.user_management', compact(
-                'users', 'total', 'active', 'inactive', 
-                'admins', 'staff', 'regular'
-            ));
-        } catch (\Exception $e) {
-            Log::error('Error loading users: ' . $e->getMessage());
-            return view('admin.user_management', [
-                'users' => collect([]),
-                'total' => 0, 'active' => 0, 'inactive' => 0,
-                'admins' => 0, 'staff' => 0, 'regular' => 0
-            ])->with('error', 'Unable to load users');
-        }
-    }
+   public function index()
+{
+    $users = User::all();
+    
+    // Statistics
+    $total = $users->count();
+    $active = $users->where('status', 'active')->count();
+    $inactive = $users->where('status', 'inactive')->count();
+    $admins = $users->where('role', 'admin')->count();
+    $staff = $users->where('role', 'staff')->count();
+    $regular = $users->where('role', 'user')->count();
+    
+    return view('Pages.Admin.user_management', compact(
+        'users', 'total', 'active', 'inactive', 'admins', 'staff', 'regular'
+    ));
+}
 
     /**
      * Show create user form
