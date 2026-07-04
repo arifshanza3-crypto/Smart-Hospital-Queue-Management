@@ -64,7 +64,7 @@ Route::prefix('staff')->name('staff.')->group(function () {
     // Staff Page (Public View)
     Route::get('/page', [PageController::class, 'Staff'])->name('page');
     
-    // ✅ Patient Management (Updated)
+    // ✅ Patient Management
     Route::post('/add-patient', [StaffController::class, 'addPatient'])->name('add-patient');
     Route::post('/start-serving', [StaffController::class, 'startServing'])->name('start-serving');
     Route::post('/complete-service', [StaffController::class, 'completeService'])->name('complete-service');
@@ -73,8 +73,10 @@ Route::prefix('staff')->name('staff.')->group(function () {
     Route::post('/cancel-patient', [StaffController::class, 'cancelPatient'])->name('cancel-patient');
     Route::post('/set-global-time', [StaffController::class, 'setGlobalTime'])->name('set-global-time');
     
-    // ✅ Get Patients List (AJAX)
+    // ✅ Get Queue Routes (AJAX)
     Route::get('/get-queue', [StaffController::class, 'getQueue'])->name('get-queue');
+    Route::get('/get-department-queue', [StaffController::class, 'getDepartmentQueue'])->name('get-department-queue');
+    Route::get('/get-department-stats', [StaffController::class, 'getDepartmentStats'])->name('get-department-stats');
 });
 
 // =============================================

@@ -1,6 +1,7 @@
 let timerInterval = null;
 let currentToken = null;
 let timeLeft = 300;
+let currentDepartment = 'all';
 
 // ========== CSRF TOKEN HELPER ==========
 function getCSRFToken() {
@@ -21,6 +22,23 @@ function showToast(message, type = 'success') {
     toast.innerHTML = message;
     document.body.appendChild(toast);
     setTimeout(() => toast.remove(), 3000);
+}
+
+// ========== DEPARTMENT SWITCH ==========
+function switchDepartment(dept) {
+    currentDepartment = dept;
+    
+    // Update active tab
+    document.querySelectorAll('.dept-tab').forEach(tab => {
+        tab.style.background = 'rgba(255,255,255,0.1)';
+        tab.style.color = 'white';
+        if (tab.dataset.dept === dept) {
+            tab.style.background = '#00d4ff';
+            tab.style.color = '#0b2e33';
+        }
+    });
+    
+    loadQueue();
 }
 
 // ========== TIMER FUNCTIONS ==========
@@ -83,12 +101,26 @@ function cancelPatientAndCallNext() {
 
 // ========== QUEUE FUNCTIONS ==========
 function loadQueue() {
-    fetch('/staff/get-queue')
+    let url = '/staff/get-queue';
+    if (currentDepartment !== 'all') {
+        url = '/staff/get-department-queue';
+    }
+    
+    fetch(url)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                updateQueueTable(data.queue);
-                updateStats(data.total, data.serving, data.avgWait);
+                if (currentDepartment === 'all') {
+                    updateQueueTable(data.queue);
+                    updateStats(data.total, data.serving, data.avgWait);
+                } else {
+                    // Department-wise data
+                    const deptData = data.departments[currentDepartment];
+                    if (deptData) {
+                        updateQueueTable(deptData.queue);
+                        updateStats(deptData.total, deptData.serving ? deptData.serving.token_number : '--', deptData.avgWait);
+                    }
+                }
             }
         })
         .catch(error => console.error('Error:', error));
@@ -130,7 +162,7 @@ function updateQueueTable(queue) {
             typeText = 'Online';
         }
 
-        // ✅ Cancel button ka style same rakho
+        // Cancel button style
         const cancelButtonStyle = `background: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;`;
 
         // Actions based on status
@@ -254,7 +286,6 @@ function closeModal(id) {
     if (modal) modal.style.display = 'none';
 }
 
-// ========== SUBMIT PATIENT ==========
 function submitPatient() {
     const name = document.getElementById('p_name').value.trim();
     const department = document.getElementById('p_department')?.value || 'OPD';

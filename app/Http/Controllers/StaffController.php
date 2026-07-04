@@ -19,7 +19,8 @@ class StaffController extends Controller
     {
         try {
             $tokens = Token::whereIn('status', ['waiting', 'calling', 'serving'])
-                           ->orderBy('created_at', 'asc')
+                           ->orderBy('department', 'asc')
+                           ->orderBy('position', 'asc')
                            ->get();
 
             $total = $tokens->count();
@@ -42,7 +43,41 @@ class StaffController extends Controller
         }
     }
 
-    // ✅ Add Physical Patient - Age Removed
+    // ✅ Get Department-wise Queue
+    public function getDepartmentQueue()
+    {
+        try {
+            $departments = ['OPD', 'Lab', 'Pharmacy', 'Radiology'];
+            $result = [];
+
+            foreach ($departments as $dept) {
+                $tokens = Token::where('department', $dept)
+                               ->whereIn('status', ['waiting', 'calling', 'serving'])
+                               ->orderBy('position', 'asc')
+                               ->get();
+
+                $result[$dept] = [
+                    'queue' => $tokens,
+                    'total' => $tokens->count(),
+                    'serving' => $tokens->where('status', 'serving')->first(),
+                    'avgWait' => $tokens->count() * 15
+                ];
+            }
+
+            return response()->json([
+                'success' => true,
+                'departments' => $result
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Get department queue error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    // ✅ Add Physical Patient
     public function addPatient(Request $request)
     {
         Log::info('Add patient called', $request->all());
@@ -64,14 +99,16 @@ class StaffController extends Controller
                 $tokenNumber = 'TKN-001';
             }
 
-            // Calculate position
+            // ✅ Department-wise position calculate karo
             $department = $request->department ?? 'OPD';
             $position = Token::where('department', $department)
                              ->whereIn('status', ['waiting', 'calling'])
                              ->count() + 1;
-            $estimatedTime = $position * 15;
+            
+            // ✅ Department-wise estimated time (har department ka alag time)
+            $estimatedTime = $position * $this->getDepartmentTime($department);
 
-            // Save token - Age removed
+            // Save token
             $token = Token::create([
                 'token_number' => $tokenNumber,
                 'patient_id' => null,
@@ -108,6 +145,18 @@ class StaffController extends Controller
         }
     }
 
+    // ✅ Department-wise time per patient
+    private function getDepartmentTime($department)
+    {
+        $times = [
+            'OPD' => 10,
+            'Lab' => 15,
+            'Pharmacy' => 5,
+            'Radiology' => 20
+        ];
+        return $times[$department] ?? 15;
+    }
+
     // ✅ Start Serving (Call Patient)
     public function startServing(Request $request)
     {
@@ -136,6 +185,7 @@ class StaffController extends Controller
             $token->completed_at = now();
             $token->save();
 
+            // Auto call next
             $this->callNext();
 
             return response()->json(['success' => true]);
@@ -168,12 +218,22 @@ class StaffController extends Controller
         }
     }
 
-    // ✅ Call Next Patient
+    // ✅ Call Next Patient (Department-wise)
     public function callNext()
     {
         try {
+            // ✅ Pehle serving status wale ko complete karo
+            $serving = Token::where('status', 'serving')->first();
+            if ($serving) {
+                $serving->status = 'completed';
+                $serving->completed_at = now();
+                $serving->save();
+            }
+
+            // ✅ Next waiting patient ko call karo (department-wise)
             $next = Token::where('status', 'waiting')
-                         ->orderBy('created_at', 'asc')
+                         ->orderBy('department', 'asc')
+                         ->orderBy('position', 'asc')
                          ->first();
 
             if ($next) {
@@ -224,6 +284,43 @@ class StaffController extends Controller
             return response()->json(['success' => true]);
         } catch (\Exception $e) {
             Log::error('Set global time error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    // ✅ Get Department Stats
+    public function getDepartmentStats()
+    {
+        try {
+            $departments = ['OPD', 'Lab', 'Pharmacy', 'Radiology'];
+            $stats = [];
+
+            foreach ($departments as $dept) {
+                $waiting = Token::where('department', $dept)
+                                ->where('status', 'waiting')
+                                ->count();
+                $serving = Token::where('department', $dept)
+                                ->where('status', 'serving')
+                                ->first();
+                $total = Token::where('department', $dept)
+                              ->whereIn('status', ['waiting', 'calling', 'serving'])
+                              ->count();
+
+                $stats[$dept] = [
+                    'waiting' => $waiting,
+                    'serving' => $serving ? $serving->token_number : '--',
+                    'total' => $total
+                ];
+            }
+
+            return response()->json([
+                'success' => true,
+                'stats' => $stats
+            ]);
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage()
