@@ -11,17 +11,23 @@ use App\Http\Controllers\TokenController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\StaffController;
 
-// Test route
+// =============================================
+// ✅ TEST ROUTE
+// =============================================
 Route::get('/test', function () {
     return "Test page working!";
 });
 
+// =============================================
 // ✅ ADMIN REDIRECT
+// =============================================
 Route::get('/admin', function () {
     return redirect('/admin/doctor-management');
 })->name('admin.redirect');
 
-// Main website routes
+// =============================================
+// ✅ MAIN WEBSITE ROUTES (Public Pages)
+// =============================================
 Route::get('/', [PageController::class, 'home'])->name('home');
 Route::get('/about', [PageController::class, 'about'])->name('about');
 Route::get('/services', [PageController::class, 'services'])->name('services');
@@ -32,7 +38,12 @@ Route::get('/Doctors', [PageController::class, 'Doctors'])->name('doctors');
 // ✅ STAFF ROUTE - SIRF EK BAAR
 Route::get('/Staff', [StaffController::class, 'dashboard'])->name('staff.page');
 
-// Token Routes
+// ✅ STAFF PAGE ROUTE - This loads resources/views/Pages/Staff.blade.php
+Route::get('/Staff', [PageController::class, 'Staff'])->name('Staff');
+
+// =============================================
+// ✅ TOKEN ROUTES
+// =============================================
 Route::get('/Token_form', [TokenController::class, 'showForm'])->name('token.form');
 Route::post('/token/generate', [TokenController::class, 'generateToken'])->name('token.generate');
 Route::get('/Status', [PageController::class, 'Status'])->name('status.page');
@@ -57,9 +68,9 @@ Route::get('/reset-password/{token}', [AuthController::class, 'showResetForm'])-
 Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 
 // =============================================
-// ✅ STAFF ROUTES
+// ✅ STAFF ROUTES (FULLY ADDED)
 // =============================================
-Route::prefix('staff')->name('staff.')->group(function () {
+Route::prefix('Staff')->name('Staff')->group(function () {
     // Staff Dashboard
     Route::get('/dashboard', [StaffController::class, 'dashboard'])->name('dashboard');
     
@@ -77,7 +88,7 @@ Route::prefix('staff')->name('staff.')->group(function () {
 });
 
 // =============================================
-// ✅ ADMIN ROUTES
+// ✅ ADMIN ROUTES (Authenticated Admin)
 // =============================================
 Route::prefix('admin')->name('admin.')->group(function () {
     
@@ -95,7 +106,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/user-management', [PageController::class, 'user_management'])->name('user-management');
     Route::get('/services-management', [ServiceController::class, 'index'])->name('services-management');
 
-    // Doctor Management Routes
+    // =============================================
+    // DOCTOR MANAGEMENT ROUTES
+    // =============================================
     Route::prefix('doctors')->name('doctors.')->group(function () {
         Route::get('/', [DoctorController::class, 'index'])->name('index');
         Route::get('/create', [DoctorController::class, 'create'])->name('create');
@@ -105,7 +118,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('/{id}', [DoctorController::class, 'destroy'])->name('destroy');
     });
     
-    // Service Management Routes
+    // =============================================
+    // SERVICE MANAGEMENT ROUTES
+    // =============================================
     Route::prefix('services')->name('services.')->group(function () {
         Route::get('/', [ServiceController::class, 'index'])->name('index');
         Route::get('/create', [ServiceController::class, 'create'])->name('create');
@@ -119,7 +134,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/bulk-delete', [ServiceController::class, 'bulkDelete'])->name('bulk-delete');
     });
     
-    // User Management Routes
+    // =============================================
+    // USER MANAGEMENT ROUTES
+    // =============================================
     Route::prefix('users')->name('users.')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('index');
         Route::get('/create', [UserController::class, 'create'])->name('create');
@@ -131,14 +148,18 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/search', [UserController::class, 'search'])->name('search');
     });
 
-    // Queue Reports Routes
+    // =============================================
+    // QUEUE REPORTS ROUTES
+    // =============================================
     Route::prefix('queue-reports')->name('queue-reports.')->group(function () {
         Route::get('/', [QueueReportController::class, 'index'])->name('index');
         Route::get('/{id}', [QueueReportController::class, 'show'])->name('show');
         Route::get('/export/csv', [QueueReportController::class, 'export'])->name('export');
     });
 
-    // Settings Routes
+    // =============================================
+    // SETTINGS ROUTES
+    // =============================================
     Route::prefix('settings')->name('settings.')->group(function () {
         Route::get('/', [\App\Http\Controllers\Admin\SettingController::class, 'index'])->name('index');
         Route::put('/update', [\App\Http\Controllers\Admin\SettingController::class, 'update'])->name('update');
