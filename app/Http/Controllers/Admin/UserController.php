@@ -12,6 +12,7 @@ class UserController extends Controller
 {
     public function index()
     {
+<<<<<<< HEAD
         $users = User::all();
         
         $total = $users->count();
@@ -29,6 +30,9 @@ class UserController extends Controller
     public function create()
     {
         return view('Pages.Admin.add_user');  // ✅ FIXED PATH
+=======
+        return view('Component.Admin.add_user');
+>>>>>>> 92d774f9d8d09cbee73e185001225764ee504e80
     }
 
     public function store(Request $request)

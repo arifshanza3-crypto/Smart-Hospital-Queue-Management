@@ -26,58 +26,42 @@ class AuthController extends Controller
                 $user = Auth::user();
                 
                 if ($user->role === 'admin') {
-                    return redirect('/admin/doctor-management');
+                    return redirect('/admin/doctor-management'); // ✅ Correct redirect
                 }
                 
                 return redirect('/');
             }
 
-            return back()->withErrors([
-                'email' => 'Invalid admin credentials.',
-            ])->onlyInput('email');
-        }
+        return back()->withErrors([
+            'email' => 'Invalid admin credentials.',
+        ])->onlyInput('email');
+    }
 
-        // Staff login (using employee_id + password)
+        // Staff login (using employee_id)
         if ($request->role === 'staff') {
             $request->validate([
                 'employee_id' => 'required|string',
                 'password' => 'required',
             ]);
 
-            $user = User::where('employee_id', $request->employee_id)
-                        ->where('role', 'staff')
-                        ->first();
+            // Find user by employee_id
+            $user = User::where('employee_id', $request->employee_id)->first();
 
-            if (!$user) {
-                return back()->withErrors([
-                    'employee_id' => 'Invalid employee ID.',
-                ])->onlyInput('employee_id');
-            }
-
-            // ✅ Check if staff is approved
-            if ($user->status === 'pending') {
-                return back()->with('error', 'Your account is pending admin approval.');
-            }
-
-            if ($user->status === 'rejected') {
-                return back()->with('error', 'Your account has been rejected. Contact admin.');
-            }
-
-            if (Hash::check($request->password, $user->password)) {
+            if ($user && Hash::check($request->password, $user->password)) {
                 Auth::login($user);
                 $request->session()->regenerate();
-                return redirect('/staff/dashboard');
+                
+                return redirect('/staff/dashboard'); // ✅ Staff redirect
             }
 
             return back()->withErrors([
-                'employee_id' => 'Invalid credentials.',
+                'employee_id' => 'Invalid staff credentials.',
             ])->onlyInput('employee_id');
         }
 
         return back()->withErrors(['error' => 'Invalid login attempt.']);
     }
 
-    // ✅ Staff Signup (status = pending)
     public function signup(Request $request)
     {
         $request->validate([
