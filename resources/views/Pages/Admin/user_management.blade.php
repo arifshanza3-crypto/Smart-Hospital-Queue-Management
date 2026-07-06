@@ -86,23 +86,20 @@
         color: white;
     }
 
-    .status-active {
-        background: #d4edda;
-        color: #155724;
+    .status-badge {
         padding: 4px 10px;
         border-radius: 20px;
         font-size: 12px;
         font-weight: 600;
         display: inline-block;
     }
+    .status-active {
+        background: #d4edda;
+        color: #155724;
+    }
     .status-inactive {
         background: #f8d7da;
         color: #721c24;
-        padding: 4px 10px;
-        border-radius: 20px;
-        font-size: 12px;
-        font-weight: 600;
-        display: inline-block;
     }
 
     .btn-action {
@@ -296,7 +293,7 @@
                 <th>Phone</th>
                 <th>Role</th>
                 <th>Status</th>
-                <th>Actions</th>
+                <th style="text-align:center;">Actions</th>
             </tr>
         </thead>
         <tbody id="tableBody">
@@ -314,15 +311,15 @@
                 <td>{{ $user->email }}</td>
                 <td>{{ $user->phone ?? '-' }}</td>
                 <td><span class="role-badge role-{{ $user->role }}">{{ ucfirst($user->role) }}</span></td>
-                <td><span class="status-{{ $user->status }}">{{ ucfirst($user->status) }}</span></td>
-                <td>
-                    <a href="{{ route('admin.users.edit', $user->id) }}" class="btn-action btn-edit">
+                <td><span class="status-badge status-{{ $user->status }}">{{ ucfirst($user->status) }}</span></td>
+                <td style="text-align:center;">
+                    <a href="{{ route('admin.users.edit', $user->id) }}" class="btn-action btn-edit" title="Edit">
                         <i class="fas fa-edit"></i>
                     </a>
-                    <button onclick="deleteUser({{ $user->id }})" class="btn-action btn-delete">
+                    <button onclick="deleteUser({{ $user->id }})" class="btn-action btn-delete" title="Delete">
                         <i class="fas fa-trash"></i>
                     </button>
-                    <button onclick="toggleStatus({{ $user->id }}, '{{ $user->status }}')" class="btn-action btn-status">
+                    <button onclick="toggleStatus({{ $user->id }}, '{{ $user->status }}')" class="btn-action btn-status" title="Toggle Status">
                         <i class="fas {{ $user->status == 'active' ? 'fa-pause' : 'fa-play' }}"></i>
                     </button>
                 </td>
@@ -347,33 +344,91 @@
 
 <script>
 function deleteUser(id) {
-    if(confirm('Are you sure you want to delete this user?')) {
+    if(confirm('⚠️ Are you sure you want to delete this user?\n\nThis action cannot be undone!')) {
         fetch('/admin/users/' + id, {
             method: 'DELETE',
-            headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json'
+            }
         })
-        .then(r => r.json())
-        .then(d => { if(d.success) location.reload(); });
+        .then(response => response.json())
+        .then(data => {
+            if(data.success) {
+                showNotification('✅ User deleted successfully!');
+                setTimeout(() => location.reload(), 800);
+            } else {
+                alert('❌ Error deleting user');
+            }
+        })
+        .catch(() => alert('❌ Network error. Please try again.'));
     }
 }
 
 function toggleStatus(id, currentStatus) {
     let newStatus = currentStatus === 'active' ? 'inactive' : 'active';
-    fetch('/admin/users/' + id + '/status/' + newStatus, {
-        method: 'PATCH',
-        headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
-    })
-    .then(r => r.json())
-    .then(d => { if(d.success) location.reload(); });
+    let action = newStatus === 'active' ? 'activate' : 'deactivate';
+    
+    if(confirm(`Are you sure you want to ${action} this user?`)) {
+        fetch('/admin/users/' + id + '/status/' + newStatus, {
+            method: 'PATCH',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.success) {
+                showNotification(`✅ User ${action}d successfully!`);
+                setTimeout(() => location.reload(), 800);
+            } else {
+                alert('❌ Error updating status');
+            }
+        })
+        .catch(() => alert('❌ Network error. Please try again.'));
+    }
 }
 
+function showNotification(message) {
+    const div = document.createElement('div');
+    div.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 25px;
+        background: #0b2e33;
+        color: white;
+        border-radius: 10px;
+        z-index: 9999;
+        font-family: 'Poppins', sans-serif;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        animation: slideIn 0.3s ease;
+    `;
+    div.textContent = message;
+    document.body.appendChild(div);
+    setTimeout(() => div.remove(), 3000);
+}
+
+// Search functionality
 document.getElementById('search').addEventListener('keyup', function() {
     let v = this.value.toLowerCase();
     document.querySelectorAll('#tableBody tr').forEach(row => {
         if(row.querySelector('td')) {
-            row.style.display = row.textContent.toLowerCase().includes(v) ? '' : 'none';
+            let text = row.textContent.toLowerCase();
+            row.style.display = text.includes(v) ? '' : 'none';
         }
     });
 });
+
+// Animation style
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+`;
+document.head.appendChild(style);
 </script>
 @endsection
