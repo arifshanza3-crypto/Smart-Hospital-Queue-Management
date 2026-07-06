@@ -89,6 +89,7 @@
         font-weight: 800;
         letter-spacing: 0.5px;
         line-height: 1.1;
+         color: white; 
     }
 
     .brand-sub {
@@ -98,6 +99,7 @@
         font-weight: 600;
         opacity: 0.8;
         margin-top: 4px;
+        color: white;
     }
 
     .menu-label {
