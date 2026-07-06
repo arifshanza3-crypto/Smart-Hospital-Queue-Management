@@ -36,7 +36,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        return view('admin.add_user');
+        return view('Component.Admin.add_user');
     }
 
     /**
