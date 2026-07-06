@@ -1,167 +1,21 @@
 @extends('Layout.admin-layout')
 
-@section('page-title', 'Dashboard')
-@section('breadcrumb', 'Doctor Management')
+@section('page-title', 'Doctor Management')
+@section('breadcrumb', 'Manage Doctors')
 
 @section('content')
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
 <style>
-    /* ===== STATS CARDS ===== */
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 20px;
-        margin-bottom: 30px;
+    .doctor-row {
+        transition: background 0.3s ease;
     }
-    .stat-card {
-        background: white;
-        padding: 25px 20px;
-        border-radius: 16px;
-        text-align: center;
-        box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-        transition: all 0.3s ease;
-        border-left: 4px solid #00d4ff;
-    }
-    .stat-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 30px rgba(0,0,0,0.1);
-    }
-    .stat-card .icon {
-        font-size: 32px;
-        margin-bottom: 8px;
-        display: block;
-    }
-    .stat-card .number {
-        font-size: 32px;
-        font-weight: 700;
-        color: #0b2e33;
-    }
-    .stat-card .label {
-        color: #666;
-        font-size: 13px;
-        margin-top: 4px;
-    }
-    .stat-card .sub {
-        font-size: 11px;
-        color: #999;
-        margin-top: 2px;
-    }
-    .stat-card:nth-child(1) { border-left-color: #667eea; }
-    .stat-card:nth-child(2) { border-left-color: #00d4ff; }
-    .stat-card:nth-child(3) { border-left-color: #28a745; }
-    .stat-card:nth-child(4) { border-left-color: #dc3545; }
-
-    /* ===== ACTION BAR ===== */
-    .action-bar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-        flex-wrap: wrap;
-        gap: 15px;
-    }
-    .action-bar .title h2 {
-        color: #0b2e33;
-        font-size: 20px;
-        margin: 0;
-    }
-    .action-bar .title p {
-        color: #666;
-        font-size: 14px;
-        margin: 0;
-    }
-    .btn-primary {
-        background: linear-gradient(135deg, #00d4ff, #0b2e33);
-        color: white;
-        padding: 10px 24px;
-        border: none;
-        border-radius: 10px;
-        font-size: 14px;
-        font-weight: 600;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        transition: all 0.3s ease;
-        text-decoration: none;
-    }
-    .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 20px rgba(0,212,255,0.3);
-        color: white;
-    }
-
-    /* ===== SEARCH ===== */
-    .search-box {
-        display: flex;
-        gap: 15px;
-        margin-bottom: 20px;
-        flex-wrap: wrap;
-    }
-    .search-box input {
-        flex: 1;
-        min-width: 250px;
-        padding: 12px 18px;
-        border: 2px solid #e0e0e0;
-        border-radius: 10px;
-        font-size: 14px;
-        transition: all 0.3s ease;
-    }
-    .search-box input:focus {
-        outline: none;
-        border-color: #00d4ff;
-        box-shadow: 0 0 0 3px rgba(0,212,255,0.1);
-    }
-    .search-box select {
-        padding: 12px 18px;
-        border: 2px solid #e0e0e0;
-        border-radius: 10px;
-        font-size: 14px;
-        background: white;
-        cursor: pointer;
-        min-width: 150px;
-    }
-    .search-box select:focus {
-        outline: none;
-        border-color: #00d4ff;
-    }
-
-    /* ===== TABLE ===== */
-    .table-wrapper {
-        background: white;
-        border-radius: 16px;
-        overflow: hidden;
-        box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-    }
-    table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-    th {
-        background: #0b2e33;
-        color: white;
-        padding: 14px 20px;
-        text-align: left;
-        font-size: 13px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-    td {
-        padding: 14px 20px;
-        border-bottom: 1px solid #f0f0f0;
-        font-size: 14px;
-        vertical-align: middle;
-    }
-    tr:hover {
+    .doctor-row:hover {
         background: #f8f9fa;
     }
-    tr:last-child td {
-        border-bottom: none;
-    }
 
-    /* ===== STATUS BADGES ===== */
     .status-badge {
-        padding: 4px 14px;
+        padding: 5px 12px;
         border-radius: 20px;
         font-size: 12px;
         font-weight: 600;
@@ -180,46 +34,102 @@
         color: #721c24;
     }
 
-    /* ===== ACTION BUTTONS ===== */
-    .btn-action {
-        padding: 5px 12px;
-        border: none;
-        border-radius: 6px;
-        font-size: 12px;
-        cursor: pointer;
+    .search-box {
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        padding: 10px 15px;
+        width: 300px;
         transition: all 0.3s ease;
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        text-decoration: none;
     }
-    .btn-action:hover {
-        transform: translateY(-1px);
+    .search-box:focus {
+        outline: none;
+        border-color: #00d4ff;
+        box-shadow: 0 0 0 3px rgba(0,212,255,0.1);
+    }
+
+    .btn-action {
+        padding: 6px 12px;
+        margin: 0 3px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 13px;
+        transition: all 0.3s ease;
+        display: inline-block;
+        cursor: pointer;
     }
     .btn-edit {
         background: #00d4ff;
         color: white;
+        border: none;
     }
     .btn-edit:hover {
         background: #0b2e33;
+        transform: translateY(-2px);
     }
     .btn-delete {
         background: #dc3545;
         color: white;
+        border: none;
     }
     .btn-delete:hover {
         background: #c82333;
+        transform: translateY(-2px);
     }
 
-    /* ===== EMPTY STATE ===== */
+    .stat-card {
+        transition: transform 0.3s ease;
+        cursor: pointer;
+    }
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .table-wrapper {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    }
+
+    .table-header {
+        background: #0b2e33;
+        color: white;
+    }
+
+    .loader {
+        display: none;
+        text-align: center;
+        padding: 20px;
+    }
+    .loader.show {
+        display: block;
+    }
+
+    .alert-success {
+        background: #d4edda;
+        color: #155724;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        border-left: 4px solid #28a745;
+    }
+    .alert-error {
+        background: #f8d7da;
+        color: #721c24;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        border-left: 4px solid #dc3545;
+    }
+
     .empty-state {
         text-align: center;
         padding: 60px 20px;
         color: #999;
     }
     .empty-state i {
-        font-size: 60px;
-        color: #ddd;
+        font-size: 48px;
+        color: #ccc;
         display: block;
         margin-bottom: 15px;
     }
@@ -228,226 +138,305 @@
         margin-bottom: 8px;
     }
 
-    /* ===== RESPONSIVE ===== */
     @media (max-width: 768px) {
-        .stats-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
-        .action-bar {
-            flex-direction: column;
-            align-items: stretch;
-        }
         .search-box {
-            flex-direction: column;
-        }
-        .search-box input,
-        .search-box select {
             width: 100%;
+        }
+        .table-wrapper {
+            overflow-x: auto;
+        }
+        table {
+            font-size: 12px;
         }
         th, td {
             padding: 10px 12px;
-            font-size: 12px;
-        }
-    }
-    @media (max-width: 500px) {
-        .stats-grid {
-            grid-template-columns: 1fr;
         }
     }
 </style>
 
-<!-- ===== STATS ===== -->
-@php
-    $total = $doctors->count();
-    $onDuty = $doctors->where('status', 'on_duty')->count();
-    $active = $doctors->where('status', 'active')->count();
-    $inactive = $doctors->where('status', 'inactive')->count();
-@endphp
+<div style="padding: 20px;">
+    <!-- Header -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <div>
+            <h1 style="color: #0b2e33; margin-bottom: 5px;">
+                <i class="fas fa-user-md" style="color: #00d4ff;"></i> Doctor Management
+            </h1>
+            <p style="color: #666;">Manage hospital specialized doctors</p>
+        </div>
+        <a href="{{ route('admin.doctors.create') }}" 
+           style="background: linear-gradient(135deg, #00d4ff, #0b2e33); color: white; padding: 12px 24px; text-decoration: none; border-radius: 10px; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s ease;">
+            <i class="fas fa-plus"></i> Add New Doctor
+        </a>
+    </div>
 
-<div class="stats-grid">
-    <div class="stat-card">
-        <span class="icon">👨‍⚕️</span>
-        <div class="number">{{ $total }}</div>
-        <div class="label">Total Doctors</div>
-    </div>
-    <div class="stat-card">
-        <span class="icon">🔄</span>
-        <div class="number">{{ $onDuty }}</div>
-        <div class="label">On Duty</div>
-        <div class="sub">Currently working</div>
-    </div>
-    <div class="stat-card">
-        <span class="icon">✅</span>
-        <div class="number">{{ $active }}</div>
-        <div class="label">Active</div>
-        <div class="sub">Available for appointments</div>
-    </div>
-    <div class="stat-card">
-        <span class="icon">⏸️</span>
-        <div class="number">{{ $inactive }}</div>
-        <div class="label">Inactive</div>
-        <div class="sub">Not available</div>
-    </div>
-</div>
+    <!-- Alerts -->
+    @if(session('success'))
+        <div class="alert-success">
+            <i class="fas fa-check-circle"></i> {{ session('success') }}
+        </div>
+    @endif
 
-<!-- ===== SEARCH ===== -->
-<div class="search-box">
-    <input type="text" id="searchInput" placeholder="🔍 Search by name, specialization, email...">
-    <select id="statusFilter">
-        <option value="">All Status</option>
-        <option value="active">Active</option>
-        <option value="on_duty">On Duty</option>
-        <option value="inactive">Inactive</option>
-    </select>
-</div>
+    @if(session('error'))
+        <div class="alert-error">
+            <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
+        </div>
+    @endif
 
-<!-- ===== TABLE ===== -->
-<div class="table-wrapper">
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Doctor</th>
-                <th>Specialization</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Status</th>
-                <th style="text-align:center;">Actions</th>
-            </tr>
-        </thead>
-        <tbody id="tableBody">
-            @forelse($doctors as $doctor)
-            <tr>
-                <td><strong>#{{ $doctor->id }}</strong></td>
-                <td>
-                    <div style="display:flex; align-items:center; gap:12px;">
-                        <div style="width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg, #00d4ff, #0b2e33); color:white; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:16px; flex-shrink:0;">
-                            {{ strtoupper(substr($doctor->name, 0, 2)) }}
+    <!-- Statistics Cards -->
+    @php
+        $total = $doctors->count();
+        $onDuty = $doctors->where('status', 'on_duty')->count();
+        $active = $doctors->where('status', 'active')->count();
+        $inactive = $doctors->where('status', 'inactive')->count();
+    @endphp
+
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px;">
+        <div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 15px; color: white;">
+            <i class="fas fa-user-md" style="font-size: 35px; opacity: 0.9;"></i>
+            <div style="font-size: 32px; font-weight: bold; margin-top: 10px;">{{ $total }}</div>
+            <div style="opacity: 0.9;">Total Doctors</div>
+        </div>
+        <div class="stat-card" style="background: linear-gradient(135deg, #00d4ff 0%, #0b2e33 100%); padding: 20px; border-radius: 15px; color: white;">
+            <i class="fas fa-stethoscope" style="font-size: 35px; opacity: 0.9;"></i>
+            <div style="font-size: 32px; font-weight: bold; margin-top: 10px;">{{ $onDuty }}</div>
+            <div style="opacity: 0.9;">On Duty</div>
+        </div>
+        <div class="stat-card" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); padding: 20px; border-radius: 15px; color: white;">
+            <i class="fas fa-check-circle" style="font-size: 35px; opacity: 0.9;"></i>
+            <div style="font-size: 32px; font-weight: bold; margin-top: 10px;">{{ $active }}</div>
+            <div style="opacity: 0.9;">Active</div>
+        </div>
+        <div class="stat-card" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); padding: 20px; border-radius: 15px; color: white;">
+            <i class="fas fa-clock" style="font-size: 35px; opacity: 0.9;"></i>
+            <div style="font-size: 32px; font-weight: bold; margin-top: 10px;">{{ $inactive }}</div>
+            <div style="opacity: 0.9;">Inactive</div>
+        </div>
+    </div>
+
+    <!-- Search and Filter -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 15px; flex-wrap: wrap;">
+        <div style="position: relative; flex: 1; max-width: 400px;">
+            <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #999;"></i>
+            <input type="text" id="search" placeholder="Search doctors by name, specialization..." class="search-box" style="padding-left: 40px; width: 100%;">
+        </div>
+        <div>
+            <select id="filterStatus" class="search-box" style="width: auto;">
+                <option value="">All Status</option>
+                <option value="active">Active</option>
+                <option value="on_duty">On Duty</option>
+                <option value="inactive">Inactive</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Loader -->
+    <div id="loader" class="loader">
+        <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #00d4ff;"></i> Loading...
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr class="table-header">
+                    <th style="padding: 15px; text-align: left; width: 5%;">ID</th>
+                    <th style="padding: 15px; text-align: left; width: 25%;">Doctor</th>
+                    <th style="padding: 15px; text-align: left; width: 15%;">Specialization</th>
+                    <th style="padding: 15px; text-align: left; width: 20%;">Email</th>
+                    <th style="padding: 15px; text-align: left; width: 15%;">Phone</th>
+                    <th style="padding: 15px; text-align: left; width: 10%;">Status</th>
+                    <th style="padding: 15px; text-align: left; width: 10%;">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                @forelse($doctors as $doctor)
+                <tr class="doctor-row" style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 15px;">{{ $doctor->id }}</td>
+                    <td style="padding: 15px;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #00d4ff, #0b2e33); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white;">
+                                <i class="fas fa-user-md"></i>
+                            </div>
+                            <div>
+                                <strong>Dr. {{ $doctor->name }}</strong>
+                                @if($doctor->qualification)
+                                    <div style="font-size: 11px; color: #999;">{{ $doctor->qualification }}</div>
+                                @endif
+                            </div>
                         </div>
-                        <div>
-                            <strong>Dr. {{ $doctor->name }}</strong>
-                            @if($doctor->qualification)
-                                <div style="font-size:11px; color:#999;">{{ $doctor->qualification }}</div>
-                            @endif
-                        </div>
-                    </div>
-                </td>
-                <td>
-                    <span style="background:#f0f0f0; padding:4px 12px; border-radius:12px; font-size:12px;">
-                        {{ $doctor->specialization }}
-                    </span>
-                </td>
-                <td>{{ $doctor->email }}</td>
-                <td>{{ $doctor->phone }}</td>
-                <td>
-                    <span class="status-badge status-{{ $doctor->status }}">
-                        {{ ucfirst($doctor->status) }}
-                    </span>
-                </td>
-                <td style="text-align:center;">
-                    <a href="{{ route('admin.doctors.edit', $doctor->id) }}" class="btn-action btn-edit" title="Edit">
-                        <i class="fas fa-edit"></i>
-                    </a>
-                    <button onclick="deleteDoctor({{ $doctor->id }})" class="btn-action btn-delete" title="Delete">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </td>
-            </tr>
-            @empty
-            <tr>
-                <td colspan="7">
-                    <div class="empty-state">
-                        <i class="fas fa-user-md"></i>
-                        <h3>No Doctors Found</h3>
-                        <p>Click the "Add New Doctor" button to add your first doctor.</p>
-                        <a href="{{ route('admin.doctors.create') }}" class="btn-primary" style="display:inline-flex; margin-top:10px;">
-                            <i class="fas fa-plus-circle"></i> Add New Doctor
+                    </td>
+                    <td style="padding: 15px;">
+                        <span style="background: #f0f0f0; padding: 4px 8px; border-radius: 5px; font-size: 12px;">
+                            {{ $doctor->specialization }}
+                        </span>
+                    </td>
+                    <td style="padding: 15px;">{{ $doctor->email }}</td>
+                    <td style="padding: 15px;">{{ $doctor->phone }}</td>
+                    <td style="padding: 15px;">
+                        <span class="status-badge status-{{ str_replace('_', '-', $doctor->status) }}">
+                            <i class="fas 
+                                @if($doctor->status == 'active') fa-check-circle
+                                @elseif($doctor->status == 'on_duty') fa-stethoscope
+                                @else fa-clock @endif
+                            "></i>
+                            {{ ucfirst(str_replace('_', ' ', $doctor->status)) }}
+                        </span>
+                    </td>
+                    <td style="padding: 15px;">
+                        <a href="{{ route('admin.doctors.edit', $doctor->id) }}" class="btn-action btn-edit">
+                            <i class="fas fa-edit"></i> Edit
                         </a>
-                    </div>
-                </td>
-            </tr>
-            @endforelse
-        </tbody>
-    </table>
+                        <button onclick="deleteDoctor({{ $doctor->id }})" class="btn-action btn-delete">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="7">
+                        <div class="empty-state">
+                            <i class="fas fa-user-md"></i>
+                            <h3>No Doctors Found</h3>
+                            <p>Click "Add New Doctor" to create your first doctor.</p>
+                            <a href="{{ route('admin.doctors.create') }}" style="display: inline-block; margin-top: 15px; background: #00d4ff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
+                                <i class="fas fa-plus"></i> Add New Doctor
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
 </div>
 
-<!-- ===== SCRIPTS ===== -->
 <script>
 function deleteDoctor(id) {
     if(confirm('⚠️ Are you sure you want to delete this doctor?\n\nThis action cannot be undone!')) {
+        showLoader();
+        
         fetch('/admin/doctors/' + id, {
             method: 'DELETE',
             headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
             }
         })
         .then(response => response.json())
         .then(data => {
+            hideLoader();
             if(data.success) {
-                showNotification('✅ Doctor deleted successfully!');
-                setTimeout(() => location.reload(), 800);
+                showNotification('success', data.message);
+                setTimeout(() => location.reload(), 1000);
             } else {
-                showNotification('❌ Error deleting doctor');
+                showNotification('error', data.message || 'Error deleting doctor');
             }
         })
-        .catch(() => showNotification('❌ Network error. Please try again.'));
+        .catch(error => {
+            hideLoader();
+            showNotification('error', 'Network error. Please try again.');
+            console.error('Error:', error);
+        });
     }
 }
 
-function showNotification(message) {
-    const div = document.createElement('div');
-    div.style.cssText = `
+// Search and filter functionality
+document.getElementById('search').addEventListener('keyup', filterTable);
+document.getElementById('filterStatus').addEventListener('change', filterTable);
+
+function filterTable() {
+    let searchValue = document.getElementById('search').value.toLowerCase();
+    let statusValue = document.getElementById('filterStatus').value;
+    let rows = document.querySelectorAll('#tableBody tr');
+    let visibleCount = 0;
+    
+    rows.forEach(row => {
+        if(row.querySelector('td')) {
+            let text = row.textContent.toLowerCase();
+            let statusCell = row.querySelector('td:nth-child(6)');
+            let status = '';
+            
+            if(statusCell) {
+                let statusText = statusCell.textContent.trim().toLowerCase();
+                if(statusText.includes('active')) status = 'active';
+                if(statusText.includes('on duty')) status = 'on_duty';
+                if(statusText.includes('inactive')) status = 'inactive';
+            }
+            
+            let matchesSearch = text.includes(searchValue);
+            let matchesStatus = !statusValue || status === statusValue;
+            
+            if (matchesSearch && matchesStatus) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        }
+    });
+    
+    // Show/hide no results message
+    let noResultsMsg = document.getElementById('noResultsMsg');
+    if (visibleCount === 0 && rows.length > 0) {
+        if (!noResultsMsg) {
+            let tbody = document.getElementById('tableBody');
+            let msgRow = document.createElement('tr');
+            msgRow.id = 'noResultsMsg';
+            msgRow.innerHTML = `<td colspan="7" style="padding: 40px; text-align: center; color: #999;">
+                <i class="fas fa-search" style="font-size: 48px;"></i>
+                <p>No matching doctors found</p>
+            </td>`;
+            tbody.appendChild(msgRow);
+        }
+    } else if (noResultsMsg) {
+        noResultsMsg.remove();
+    }
+}
+
+function showNotification(type, message) {
+    let notification = document.createElement('div');
+    notification.style.cssText = `
         position: fixed;
         top: 20px;
         right: 20px;
-        padding: 15px 25px;
-        background: #0b2e33;
-        color: white;
-        border-radius: 10px;
+        padding: 15px 20px;
+        background: ${type === 'success' ? '#d4edda' : '#f8d7da'};
+        color: ${type === 'success' ? '#155724' : '#721c24'};
+        border-left: 4px solid ${type === 'success' ? '#28a745' : '#dc3545'};
+        border-radius: 8px;
         z-index: 9999;
-        font-family: 'Poppins', sans-serif;
-        box-shadow: 0 5px 20px rgba(0,0,0,0.2);
         animation: slideIn 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     `;
-    div.textContent = message;
-    document.body.appendChild(div);
-    setTimeout(() => div.remove(), 3000);
+    notification.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${message}`;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
 }
 
-// Search and Filter
-document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.getElementById('searchInput');
-    const statusFilter = document.getElementById('statusFilter');
-    const rows = document.querySelectorAll('#tableBody tr');
+function showLoader() {
+    const loader = document.getElementById('loader');
+    if (loader) loader.classList.add('show');
+}
 
-    function filterTable() {
-        const search = searchInput.value.toLowerCase();
-        const status = statusFilter.value;
+function hideLoader() {
+    const loader = document.getElementById('loader');
+    if (loader) loader.classList.remove('show');
+}
 
-        rows.forEach(row => {
-            if (!row.querySelector('td')) return;
-            
-            const text = row.textContent.toLowerCase();
-            const rowStatus = row.querySelector('.status-badge')?.textContent?.trim().toLowerCase() || '';
-            
-            const matchSearch = text.includes(search);
-            const matchStatus = !status || rowStatus === status;
-            
-            row.style.display = (matchSearch && matchStatus) ? '' : 'none';
-        });
-    }
-
-    searchInput.addEventListener('keyup', filterTable);
-    statusFilter.addEventListener('change', filterTable);
-});
-
-// Add animation style
 const style = document.createElement('style');
 style.textContent = `
     @keyframes slideIn {
         from { transform: translateX(100%); opacity: 0; }
         to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slideOut {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
     }
 `;
 document.head.appendChild(style);
