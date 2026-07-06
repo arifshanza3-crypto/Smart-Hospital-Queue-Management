@@ -63,18 +63,6 @@
         z-index: 1000;
     }
 
-<<<<<<< HEAD
-=======
-    /* --- Important: The Content Fix --- */
-    /* Add this class to your main content wrapper in your Service/Doctor pages */
-    .main-content {
-        margin-left: var(--sidebar-width);
-        padding: 20px;
-        min-height: 100vh;
-        background: #f4f7f6; /* Soft light background for hospital feel */
-    }
-
->>>>>>> 3f9cfec078e8d9879dc8f908935c7d8b28740f60
     .logo-section {
         padding: 10px 15px 35px;
         display: flex;
