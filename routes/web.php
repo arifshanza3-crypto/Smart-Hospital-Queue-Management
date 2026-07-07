@@ -35,10 +35,7 @@ Route::get('/contact', [PageController::class, 'contact'])->name('contact');
 Route::get('/booking', [PageController::class, 'booking'])->name('booking');
 Route::get('/Doctors', [PageController::class, 'Doctors'])->name('doctors');
 
-// ✅ STAFF ROUTE - SIRF EK BAAR
-Route::get('/Staff', [StaffController::class, 'dashboard'])->name('staff.page');
-
-// ✅ STAFF PAGE ROUTE - This loads resources/views/Pages/Staff.blade.php
+// ✅ STAFF PAGE ROUTE
 Route::get('/Staff', [PageController::class, 'Staff'])->name('Staff');
 
 // =============================================
@@ -52,10 +49,9 @@ Route::get('/patient/token-status', [TokenController::class, 'getTokenStatus'])-
 // =============================================
 // ✅ AUTHENTICATION ROUTES
 // =============================================
-Route::get('/login', [PageController::class, 'login'])->name('login');
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
-Route::get('/signup', [PageController::class, 'sign'])->name('signup');
-Route::get('/register', [PageController::class, 'sign'])->name('register');
+Route::get('/signup', [AuthController::class, 'showSignupForm'])->name('signup');
 Route::post('/signup', [AuthController::class, 'signup'])->name('signup.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
@@ -68,9 +64,9 @@ Route::get('/reset-password/{token}', [AuthController::class, 'showResetForm'])-
 Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 
 // =============================================
-// ✅ STAFF ROUTES (FULLY ADDED)
+// ✅ STAFF ROUTES
 // =============================================
-Route::prefix('Staff')->name('Staff')->group(function () {
+Route::prefix('Staff')->name('Staff.')->group(function () {
     // Staff Dashboard
     Route::get('/dashboard', [StaffController::class, 'dashboard'])->name('dashboard');
     

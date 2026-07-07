@@ -11,6 +11,12 @@ use App\Models\User;
 
 class AuthController extends Controller
 {
+    // ✅ Show Login Page
+    public function showLoginForm()
+    {
+        return view('Pages.login');
+    }
+
     // ✅ Login method for Admin and Staff
     public function login(Request $request)
     {
@@ -26,16 +32,16 @@ class AuthController extends Controller
                 $user = Auth::user();
                 
                 if ($user->role === 'admin') {
-                    return redirect('/admin/doctor-management'); // ✅ Correct redirect
+                    return redirect('/admin/doctor-management');
                 }
                 
                 return redirect('/');
             }
 
-        return back()->withErrors([
-            'email' => 'Invalid admin credentials.',
-        ])->onlyInput('email');
-    }
+            return back()->withErrors([
+                'email' => 'Invalid admin credentials.',
+            ])->onlyInput('email');
+        }
 
         // Staff login (using employee_id)
         if ($request->role === 'staff') {
@@ -51,7 +57,7 @@ class AuthController extends Controller
                 Auth::login($user);
                 $request->session()->regenerate();
                 
-                return redirect('/staff/dashboard'); // ✅ Staff redirect
+                return redirect('/Staff/dashboard');
             }
 
             return back()->withErrors([
@@ -62,6 +68,13 @@ class AuthController extends Controller
         return back()->withErrors(['error' => 'Invalid login attempt.']);
     }
 
+    // ✅ Show Signup Page
+    public function showSignupForm()
+    {
+        return view('Pages.signup');
+    }
+
+    // ✅ Signup (Create Staff Account)
     public function signup(Request $request)
     {
         $request->validate([
@@ -83,6 +96,7 @@ class AuthController extends Controller
         return redirect('/login')->with('success', 'Registration successful! Waiting for admin approval.');
     }
 
+    // ✅ Logout
     public function logout(Request $request)
     {
         Auth::logout();

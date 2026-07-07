@@ -11,14 +11,15 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     protected $fillable = [
-    'name',
-    'email',
-    'password',
-    'phone',
-    'role',
-    'status',
-    'avatar'
-];
+        'full_name',      // ✅ full_name add karo
+        'email',
+        'password',
+        'employee_id',    // ✅ employee_id add karo
+        'phone',
+        'role',
+        'status',
+        'avatar'
+    ];
 
     protected $hidden = [
         'password',
@@ -68,7 +69,7 @@ class User extends Authenticatable
         return 'https://ui-avatars.com/api/?name=' . urlencode($this->full_name ?? $this->name) . '&background=00d4ff&color=fff';
     }
 
-    // ✅ Alias for name (if needed)
+    // ✅ Alias for name
     public function getNameAttribute()
     {
         return $this->full_name;

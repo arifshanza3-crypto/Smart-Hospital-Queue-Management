@@ -45,7 +45,6 @@
                     <select name="department" class="form-control token-input" required>
                         <option value="" disabled selected>Select Department</option>
                         <option value="OPD">OPD</option>
-                        <!-- <option value="Lab">Lab</option> -->
                         <option value="Pharmacy">Pharmacy</option>
                         <option value="Radiology">Radiology</option>
                     </select>

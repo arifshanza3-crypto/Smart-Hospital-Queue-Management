@@ -35,7 +35,7 @@
             <form method="POST" action="{{ route('signup.post') }}" id="signupForm">
                 @csrf
                 
-                <!-- ✅ Role Selection - Sirf Staff -->
+                <!-- Role Selection - Sirf Staff -->
                 <div class="mb-3">
                     <label class="form-label text-white-50">Register As</label>
                     <select name="role" id="roleSelect" class="form-control custom-input" required>
@@ -44,16 +44,16 @@
                 </div>
 
                 <div class="mb-3">
-                    <input type="text" name="full_name" class="form-control custom-input" placeholder="Full Name" required>
+                    <input type="text" name="full_name" class="form-control custom-input" placeholder="Full Name" value="{{ old('full_name') }}" required>
                 </div>
 
                 <div class="mb-3">
-                    <input type="email" name="email" class="form-control custom-input" placeholder="Email Address" required>
+                    <input type="email" name="email" class="form-control custom-input" placeholder="Email Address" value="{{ old('email') }}" required>
                 </div>
 
-                <!-- ✅ Employee ID Field -->
-                <div class="mb-3">
-                    <input type="text" name="employee_id" class="form-control custom-input" placeholder="Employee ID" required>
+                <!-- Employee ID Field -->
+                <div class="mb-3" id="staffEmployeeField">
+                    <input type="text" name="employee_id" class="form-control custom-input" placeholder="Employee ID" value="{{ old('employee_id') }}" required>
                 </div>
 
                 <div class="mb-3">
@@ -75,18 +75,31 @@
 </div>
 
 <script>
-    // ✅ Role select change handler (Sirf Staff)
-    document.getElementById('roleSelect').addEventListener('change', function() {
-        const role = this.value;
+    document.addEventListener('DOMContentLoaded', function() {
+        const roleSelect = document.getElementById('roleSelect');
         const staffField = document.getElementById('staffEmployeeField');
         
-        if (role === 'staff') {
+        // Initial check
+        if (roleSelect.value === 'staff') {
             staffField.style.display = 'block';
             document.querySelector('input[name="employee_id"]').required = true;
         } else {
             staffField.style.display = 'none';
             document.querySelector('input[name="employee_id"]').required = false;
         }
+
+        // On change
+        roleSelect.addEventListener('change', function() {
+            const role = this.value;
+            
+            if (role === 'staff') {
+                staffField.style.display = 'block';
+                document.querySelector('input[name="employee_id"]').required = true;
+            } else {
+                staffField.style.display = 'none';
+                document.querySelector('input[name="employee_id"]').required = false;
+            }
+        });
     });
 </script>
 

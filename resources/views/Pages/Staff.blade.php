@@ -87,7 +87,6 @@
                 <label>Department</label>
                 <select id="p_department" style="width: 100%; padding: 12px; margin-top: 8px; border: 1px solid #00d4ff; border-radius: 8px; background: #0b2e33; color: #ffffff; outline: none;">
                     <option value="OPD">OPD</option>
-                    <!-- <option value="Lab">Lab</option> -->
                     <option value="Pharmacy">Pharmacy</option>
                     <option value="Radiology">Radiology</option>
                 </select>
