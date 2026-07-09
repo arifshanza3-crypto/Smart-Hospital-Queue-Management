@@ -40,7 +40,6 @@
         <div class="department-tabs" style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
             <button class="dept-tab active" data-dept="all" onclick="switchDepartment('all')" style="padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; background: #00d4ff; color: #0b2e33; font-weight: bold;">All Departments</button>
             <button class="dept-tab" data-dept="OPD" onclick="switchDepartment('OPD')" style="padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; background: rgba(255,255,255,0.1); color: white;">🏥 OPD</button>
-            <button class="dept-tab" data-dept="Lab" onclick="switchDepartment('Lab')" style="padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; background: rgba(255,255,255,0.1); color: white;">🔬 Lab</button>
             <button class="dept-tab" data-dept="Pharmacy" onclick="switchDepartment('Pharmacy')" style="padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; background: rgba(255,255,255,0.1); color: white;">💊 Pharmacy</button>
             <button class="dept-tab" data-dept="Radiology" onclick="switchDepartment('Radiology')" style="padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; background: rgba(255,255,255,0.1); color: white;">🩻 Radiology</button>
         </div>

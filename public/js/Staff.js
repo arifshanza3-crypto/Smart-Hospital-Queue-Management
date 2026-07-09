@@ -2,6 +2,7 @@ let timerInterval = null;
 let currentToken = null;
 let timeLeft = 300;
 let currentDepartment = 'all';
+const BASE_URL = '/staff';
 
 // ========== CSRF TOKEN HELPER ==========
 function getCSRFToken() {
@@ -26,9 +27,9 @@ function showToast(message, type = 'success') {
 
 // ========== DEPARTMENT SWITCH ==========
 function switchDepartment(dept) {
+    console.log('Switching to department:', dept);
     currentDepartment = dept;
     
-    // Update active tab
     document.querySelectorAll('.dept-tab').forEach(tab => {
         tab.style.background = 'rgba(255,255,255,0.1)';
         tab.style.color = 'white';
@@ -84,7 +85,7 @@ function cancelPatientTimeout() {
 }
 
 function cancelPatientAndCallNext() {
-    fetch('/staff/cancel-patient', {
+    fetch(BASE_URL + '/cancel-patient', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': getCSRFToken() },
         body: JSON.stringify({ token_id: currentToken.id })
@@ -101,26 +102,29 @@ function cancelPatientAndCallNext() {
 
 // ========== QUEUE FUNCTIONS ==========
 function loadQueue() {
-    let url = '/staff/get-queue';
+    let url = BASE_URL + '/get-queue';
     if (currentDepartment !== 'all') {
-        url = '/staff/get-department-queue';
+        url = BASE_URL + '/get-department-queue?dept=' + encodeURIComponent(currentDepartment);
     }
     
+    console.log('Loading queue from:', url);
+    
     fetch(url)
-        .then(response => response.json())
+        .then(response => {
+            console.log('Response status:', response.status);
+            return response.json();
+        })
         .then(data => {
+            console.log('Queue data:', data);
             if (data.success) {
-                if (currentDepartment === 'all') {
-                    updateQueueTable(data.queue);
-                    updateStats(data.total, data.serving, data.avgWait);
-                } else {
-                    // Department-wise data
-                    const deptData = data.departments[currentDepartment];
-                    if (deptData) {
-                        updateQueueTable(deptData.queue);
-                        updateStats(deptData.total, deptData.serving ? deptData.serving.token_number : '--', deptData.avgWait);
-                    }
-                }
+                // Always use data.queue for both cases
+                let queueData = data.queue || [];
+                let total = data.total || 0;
+                let serving = data.serving || '--';
+                let avgWait = data.avgWait || 0;
+                
+                updateQueueTable(queueData);
+                updateStats(total, serving, avgWait);
             }
         })
         .catch(error => console.error('Error:', error));
@@ -152,8 +156,8 @@ function updateQueueTable(queue) {
         else if (statusText === 'serving') statusClass = 'status-serving';
         else if (statusText === 'completed') statusClass = 'status-completed';
         else if (statusText === 'missed') statusClass = 'status-missed';
+        else if (statusText === 'cancelled') statusClass = 'status-cancelled';
 
-        // TYPE DISPLAY
         let typeDisplay = patient.type || 'online';
         let typeText = '';
         if (typeDisplay === 'physical') {
@@ -162,10 +166,8 @@ function updateQueueTable(queue) {
             typeText = 'Online';
         }
 
-        // Cancel button style
         const cancelButtonStyle = `background: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;`;
 
-        // Actions based on status
         let actionsHtml = '';
         if (statusText === 'waiting') {
             actionsHtml = `
@@ -205,7 +207,7 @@ function updateStats(total, serving, avgWait) {
 
 // ========== PATIENT FUNCTIONS ==========
 function startServing(tokenId, tokenNumber) {
-    fetch('/staff/start-serving', {
+    fetch(BASE_URL + '/start-serving', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': getCSRFToken() },
         body: JSON.stringify({ token_id: tokenId })
@@ -227,7 +229,7 @@ function startServing(tokenId, tokenNumber) {
 }
 
 function completeService(tokenId, tokenNumber) {
-    fetch('/staff/complete-service', {
+    fetch(BASE_URL + '/complete-service', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': getCSRFToken() },
         body: JSON.stringify({ token_id: tokenId })
@@ -249,7 +251,7 @@ function completeService(tokenId, tokenNumber) {
 
 function cancelToken(tokenId, tokenNumber) {
     if (confirm('Cancel patient #' + tokenNumber + '?')) {
-        fetch('/staff/cancel-token', {
+        fetch(BASE_URL + '/cancel-token', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': getCSRFToken() },
             body: JSON.stringify({ token_id: tokenId })
@@ -286,9 +288,15 @@ function closeModal(id) {
     if (modal) modal.style.display = 'none';
 }
 
+// ========== SUBMIT PATIENT ==========
 function submitPatient() {
+    console.log('===== SUBMIT PATIENT CALLED =====');
+    
     const name = document.getElementById('p_name').value.trim();
     const department = document.getElementById('p_department')?.value || 'OPD';
+    
+    console.log('Name:', name);
+    console.log('Department:', department);
     
     if (!name) {
         showToast('Please enter patient name', 'error');
@@ -301,19 +309,31 @@ function submitPatient() {
     btn.innerHTML = '⏳ Adding...';
     btn.disabled = true;
 
-    fetch('/staff/add-patient', {
+    const csrfToken = getCSRFToken();
+    console.log('CSRF Token:', csrfToken);
+
+    fetch(BASE_URL + '/add-patient', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': getCSRFToken()
+            'X-CSRF-TOKEN': csrfToken,
+            'Accept': 'application/json'
         },
         body: JSON.stringify({
             name: name,
             department: department
         })
     })
-    .then(response => response.json())
+    .then(response => {
+        console.log('Response Status:', response.status);
+        if (!response.ok) {
+            return response.json().then(err => { throw err; });
+        }
+        return response.json();
+    })
     .then(data => {
+        console.log('Response Data:', data);
+        
         btn.innerHTML = originalText;
         btn.disabled = false;
 
@@ -327,7 +347,7 @@ function submitPatient() {
         }
     })
     .catch(error => {
-        console.error('Error:', error);
+        console.error('Fetch Error:', error);
         btn.innerHTML = originalText;
         btn.disabled = false;
         showToast('Error adding patient. Please try again.', 'error');
@@ -341,7 +361,7 @@ function submitGlobalTime() {
         return;
     }
 
-    fetch('/staff/set-global-time', {
+    fetch(BASE_URL + '/set-global-time', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': getCSRFToken() },
         body: JSON.stringify({ minutes: minutes })
@@ -363,7 +383,7 @@ function submitGlobalTime() {
 }
 
 function showQueueDetails(token) {
-    fetch('/staff/token-detail/' + token)
+    fetch(BASE_URL + '/token-detail/' + token)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
@@ -421,6 +441,14 @@ style.textContent = `
     .status-serving { background: #28a745; color: #fff; }
     .status-completed { background: #6c757d; color: #fff; }
     .status-missed { background: #dc3545; color: #fff; }
+    .status-cancelled { background: #6c757d; color: #fff; }
     .badge { background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 4px; font-size: 11px; }
+    .dept-tab {
+        transition: all 0.3s ease;
+    }
+    .dept-tab:hover {
+        transform: scale(1.02);
+        opacity: 0.9;
+    }
 `;
 document.head.appendChild(style);

@@ -64,9 +64,9 @@ Route::get('/reset-password/{token}', [AuthController::class, 'showResetForm'])-
 Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 
 // =============================================
-// ✅ STAFF ROUTES
+// ✅ STAFF ROUTES - FIXED (staff not Staff)
 // =============================================
-Route::prefix('Staff')->name('Staff.')->group(function () {
+Route::prefix('staff')->name('staff.')->group(function () {
     // Staff Dashboard
     Route::get('/dashboard', [StaffController::class, 'dashboard'])->name('dashboard');
     
@@ -81,6 +81,8 @@ Route::prefix('Staff')->name('Staff.')->group(function () {
     
     // Get Patients List (AJAX)
     Route::get('/get-queue', [StaffController::class, 'getQueue'])->name('get-queue');
+    Route::get('/get-department-queue', [StaffController::class, 'getDepartmentQueue'])->name('get-department-queue');
+    Route::get('/get-department-stats', [StaffController::class, 'getDepartmentStats'])->name('get-department-stats');
 });
 
 // =============================================
@@ -102,9 +104,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/user-management', [PageController::class, 'user_management'])->name('user-management');
     Route::get('/services-management', [ServiceController::class, 'index'])->name('services-management');
 
-    // =============================================
     // DOCTOR MANAGEMENT ROUTES
-    // =============================================
     Route::prefix('doctors')->name('doctors.')->group(function () {
         Route::get('/', [DoctorController::class, 'index'])->name('index');
         Route::get('/create', [DoctorController::class, 'create'])->name('create');
@@ -114,9 +114,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('/{id}', [DoctorController::class, 'destroy'])->name('destroy');
     });
     
-    // =============================================
     // SERVICE MANAGEMENT ROUTES
-    // =============================================
     Route::prefix('services')->name('services.')->group(function () {
         Route::get('/', [ServiceController::class, 'index'])->name('index');
         Route::get('/create', [ServiceController::class, 'create'])->name('create');
@@ -130,9 +128,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/bulk-delete', [ServiceController::class, 'bulkDelete'])->name('bulk-delete');
     });
     
-    // =============================================
     // USER MANAGEMENT ROUTES
-    // =============================================
     Route::prefix('users')->name('users.')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('index');
         Route::get('/create', [UserController::class, 'create'])->name('create');
@@ -144,18 +140,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/search', [UserController::class, 'search'])->name('search');
     });
 
-    // =============================================
     // QUEUE REPORTS ROUTES
-    // =============================================
     Route::prefix('queue-reports')->name('queue-reports.')->group(function () {
         Route::get('/', [QueueReportController::class, 'index'])->name('index');
         Route::get('/{id}', [QueueReportController::class, 'show'])->name('show');
         Route::get('/export/csv', [QueueReportController::class, 'export'])->name('export');
     });
 
-    // =============================================
     // SETTINGS ROUTES
-    // =============================================
     Route::prefix('settings')->name('settings.')->group(function () {
         Route::get('/', [\App\Http\Controllers\Admin\SettingController::class, 'index'])->name('index');
         Route::put('/update', [\App\Http\Controllers\Admin\SettingController::class, 'update'])->name('update');
