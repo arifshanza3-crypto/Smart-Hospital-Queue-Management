@@ -6,10 +6,12 @@ use App\Http\Controllers\Admin\DoctorController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\QueueReportController;
+use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TokenController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\StaffController;
+use App\Http\Controllers\ProfileController;  // ✅ ADDED
 
 // =============================================
 // ✅ TEST ROUTE
@@ -64,13 +66,10 @@ Route::get('/reset-password/{token}', [AuthController::class, 'showResetForm'])-
 Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 
 // =============================================
-// ✅ STAFF ROUTES - FIXED (staff not Staff)
+// ✅ STAFF ROUTES
 // =============================================
 Route::prefix('staff')->name('staff.')->group(function () {
-    // Staff Dashboard
     Route::get('/dashboard', [StaffController::class, 'dashboard'])->name('dashboard');
-    
-    // Patient Management
     Route::post('/add-patient', [StaffController::class, 'addPatient'])->name('add-patient');
     Route::post('/start-serving', [StaffController::class, 'startServing'])->name('start-serving');
     Route::post('/complete-service', [StaffController::class, 'completeService'])->name('complete-service');
@@ -78,17 +77,15 @@ Route::prefix('staff')->name('staff.')->group(function () {
     Route::post('/call-next', [StaffController::class, 'callNext'])->name('call-next');
     Route::post('/cancel-patient', [StaffController::class, 'cancelPatient'])->name('cancel-patient');
     Route::post('/set-global-time', [StaffController::class, 'setGlobalTime'])->name('set-global-time');
-    
-    // Get Patients List (AJAX)
     Route::get('/get-queue', [StaffController::class, 'getQueue'])->name('get-queue');
     Route::get('/get-department-queue', [StaffController::class, 'getDepartmentQueue'])->name('get-department-queue');
     Route::get('/get-department-stats', [StaffController::class, 'getDepartmentStats'])->name('get-department-stats');
 });
 
 // =============================================
-// ✅ ADMIN ROUTES (Authenticated Admin)
+// ✅ ADMIN ROUTES (Authenticated)
 // =============================================
-Route::prefix('admin')->name('admin.')->group(function () {
+Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     
     // Admin Dashboard
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
@@ -100,8 +97,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     
     // Static Pages
     Route::get('/report', [QueueReportController::class, 'index'])->name('report');
-    Route::get('/settings', [PageController::class, 'settings'])->name('settings');
-    Route::get('/user-management', [PageController::class, 'user_management'])->name('user-management');
+    Route::get('/settings', [SettingController::class, 'index'])->name('settings');
+    Route::get('/user-management', [UserController::class, 'index'])->name('user-management');
     Route::get('/services-management', [ServiceController::class, 'index'])->name('services-management');
 
     // DOCTOR MANAGEMENT ROUTES
@@ -149,7 +146,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     // SETTINGS ROUTES
     Route::prefix('settings')->name('settings.')->group(function () {
-        Route::get('/', [\App\Http\Controllers\Admin\SettingController::class, 'index'])->name('index');
-        Route::put('/update', [\App\Http\Controllers\Admin\SettingController::class, 'update'])->name('update');
+        Route::get('/', [SettingController::class, 'index'])->name('index');
+        Route::put('/update', [SettingController::class, 'update'])->name('update');
+    });
+
+    // ✅ PROFILE ROUTES - FIXED (Single definition)
+    Route::prefix('profile')->name('profile.')->group(function () {
+        Route::get('/', [ProfileController::class, 'index'])->name('index');
+        Route::put('/update', [ProfileController::class, 'update'])->name('update');
+        Route::put('/password', [ProfileController::class, 'updatePassword'])->name('password');
     });
 });

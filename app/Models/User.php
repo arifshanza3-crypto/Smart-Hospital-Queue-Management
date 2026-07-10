@@ -10,15 +10,18 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
+    protected $table = 'users';
+
     protected $fillable = [
-        'full_name',      // ✅ full_name add karo
+        'name',
+        'full_name',
         'email',
         'password',
-        'employee_id',    // ✅ employee_id add karo
         'phone',
         'role',
         'status',
-        'avatar'
+        'avatar',
+        'employee_id'
     ];
 
     protected $hidden = [
@@ -46,32 +49,11 @@ class User extends Authenticatable
         return $this->role === 'patient';
     }
 
-    public function isPending()
+    public function getAvatarUrlAttribute()
     {
-        return $this->status === 'pending';
-    }
-
-    public function isApproved()
-    {
-        return $this->status === 'approved';
-    }
-
-    public function isRejected()
-    {
-        return $this->status === 'rejected';
-    }
-
-    public function getProfileImageUrlAttribute()
-    {
-        if ($this->profile_image) {
-            return asset('storage/' . $this->profile_image);
+        if ($this->avatar) {
+            return asset('storage/' . $this->avatar);
         }
-        return 'https://ui-avatars.com/api/?name=' . urlencode($this->full_name ?? $this->name) . '&background=00d4ff&color=fff';
-    }
-
-    // ✅ Alias for name
-    public function getNameAttribute()
-    {
-        return $this->full_name;
+        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name ?? $this->full_name) . '&background=00d4ff&color=fff';
     }
 }
