@@ -12,6 +12,23 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\StaffController;
 
 // =============================================
+// ✅ SETUP ROUTE - LIVE SERVER KE LIYE
+// =============================================
+Route::get('/setup', function() {
+    try {
+        \Artisan::call('migrate', ['--force' => true]);
+        \Artisan::call('cache:clear');
+        \Artisan::call('config:clear');
+        \Artisan::call('view:clear');
+        \Artisan::call('route:clear');
+        \Artisan::call('storage:link');
+        return "✅ Setup complete! All migrations run successfully!";
+    } catch (\Exception $e) {
+        return "❌ Error: " . $e->getMessage();
+    }
+});
+
+// =============================================
 // ✅ TEST ROUTE
 // =============================================
 Route::get('/test', function () {
