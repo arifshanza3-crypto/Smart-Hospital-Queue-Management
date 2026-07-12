@@ -8,57 +8,67 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
-    // ✅ Show Login Page
     public function showLoginForm()
     {
         return view('Pages.login');
     }
 
-    // ✅ Login method for Admin and Staff
     public function login(Request $request)
     {
-        // Admin login (using email + password)
+        // Admin login
         if ($request->role === 'admin') {
             $credentials = $request->validate([
                 'email' => 'required|email',
                 'password' => 'required',
             ]);
 
+            Log::info('Admin Login Attempt:', ['email' => $request->email]);
+
             if (Auth::attempt($credentials)) {
                 $request->session()->regenerate();
                 $user = Auth::user();
                 
+                Log::info('Admin Login Success:', ['user' => $user->email, 'role' => $user->role]);
+                
                 if ($user->role === 'admin') {
-                    return redirect('/admin/doctor-management');
+                    return redirect('/admin/doctor-management')->with('success', 'Welcome back, ' . ($user->name ?? $user->full_name) . '!');
                 }
                 
                 return redirect('/');
             }
+
+            Log::error('Admin Login Failed:', ['email' => $request->email]);
 
             return back()->withErrors([
                 'email' => 'Invalid admin credentials.',
             ])->onlyInput('email');
         }
 
-        // Staff login (using employee_id)
+        // Staff login
         if ($request->role === 'staff') {
             $request->validate([
                 'employee_id' => 'required|string',
                 'password' => 'required',
             ]);
 
-            // Find user by employee_id
+            Log::info('Staff Login Attempt:', ['employee_id' => $request->employee_id]);
+
             $user = User::where('employee_id', $request->employee_id)->first();
 
             if ($user && Hash::check($request->password, $user->password)) {
                 Auth::login($user);
                 $request->session()->regenerate();
                 
-                return redirect('/Staff/dashboard');
+                Log::info('Staff Login Success:', ['employee_id' => $user->employee_id]);
+                
+                return redirect('/staff/dashboard')->with('success', 'Welcome back, ' . ($user->name ?? $user->full_name) . '!');
             }
+
+            Log::error('Staff Login Failed:', ['employee_id' => $request->employee_id]);
 
             return back()->withErrors([
                 'employee_id' => 'Invalid staff credentials.',
@@ -68,13 +78,11 @@ class AuthController extends Controller
         return back()->withErrors(['error' => 'Invalid login attempt.']);
     }
 
-    // ✅ Show Signup Page
     public function showSignupForm()
     {
         return view('Pages.signup');
     }
 
-    // ✅ Signup (Create Staff Account)
     public function signup(Request $request)
     {
         $request->validate([
@@ -90,28 +98,25 @@ class AuthController extends Controller
             'employee_id' => $request->employee_id,
             'password' => Hash::make($request->password),
             'role' => 'staff',
-            'status' => 'pending'  // ✅ Admin approval needed
+            'status' => 'pending'
         ]);
 
         return redirect('/login')->with('success', 'Registration successful! Waiting for admin approval.');
     }
 
-    // ✅ Logout
     public function logout(Request $request)
     {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect('/');
+        return redirect('/login');
     }
 
-    // ✅ FORGOT PASSWORD - Show reset link form
     public function showForgotForm()
     {
         return view('Pages.forgot-password');
     }
 
-    // ✅ FORGOT PASSWORD - Send reset link
     public function sendResetLink(Request $request)
     {
         $request->validate([
@@ -129,13 +134,11 @@ class AuthController extends Controller
         return back()->with('success', 'Password reset link sent to your email!');
     }
 
-    // ✅ RESET PASSWORD - Show reset form
     public function showResetForm($token)
     {
         return view('Pages.reset-password', ['token' => $token]);
     }
 
-    // ✅ RESET PASSWORD - Update password
     public function resetPassword(Request $request)
     {
         $request->validate([
@@ -160,5 +163,19 @@ class AuthController extends Controller
         DB::table('password_reset_tokens')->where('email', $request->email)->delete();
 
         return redirect('/login')->with('success', 'Password reset successful! Please login.');
+    }
+
+    public function currentUser()
+    {
+        if (Auth::check()) {
+            return response()->json([
+                'success' => true,
+                'user' => Auth::user()
+            ]);
+        }
+        return response()->json([
+            'success' => false,
+            'message' => 'Not authenticated'
+        ], 401);
     }
 }

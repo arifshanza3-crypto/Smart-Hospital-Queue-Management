@@ -17,8 +17,94 @@
             <span class="notification-badge">3</span>
         </div>
 
-        <div class="admin-profile">
-            <div class="profile-icon">AD</div>
+        <!-- ===== PROFILE DROPDOWN ===== -->
+        <div class="admin-profile" style="position: relative;">
+            <div class="profile-icon" onclick="toggleProfileDropdown()" style="cursor: pointer;">
+                @auth
+                    @if(auth()->user()->avatar)
+                        <img src="{{ Storage::url(auth()->user()->avatar) }}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                    @else
+                        {{ strtoupper(substr(auth()->user()->name, 0, 2)) }}
+                    @endif
+                @else
+                    AD
+                @endauth
+            </div>
+
+            <!-- Dropdown Menu -->
+            <div id="profileDropdown" style="
+                display: none;
+                position: absolute;
+                right: 0;
+                top: 50px;
+                background: #0b2e33;
+                border-radius: 12px;
+                min-width: 220px;
+                padding: 10px 0;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+                border: 1px solid #3e8686;
+                z-index: 1000;
+            ">
+                @auth
+                <div style="padding: 12px 20px; border-bottom: 1px solid #3e8686;">
+                    <div style="color: #00d4ff; font-weight: 600;">{{ auth()->user()->name }}</div>
+                    <div style="color: #a0d4d9; font-size: 12px;">{{ auth()->user()->email }}</div>
+                    <div style="color: #a0d4d9; font-size: 11px; opacity: 0.7; margin-top: 4px;">
+                        <i class="fas fa-user-shield"></i> {{ ucfirst(auth()->user()->role ?? 'Admin') }}
+                    </div>
+                </div>
+
+                <a href="{{ route('admin.profile.index') }}" style="
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    padding: 10px 20px;
+                    color: #a0d4d9;
+                    text-decoration: none;
+                    transition: all 0.2s ease;
+                " onmouseover="this.style.background='rgba(0,212,255,0.1)'" onmouseout="this.style.background='transparent'">
+                    <i class="fas fa-user" style="color: #00d4ff; width: 18px;"></i> My Profile
+                </a>
+
+                <a href="{{ route('admin.settings.index') }}" style="
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    padding: 10px 20px;
+                    color: #a0d4d9;
+                    text-decoration: none;
+                    transition: all 0.2s ease;
+                " onmouseover="this.style.background='rgba(0,212,255,0.1)'" onmouseout="this.style.background='transparent'">
+                    <i class="fas fa-cog" style="color: #00d4ff; width: 18px;"></i> Settings
+                </a>
+
+                <div style="border-top: 1px solid #3e8686; margin: 5px 15px;"></div>
+
+                <form method="POST" action="{{ route('logout') }}" style="margin: 0;">
+                    @csrf
+                    <button type="submit" style="
+                        display: flex;
+                        align-items: center;
+                        gap: 12px;
+                        padding: 10px 20px;
+                        background: none;
+                        border: none;
+                        width: 100%;
+                        text-align: left;
+                        color: #ff4d4d;
+                        cursor: pointer;
+                        transition: all 0.2s ease;
+                        font-size: 14px;
+                    " onmouseover="this.style.background='rgba(255,77,77,0.1)'" onmouseout="this.style.background='transparent'">
+                        <i class="fas fa-sign-out-alt" style="width: 18px;"></i> Logout
+                    </button>
+                </form>
+                @else
+                <a href="{{ route('login') }}" style="display: flex; align-items: center; gap: 12px; padding: 10px 20px; color: #a0d4d9; text-decoration: none;">
+                    <i class="fas fa-sign-in-alt" style="color: #00d4ff;"></i> Login
+                </a>
+                @endauth
+            </div>
         </div>
     </div>
 </nav>
@@ -134,5 +220,49 @@
         color: #00d4ff;
         font-weight: bold;
         cursor: pointer;
+        overflow: hidden;
+        font-size: 14px;
+    }
+
+    .profile-icon img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* Dropdown hover effect */
+    #profileDropdown a:hover,
+    #profileDropdown button:hover {
+        background: rgba(0, 212, 255, 0.1);
     }
 </style>
+
+<script>
+    function toggleProfileDropdown() {
+        const dropdown = document.getElementById('profileDropdown');
+        if (dropdown.style.display === 'none') {
+            dropdown.style.display = 'block';
+        } else {
+            dropdown.style.display = 'none';
+        }
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+        const dropdown = document.getElementById('profileDropdown');
+        const profileIcon = document.querySelector('.profile-icon');
+        if (dropdown && profileIcon && !profileIcon.contains(event.target) && !dropdown.contains(event.target)) {
+            dropdown.style.display = 'none';
+        }
+    });
+
+    // Close dropdown on Escape key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            const dropdown = document.getElementById('profileDropdown');
+            if (dropdown) {
+                dropdown.style.display = 'none';
+            }
+        }
+    });
+</script>
