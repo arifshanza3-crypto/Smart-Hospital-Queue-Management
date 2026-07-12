@@ -11,7 +11,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TokenController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\StaffController;
-use App\Http\Controllers\ProfileController;  // ✅ ADDED
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\StaffProfileController;  // ✅ ADDED
 
 // =============================================
 // ✅ TEST ROUTE
@@ -80,6 +81,13 @@ Route::prefix('staff')->name('staff.')->group(function () {
     Route::get('/get-queue', [StaffController::class, 'getQueue'])->name('get-queue');
     Route::get('/get-department-queue', [StaffController::class, 'getDepartmentQueue'])->name('get-department-queue');
     Route::get('/get-department-stats', [StaffController::class, 'getDepartmentStats'])->name('get-department-stats');
+    
+    // ✅ STAFF PROFILE ROUTES - ADDED
+    Route::prefix('profile')->name('profile.')->middleware('auth')->group(function () {
+        Route::get('/', [StaffProfileController::class, 'index'])->name('index');
+        Route::put('/update', [StaffProfileController::class, 'update'])->name('update');
+        Route::put('/password', [StaffProfileController::class, 'updatePassword'])->name('password');
+    });
 });
 
 // =============================================
@@ -150,7 +158,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
         Route::put('/update', [SettingController::class, 'update'])->name('update');
     });
 
-    // ✅ PROFILE ROUTES - FIXED (Single definition)
+    // ✅ ADMIN PROFILE ROUTES
     Route::prefix('profile')->name('profile.')->group(function () {
         Route::get('/', [ProfileController::class, 'index'])->name('index');
         Route::put('/update', [ProfileController::class, 'update'])->name('update');
