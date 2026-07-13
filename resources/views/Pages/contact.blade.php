@@ -34,7 +34,7 @@
                 <div class="q-card">
                     <div class="q-icon"><i class="fas fa-location-dot"></i></div>
                     <h3>Visit Us</h3>
-                    <p>Gujranwala, Pakistan</p>
+                    <p> Pakistan</p>
                 </div>
             </div>
         </div>

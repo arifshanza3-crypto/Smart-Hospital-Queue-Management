@@ -1,20 +1,20 @@
 /* ============================================ */
-/* PATIENT STATUS - Yellow/Golden Theme        */
+/* PATIENT STATUS - Modern Blue/Teal Theme     */
 /* ============================================ */
 
 /* --- Patient Token Card --- */
 .patient-token-card {
     max-width: 100%;
-    background: linear-gradient(145deg, #ffffff, #fffbeb);
+    background: linear-gradient(145deg, #ffffff, #f0f7fa);
     border-radius: 16px;
     padding: 24px 28px 20px;
-    box-shadow: 0 4px 25px rgba(255, 215, 0, 0.12);
-    border: 1px solid rgba(255, 215, 0, 0.15);
+    box-shadow: 0 4px 25px rgba(0, 212, 255, 0.12);
+    border: 1px solid rgba(0, 212, 255, 0.12);
     position: relative;
     overflow: hidden;
 }
 
-/* Golden top border animation */
+/* Blue top border animation */
 .patient-token-card::before {
     content: '';
     position: absolute;
@@ -22,12 +22,12 @@
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, #f59e0b, #ffd700, #f59e0b);
+    background: linear-gradient(90deg, #0b2e33, #00d4ff, #0b2e33);
     background-size: 200% 100%;
-    animation: goldShimmer 3s ease infinite;
+    animation: blueShimmer 3s ease infinite;
 }
 
-@keyframes goldShimmer {
+@keyframes blueShimmer {
     0%, 100% { background-position: 0% 0%; }
     50% { background-position: 100% 0%; }
 }
@@ -36,18 +36,19 @@
 .token-header {
     text-align: center;
     padding-bottom: 14px;
-    border-bottom: 1px solid rgba(255, 215, 0, 0.15);
+    border-bottom: 1px solid rgba(0, 212, 255, 0.1);
     margin-bottom: 14px;
 }
 
 .token-label {
     display: block;
     font-size: 10px;
-    color: #b8860b;
+    color: #0b2e33;
     font-weight: 700;
     letter-spacing: 3px;
     text-transform: uppercase;
     margin-bottom: 2px;
+    opacity: 0.7;
 }
 
 .token-number {
@@ -55,7 +56,7 @@
     font-weight: 800;
     display: block;
     letter-spacing: 1px;
-    background: linear-gradient(135deg, #b8860b, #f59e0b, #ffd700);
+    background: linear-gradient(135deg, #0b2e33, #1a7a82);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -68,9 +69,9 @@
     font-size: 11px;
     font-weight: 600;
     color: white;
-    background: #f59e0b;
+    background: #00d4ff;
     margin-top: 4px;
-    box-shadow: 0 2px 10px rgba(245, 158, 11, 0.3);
+    box-shadow: 0 2px 10px rgba(0, 212, 255, 0.3);
 }
 
 /* --- Token Details Grid --- */
@@ -85,7 +86,7 @@
     display: flex;
     flex-direction: column;
     padding: 5px 0;
-    border-bottom: 1px solid rgba(255, 215, 0, 0.08);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
 }
 
 .detail-item.full-width {
@@ -94,7 +95,7 @@
 
 .detail-item .label {
     font-size: 9px;
-    color: #b8860b;
+    color: #7a8a8e;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -103,7 +104,7 @@
 .detail-item .value {
     font-size: 14px;
     font-weight: 600;
-    color: #1a1a2e;
+    color: #1a2e33;
     margin-top: 1px;
 }
 
@@ -118,27 +119,27 @@
 }
 
 .status-waiting {
-    background: #fef3c7;
-    color: #92400e;
-    border: 1px solid #f59e0b;
+    background: #fff8e1;
+    color: #f57c00;
+    border: 1px solid #ffcc02;
 }
 
 .status-serving {
-    background: #dbeafe;
-    color: #1e40af;
-    border: 1px solid #3b82f6;
+    background: #e3f2fd;
+    color: #0d47a1;
+    border: 1px solid #42a5f5;
 }
 
 .status-completed {
-    background: #d1fae5;
-    color: #065f46;
-    border: 1px solid #10b981;
+    background: #e8f5e9;
+    color: #1b5e20;
+    border: 1px solid #66bb6a;
 }
 
 .status-cancelled {
-    background: #fee2e2;
-    color: #991b1b;
-    border: 1px solid #ef4444;
+    background: #ffebee;
+    color: #b71c1c;
+    border: 1px solid #ef5350;
 }
 
 /* --- Progress Bar --- */
@@ -148,22 +149,22 @@
     gap: 10px;
     margin: 10px 0 12px;
     padding: 8px 12px;
-    background: #fffbeb;
+    background: #f0f7fa;
     border-radius: 8px;
-    border: 1px solid rgba(255, 215, 0, 0.1);
+    border: 1px solid rgba(0, 212, 255, 0.08);
 }
 
 .progress-bar {
     flex: 1;
     height: 5px;
-    background: #fef3c7;
+    background: #e0e8eb;
     border-radius: 10px;
     overflow: hidden;
 }
 
 .progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, #b8860b, #f59e0b, #ffd700);
+    background: linear-gradient(90deg, #0b2e33, #1a7a82, #00d4ff);
     transition: width 0.6s ease;
     border-radius: 10px;
     position: relative;
@@ -189,7 +190,7 @@
 .progress-text {
     font-size: 12px;
     font-weight: 700;
-    color: #b8860b;
+    color: #0b2e33;
     min-width: 35px;
     text-align: right;
 }
@@ -216,32 +217,32 @@
 }
 
 .btn-refresh {
-    background: linear-gradient(135deg, #b8860b, #f59e0b);
+    background: linear-gradient(135deg, #0b2e33, #1a7a82);
     color: white;
-    box-shadow: 0 2px 12px rgba(245, 158, 11, 0.25);
+    box-shadow: 0 2px 12px rgba(11, 46, 51, 0.25);
 }
 
 .btn-refresh:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 20px rgba(245, 158, 11, 0.35);
+    box-shadow: 0 4px 20px rgba(11, 46, 51, 0.35);
 }
 
 .btn-home {
-    background: #fffbeb;
-    color: #b8860b;
-    border: 1px solid rgba(255, 215, 0, 0.2);
+    background: #f0f7fa;
+    color: #0b2e33;
+    border: 1px solid rgba(0, 212, 255, 0.15);
 }
 
 .btn-home:hover {
-    background: #fef3c7;
-    border-color: #f59e0b;
+    background: #e0ecf0;
+    border-color: #00d4ff;
 }
 
 /* --- Last Updated --- */
 .last-updated {
     text-align: center;
     margin-top: 10px;
-    color: #b8860b;
+    color: #7a8a8e;
     font-size: 10px;
     font-weight: 500;
     opacity: 0.6;
