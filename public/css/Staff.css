@@ -251,3 +251,80 @@ body {
     background: #00d4ff;
     color: #0b2e33;
 }
+
+/* -----------------------------------------------------------
+   7. TIMER MODAL BUTTONS
+----------------------------------------------------------- */
+.btn-success {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.btn-success:hover {
+    background: #218838;
+    transform: scale(1.05);
+}
+
+.btn-primary {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: #0069d9;
+    transform: scale(1.05);
+}
+
+.btn-danger {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.btn-danger:hover {
+    background: #c82333;
+    transform: scale(1.05);
+}
+
+/* -----------------------------------------------------------
+   8. STATUS BADGE - CANCELLED
+----------------------------------------------------------- */
+.status-cancelled {
+    background: #6c757d;
+    color: #fff;
+}
+
+/* -----------------------------------------------------------
+   9. TOAST NOTIFICATION
+----------------------------------------------------------- */
+.toast-success {
+    background: #28a745;
+    color: white;
+}
+
+.toast-error {
+    background: #dc3545;
+    color: white;
+}
+
+.toast-warning {
+    background: #ffc107;
+    color: #000;
+}

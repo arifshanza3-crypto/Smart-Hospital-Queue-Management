@@ -105,7 +105,7 @@ class StaffController extends Controller
         return $waiting * $timePerPatient;
     }
 
-    // ✅ Add Physical Patient - FIXED
+    // ✅ Add Physical Patient
     public function addPatient(Request $request)
     {
         Log::info('Add patient called', $request->all());
@@ -149,7 +149,7 @@ class StaffController extends Controller
                 'created_at' => now()
             ]);
 
-            // ✅ FIX: Recalculate all positions for this department
+            // Recalculate positions for this department
             $this->recalculatePositions($department);
 
             Log::info('Token created: ' . $token->id . ' - ' . $tokenNumber . ' - Position: ' . $position);
@@ -188,11 +188,21 @@ class StaffController extends Controller
         return $times[$department] ?? 15;
     }
 
-    // ✅ Start Serving (Call Patient)
+    // ✅ Start Serving (Call Patient) - Status 'calling' set karo
     public function startServing(Request $request)
     {
         try {
             $token = Token::findOrFail($request->token_id);
+            
+            // ✅ Check if already serving
+            $existingServing = Token::where('status', 'serving')->first();
+            if ($existingServing && $existingServing->id != $token->id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Another patient is already being served!'
+                ], 400);
+            }
+            
             $token->status = 'calling';
             $token->called_at = now();
             $token->save();
@@ -207,7 +217,37 @@ class StaffController extends Controller
         }
     }
 
-    // ✅ Complete Service - FIXED
+    // ✅ Patient Arrived - Start Service (Status 'serving' set karo)
+    public function startService(Request $request)
+    {
+        try {
+            $token = Token::findOrFail($request->token_id);
+            
+            // Check if another patient is already serving
+            $existingServing = Token::where('status', 'serving')->first();
+            if ($existingServing && $existingServing->id != $token->id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Another patient is already being served!'
+                ], 400);
+            }
+            
+            // ✅ Status 'serving' set karo
+            $token->status = 'serving';
+            $token->called_at = now();
+            $token->save();
+
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            Log::error('Start service error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    // ✅ Complete Service
     public function completeService(Request $request)
     {
         try {
@@ -217,7 +257,6 @@ class StaffController extends Controller
             $token->completed_at = now();
             $token->save();
 
-            // ✅ Recalculate positions for this department
             $this->recalculatePositions($department);
             $this->callNext();
 
@@ -231,7 +270,7 @@ class StaffController extends Controller
         }
     }
 
-    // ✅ Cancel Token - FIXED
+    // ✅ Cancel Token
     public function cancelToken(Request $request)
     {
         try {
@@ -253,7 +292,7 @@ class StaffController extends Controller
         }
     }
 
-    // ✅ Recalculate positions for a department - FIXED
+    // ✅ Recalculate positions for a department
     private function recalculatePositions($department)
     {
         Log::info('Recalculating positions for department: ' . $department);
@@ -276,7 +315,7 @@ class StaffController extends Controller
         Log::info('Recalculated ' . $tokens->count() . ' tokens for department: ' . $department);
     }
 
-    // ✅ Call Next Patient - FIXED
+    // ✅ Call Next Patient
     public function callNext()
     {
         try {
@@ -288,7 +327,6 @@ class StaffController extends Controller
                 $serving->completed_at = now();
                 $serving->save();
                 
-                // ✅ Recalculate positions for this department
                 $this->recalculatePositions($department);
             }
 
@@ -358,7 +396,7 @@ class StaffController extends Controller
     public function getDepartmentStats()
     {
         try {
-            $departments = ['OPD',  'Pharmacy', 'Radiology'];
+            $departments = ['OPD', 'Pharmacy', 'Radiology'];
             $stats = [];
 
             foreach ($departments as $dept) {

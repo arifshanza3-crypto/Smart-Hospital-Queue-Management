@@ -12,7 +12,7 @@ use App\Http\Controllers\TokenController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\StaffProfileController;  // ✅ ADDED
+use App\Http\Controllers\StaffProfileController;
 
 // =============================================
 // ✅ SETUP ROUTE - LIVE SERVER KE LIYE
@@ -90,6 +90,10 @@ Route::prefix('staff')->name('staff.')->group(function () {
     Route::get('/dashboard', [StaffController::class, 'dashboard'])->name('dashboard');
     Route::post('/add-patient', [StaffController::class, 'addPatient'])->name('add-patient');
     Route::post('/start-serving', [StaffController::class, 'startServing'])->name('start-serving');
+    
+    // ✅ NEW ROUTE - Patient Arrived - Start Service
+    Route::post('/start-service', [StaffController::class, 'startService'])->name('start-service');
+    
     Route::post('/complete-service', [StaffController::class, 'completeService'])->name('complete-service');
     Route::post('/cancel-token', [StaffController::class, 'cancelToken'])->name('cancel-token');
     Route::post('/call-next', [StaffController::class, 'callNext'])->name('call-next');
@@ -99,7 +103,7 @@ Route::prefix('staff')->name('staff.')->group(function () {
     Route::get('/get-department-queue', [StaffController::class, 'getDepartmentQueue'])->name('get-department-queue');
     Route::get('/get-department-stats', [StaffController::class, 'getDepartmentStats'])->name('get-department-stats');
     
-    // ✅ STAFF PROFILE ROUTES - ADDED
+    // ✅ STAFF PROFILE ROUTES
     Route::prefix('profile')->name('profile.')->middleware('auth')->group(function () {
         Route::get('/', [StaffProfileController::class, 'index'])->name('index');
         Route::put('/update', [StaffProfileController::class, 'update'])->name('update');

@@ -61,15 +61,16 @@
         </div>
     </main>
 
-    <!-- Timer Modal -->
+    <!-- ✅ Timer Modal with Patient Arrived Button -->
     <div id="timerModal" class="modal" style="display: none;">
         <div class="modal-content" style="text-align: center;">
             <h3>⏰ Waiting for Patient</h3>
             <div id="timerDisplay" style="font-size: 48px; font-weight: bold; margin: 20px 0;">05:00</div>
             <p>Patient has <span id="minutesLeft">5</span> minutes to arrive</p>
-            <div class="modal-footer">
-                <button class="btn btn-primary" onclick="extendTimer()">⏰ Extend (2 min)</button>
-                <button class="btn btn-danger" onclick="cancelCurrentPatient()">❌ Cancel & Next</button>
+            <div class="modal-footer" style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+                <button class="btn btn-success" onclick="patientArrived()" style="background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold;">✅ Patient Arrived - Start Service</button>
+                <button class="btn btn-primary" onclick="extendTimer()" style="background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold;">⏰ Extend (2 min)</button>
+                <button class="btn btn-danger" onclick="cancelCurrentPatient()" style="background: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold;">❌ Cancel & Next</button>
             </div>
         </div>
     </div>

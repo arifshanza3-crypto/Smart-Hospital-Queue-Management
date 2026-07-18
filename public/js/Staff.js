@@ -61,8 +61,13 @@ function startTimer(tokenId, tokenNumber) {
     document.getElementById('timerModal').style.display = 'flex';
     if (timerInterval) clearInterval(timerInterval);
     timerInterval = setInterval(() => {
-        if (timeLeft <= 0) { clearInterval(timerInterval); cancelPatientTimeout(); }
-        else { timeLeft--; updateTimerDisplay(); }
+        if (timeLeft <= 0) { 
+            clearInterval(timerInterval); 
+            cancelPatientTimeout(); 
+        } else { 
+            timeLeft--; 
+            updateTimerDisplay(); 
+        }
     }, 1000);
 }
 
@@ -100,6 +105,37 @@ function cancelPatientAndCallNext() {
     });
 }
 
+// ========== PATIENT ARRIVED - START SERVICE ==========
+function patientArrived() {
+    // Clear timer
+    clearInterval(timerInterval);
+    document.getElementById('timerModal').style.display = 'none';
+    
+    showToast('Patient #' + currentToken.number + ' arrived! Starting service...', 'success');
+    
+    fetch(BASE_URL + '/start-service', {
+        method: 'POST',
+        headers: { 
+            'Content-Type': 'application/json', 
+            'X-CSRF-TOKEN': getCSRFToken() 
+        },
+        body: JSON.stringify({ token_id: currentToken.id })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            loadQueue();
+            showToast('Patient #' + currentToken.number + ' is now being served!', 'success');
+        } else {
+            showToast(data.message || 'Error starting service', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showToast('Error starting service', 'error');
+    });
+}
+
 // ========== QUEUE FUNCTIONS ==========
 function loadQueue() {
     let url = BASE_URL + '/get-queue';
@@ -117,7 +153,6 @@ function loadQueue() {
         .then(data => {
             console.log('Queue data:', data);
             if (data.success) {
-                // Always use data.queue for both cases
                 let queueData = data.queue || [];
                 let total = data.total || 0;
                 let serving = data.serving || '--';
@@ -217,7 +252,7 @@ function startServing(tokenId, tokenNumber) {
         if (data.success) { 
             startTimer(tokenId, tokenNumber); 
             loadQueue(); 
-            showToast('Calling patient #' + tokenNumber, 'warning');
+            showToast('Calling patient #' + tokenNumber + ' - waiting for arrival', 'warning');
         } else {
             showToast(data.message || 'Error calling patient', 'error');
         }
@@ -449,6 +484,13 @@ style.textContent = `
     .dept-tab:hover {
         transform: scale(1.02);
         opacity: 0.9;
+    }
+    .btn-success {
+        transition: all 0.3s ease;
+    }
+    .btn-success:hover {
+        transform: scale(1.05);
+        background: #218838 !important;
     }
 `;
 document.head.appendChild(style);
