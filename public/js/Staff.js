@@ -236,7 +236,10 @@ function updateQueueTable(queue) {
 
 function updateStats(total, serving, avgWait) {
     document.getElementById('stat-total').innerText = total || 0;
-    document.getElementById('stat-serving').innerText = serving || '--';
+    
+    // ✅ Now serving can show multiple tokens with department names
+    document.getElementById('stat-serving').innerHTML = serving || '--';
+    
     document.getElementById('stat-avg-time').innerText = (avgWait || 0) + 'm';
 }
 

@@ -24,7 +24,21 @@ class StaffController extends Controller
                            ->get();
 
             $total = $tokens->count();
-            $serving = Token::where('status', 'serving')->first();
+            
+            // ✅ Get ALL serving tokens from all departments
+            $servingTokens = Token::where('status', 'serving')
+                                  ->orderBy('department', 'asc')
+                                  ->get();
+            
+            // ✅ Format serving tokens with department names
+            $servingText = '';
+            if ($servingTokens->count() > 0) {
+                $servingText = $servingTokens->map(function($token) {
+                    return $token->token_number . ' (' . $token->department . ')';
+                })->implode(', ');
+            } else {
+                $servingText = '--';
+            }
             
             $avgWait = $this->calculateAverageWait($tokens);
 
@@ -32,7 +46,7 @@ class StaffController extends Controller
                 'success' => true,
                 'queue' => $tokens,
                 'total' => $total,
-                'serving' => $serving ? $serving->token_number : '--',
+                'serving' => $servingText,
                 'avgWait' => $avgWait
             ]);
         } catch (\Exception $e) {
@@ -62,14 +76,19 @@ class StaffController extends Controller
                            ->get();
 
             $total = $tokens->count();
-            $serving = $tokens->where('status', 'serving')->first();
+            
+            $servingToken = Token::where('department', $department)
+                                 ->where('status', 'serving')
+                                 ->first();
+            
+            $servingText = $servingToken ? $servingToken->token_number : '--';
             $avgWait = $this->calculateDepartmentWait($tokens, $department);
 
             return response()->json([
                 'success' => true,
                 'queue' => $tokens,
                 'total' => $total,
-                'serving' => $serving ? $serving->token_number : '--',
+                'serving' => $servingText,
                 'avgWait' => $avgWait,
                 'department' => $department
             ]);
@@ -188,7 +207,6 @@ class StaffController extends Controller
         try {
             $token = Token::findOrFail($request->token_id);
             
-            // ✅ Only 'waiting' tokens can be called
             if ($token->status !== 'waiting') {
                 return response()->json([
                     'success' => false,
@@ -196,7 +214,6 @@ class StaffController extends Controller
                 ], 400);
             }
             
-            // ✅ Set status to 'calling'
             $token->status = 'calling';
             $token->called_at = now();
             $token->save();
@@ -217,7 +234,6 @@ class StaffController extends Controller
         try {
             $token = Token::findOrFail($request->token_id);
             
-            // ✅ Only 'calling' tokens can be served
             if ($token->status !== 'calling') {
                 return response()->json([
                     'success' => false,
@@ -225,7 +241,6 @@ class StaffController extends Controller
                 ], 400);
             }
             
-            // ✅ Set status to 'serving'
             $token->status = 'serving';
             $token->called_at = now();
             $token->save();
@@ -247,7 +262,6 @@ class StaffController extends Controller
             $token = Token::findOrFail($request->token_id);
             $department = $token->department;
             
-            // ✅ Only 'serving' tokens can be completed
             if ($token->status !== 'serving') {
                 return response()->json([
                     'success' => false,
@@ -260,8 +274,6 @@ class StaffController extends Controller
             $token->save();
 
             $this->recalculatePositions($department);
-            
-            // ❌ AUTO-CALL REMOVED
 
             return response()->json(['success' => true]);
         } catch (\Exception $e) {
@@ -280,7 +292,6 @@ class StaffController extends Controller
             $token = Token::findOrFail($request->token_id);
             $department = $token->department;
             
-            // ✅ Only 'waiting' or 'calling' tokens can be cancelled
             if (!in_array($token->status, ['waiting', 'calling'])) {
                 return response()->json([
                     'success' => false,
@@ -292,8 +303,6 @@ class StaffController extends Controller
             $token->save();
 
             $this->recalculatePositions($department);
-            
-            // ❌ AUTO-CALL REMOVED
 
             return response()->json(['success' => true]);
         } catch (\Exception $e) {
@@ -316,8 +325,6 @@ class StaffController extends Controller
             $token->save();
 
             $this->recalculatePositions($department);
-            
-            // ❌ AUTO-CALL REMOVED
 
             return response()->json(['success' => true]);
         } catch (\Exception $e) {
@@ -352,7 +359,7 @@ class StaffController extends Controller
         Log::info('Recalculated ' . $tokens->count() . ' tokens for department: ' . $department);
     }
 
-    // ❌ callNext() - COMPLETELY REMOVED (No auto-call anywhere)
+    // ❌ callNext() - COMPLETELY REMOVED
 
     // ✅ Set Global Time
     public function setGlobalTime(Request $request)

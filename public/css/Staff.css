@@ -87,6 +87,58 @@ body {
 
 .stat-item h2 {
     margin: 10px 0 0 0;
+    font-size: 1.8rem;
+}
+
+/* -----------------------------------------------------------
+   3.1 NOW SERVING - MULTIPLE TOKENS STYLE
+----------------------------------------------------------- */
+.stat-serving-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 4px;
+}
+
+.stat-serving-token {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(0, 212, 255, 0.1);
+    border: 1px solid rgba(0, 212, 255, 0.12);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+.stat-serving-token .token {
+    font-weight: 700;
+    color: #00d4ff;
+}
+
+.stat-serving-token .dept {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.05);
+    padding: 1px 6px;
+    border-radius: 3px;
+}
+
+.stat-serving-single {
+    font-size: 18px;
+    font-weight: 700;
+    color: #00d4ff;
+}
+
+.stat-serving-single .dept {
+    font-size: 13px;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.stat-serving-empty {
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 16px;
 }
 
 /* -----------------------------------------------------------
