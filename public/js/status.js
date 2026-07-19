@@ -14,6 +14,8 @@
      * Main function to fetch token status from server
      */
     function fetchTokenStatus() {
+        console.log('🔄 Fetching token status...');
+
         // If no token number, show error
         if (!tokenNumber || tokenNumber === '--' || tokenNumber === 'No Token') {
             const badge = document.getElementById('tokenBadge');
@@ -52,18 +54,19 @@
         setElementText('patientPosition', '#' + (data.position || '--'));
         setElementText('patientWaitTime', data.estimated_time ? data.estimated_time + 'm' : '--');
         setElementText('patientServing', data.serving || '--');
-        setElementText('patientTime', data.created_at || '--');
+
+        // ❌ Generated time ko update nahi karein (fix rakhna hai)
+        // Time sirf page load par ek baar set ho chuka hai
 
         // Update status badge
         updateStatusBadge(data.status || 'waiting');
 
-        // ❌ Progress Bar Code Removed
-
-        // Update last updated time
-        const lastUpdated = document.getElementById('lastUpdated');
-        if (lastUpdated) {
-            lastUpdated.textContent = new Date().toLocaleTimeString();
-        }
+        // Update progress
+        const progress = data.progress || 0;
+        const progressFill = document.getElementById('patientProgress');
+        const progressText = document.getElementById('progressText');
+        if (progressFill) progressFill.style.width = progress + '%';
+        if (progressText) progressText.textContent = progress + '%';
     }
 
     /**
@@ -153,6 +156,7 @@
      * Manual refresh function (called from button)
      */
     window.refreshStatus = function() {
+        console.log('🔄 Refresh button clicked!');
         fetchTokenStatus();
     };
 
@@ -165,12 +169,30 @@
 
     // Initial fetch when DOM is ready
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', fetchTokenStatus);
+        document.addEventListener('DOMContentLoaded', function() {
+            // ✅ Time set karo (sirf ek baar)
+            const timeElement = document.getElementById('patientTime');
+            if (timeElement && (!timeElement.textContent || timeElement.textContent === '--')) {
+                const now = new Date();
+                const hours12 = now.getHours() % 12 || 12;
+                const ampm = now.getHours() >= 12 ? 'PM' : 'AM';
+                timeElement.textContent = hours12 + ':' + String(now.getMinutes()).padStart(2, '0') + ' ' + ampm;
+            }
+            fetchTokenStatus();
+        });
     } else {
+        // ✅ Time set karo (sirf ek baar)
+        const timeElement = document.getElementById('patientTime');
+        if (timeElement && (!timeElement.textContent || timeElement.textContent === '--')) {
+            const now = new Date();
+            const hours12 = now.getHours() % 12 || 12;
+            const ampm = now.getHours() >= 12 ? 'PM' : 'AM';
+            timeElement.textContent = hours12 + ':' + String(now.getMinutes()).padStart(2, '0') + ' ' + ampm;
+        }
         fetchTokenStatus();
     }
 
-    // Auto-refresh every 10 seconds
+    // Auto-refresh every 10 seconds (generated time update nahi hoga)
     setInterval(fetchTokenStatus, 10000);
 
 })();

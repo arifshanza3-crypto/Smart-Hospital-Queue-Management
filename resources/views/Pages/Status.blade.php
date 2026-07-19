@@ -72,14 +72,12 @@
 
                         {{-- Buttons --}}
                         <div class="token-actions">
-                            <button class="btn-refresh" onclick="fetchTokenStatus()">⟳ Refresh</button>
+                            {{-- ✅ onclick="refreshStatus()" use karein --}}
+                            <button class="btn-refresh" onclick="refreshStatus()">⟳ Refresh</button>
                             <a href="/" class="btn-home">⌂ Home</a>
                         </div>
 
-                        {{-- Last Updated --}}
-                        <div class="last-updated">
-                            Last updated: <span id="lastUpdated">--</span>
-                        </div>
+                        {{-- ❌ Last Updated Removed --}}
                     </div>
                 </div>
             </div>

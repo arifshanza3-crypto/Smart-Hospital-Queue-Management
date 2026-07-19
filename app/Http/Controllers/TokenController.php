@@ -18,14 +18,12 @@ class TokenController extends Controller
         Log::info('Token controller reached');
         Log::info($request->all());
 
-        // ✅ Phone validation removed
         $request->validate([
             'patient_name' => 'required|string|max:255',
             'email' => 'nullable|email|max:255',
-            'department' => 'required|in:OPD,Lab,Pharmacy,Radiology'
+            'department' => 'required|in:OPD,Pharmacy,Radiology'
         ]);
 
-        // ✅ Phone check removed - checking by email instead
         $existingToken = Token::where('email', $request->email)
                               ->whereIn('status', ['waiting', 'calling', 'serving'])
                               ->first();
@@ -55,7 +53,7 @@ class TokenController extends Controller
                 'token_number' => $tokenNumber,
                 'patient_id' => null,
                 'patient_name' => $request->patient_name,
-                'phone' => null,  // ✅ Phone null set karo
+                'phone' => null,
                 'email' => $request->email,
                 'department' => $request->department,
                 'type' => 'online',
@@ -79,6 +77,9 @@ class TokenController extends Controller
 
     public function getTokenStatus(Request $request)
     {
+        // ✅ Force timezone at function start
+        date_default_timezone_set('Asia/Karachi');
+        
         $tokenNumber = $request->query('token') ?? session('current_token');
 
         if (!$tokenNumber) {
@@ -115,6 +116,12 @@ class TokenController extends Controller
         $progress = $totalWaiting > 0 ? (($totalWaiting - $position + 1) / $totalWaiting * 100) : 100;
         $progress = min(100, max(0, $progress));
 
+        // ✅ Convert Carbon to Pakistan time using date()
+        $formattedTime = '--';
+        if ($token->created_at) {
+            $formattedTime = date('h:i A', strtotime($token->created_at));
+        }
+
         return response()->json([
             'success' => true,
             'token_number' => $token->token_number,
@@ -125,7 +132,7 @@ class TokenController extends Controller
             'estimated_time' => $estimatedTime,
             'serving' => $serving ? $serving->token_number : '--',
             'progress' => round($progress, 0),
-            'created_at' => $token->created_at ? $token->created_at->format('h:i A') : '--'
+            'created_at' => $formattedTime
         ]);
     }
 }
