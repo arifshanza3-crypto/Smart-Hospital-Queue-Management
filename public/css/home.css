@@ -160,6 +160,81 @@
 }
 
 /* ============================================ */
+/* SERVING TOKENS SECTION                      */
+/* ============================================ */
+.serving-tokens-section {
+    max-width: 800px;
+    margin: 0 auto 30px;
+}
+
+.section-title {
+    text-align: center;
+    color: #ffffff;
+    font-size: 18px;
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+}
+
+.serving-tokens-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.serving-token-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border-left: 4px solid #28a745;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.serving-token-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.serving-token-number {
+    font-size: 24px;
+    font-weight: 800;
+    color: #0b2e33;
+}
+
+.serving-token-details {
+    margin: 10px 0;
+}
+
+.serving-dept {
+    display: inline-block;
+    background: rgba(0, 212, 255, 0.1);
+    color: #0b2e33;
+    padding: 2px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.serving-patient {
+    display: block;
+    color: #7a8a8e;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.serving-status-badge {
+    display: inline-block;
+    background: #28a745;
+    color: white;
+    padding: 4px 16px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+/* ============================================ */
 /* TOKEN STATUS SECTION                        */
 /* ============================================ */
 .token-status-section {
@@ -401,6 +476,10 @@
     .departments-grid {
         grid-template-columns: 1fr 1fr;
     }
+    
+    .serving-tokens-grid {
+        grid-template-columns: 1fr 1fr;
+    }
 }
 
 @media (max-width: 480px) {
@@ -422,6 +501,10 @@
     }
     
     .departments-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .serving-tokens-grid {
         grid-template-columns: 1fr;
     }
     

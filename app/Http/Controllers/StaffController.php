@@ -26,7 +26,6 @@ class StaffController extends Controller
             $total = $tokens->count();
             $serving = Token::where('status', 'serving')->first();
             
-            // Calculate average wait time
             $avgWait = $this->calculateAverageWait($tokens);
 
             return response()->json([
@@ -105,6 +104,18 @@ class StaffController extends Controller
         return $waiting * $timePerPatient;
     }
 
+    // ✅ Department-wise time per patient
+    private function getDepartmentTime($department)
+    {
+        $times = [
+            'OPD' => 15,
+            'Pharmacy' => 15,
+            'Radiology' => 15,
+            'General' => 15
+        ];
+        return $times[$department] ?? 15;
+    }
+
     // ✅ Add Physical Patient
     public function addPatient(Request $request)
     {
@@ -116,7 +127,6 @@ class StaffController extends Controller
                 'department' => 'nullable|string|max:50'
             ]);
 
-            // Generate token number
             $lastToken = Token::orderBy('id', 'desc')->first();
             
             if ($lastToken && $lastToken->token_number) {
@@ -127,16 +137,13 @@ class StaffController extends Controller
                 $tokenNumber = 'TKN-001';
             }
 
-            // Department-wise position calculate
             $department = $request->department ?? 'OPD';
             $position = Token::where('department', $department)
                              ->whereIn('status', ['waiting', 'calling'])
                              ->count() + 1;
             
-            // Department-wise estimated time
             $estimatedTime = $position * $this->getDepartmentTime($department);
 
-            // Save token
             $token = Token::create([
                 'token_number' => $tokenNumber,
                 'patient_id' => null,
@@ -149,10 +156,9 @@ class StaffController extends Controller
                 'created_at' => now()
             ]);
 
-            // Recalculate positions for this department
             $this->recalculatePositions($department);
 
-            Log::info('Token created: ' . $token->id . ' - ' . $tokenNumber . ' - Position: ' . $position);
+            Log::info('Token created: ' . $token->id . ' - ' . $tokenNumber);
 
             return response()->json([
                 'success' => true,
@@ -176,33 +182,21 @@ class StaffController extends Controller
         }
     }
 
-    // ✅ Department-wise time per patient
-    private function getDepartmentTime($department)
-    {
-        $times = [
-            'OPD' => 15,
-            'Pharmacy' => 15,
-            'Radiology' => 15,
-            'General' => 15
-        ];
-        return $times[$department] ?? 15;
-    }
-
-    // ✅ Start Serving (Call Patient) - Status 'calling' set karo
+    // ✅ Start Serving (Call Patient) - MANUAL
     public function startServing(Request $request)
     {
         try {
             $token = Token::findOrFail($request->token_id);
             
-            // ✅ Check if already serving
-            $existingServing = Token::where('status', 'serving')->first();
-            if ($existingServing && $existingServing->id != $token->id) {
+            // ✅ Only 'waiting' tokens can be called
+            if ($token->status !== 'waiting') {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Another patient is already being served!'
+                    'message' => 'This token is not waiting!'
                 ], 400);
             }
             
+            // ✅ Set status to 'calling'
             $token->status = 'calling';
             $token->called_at = now();
             $token->save();
@@ -217,22 +211,21 @@ class StaffController extends Controller
         }
     }
 
-    // ✅ Patient Arrived - Start Service (Status 'serving' set karo)
+    // ✅ Patient Arrived - Start Service - MANUAL
     public function startService(Request $request)
     {
         try {
             $token = Token::findOrFail($request->token_id);
             
-            // Check if another patient is already serving
-            $existingServing = Token::where('status', 'serving')->first();
-            if ($existingServing && $existingServing->id != $token->id) {
+            // ✅ Only 'calling' tokens can be served
+            if ($token->status !== 'calling') {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Another patient is already being served!'
+                    'message' => 'This token is not in calling status!'
                 ], 400);
             }
             
-            // ✅ Status 'serving' set karo
+            // ✅ Set status to 'serving'
             $token->status = 'serving';
             $token->called_at = now();
             $token->save();
@@ -247,18 +240,28 @@ class StaffController extends Controller
         }
     }
 
-    // ✅ Complete Service
+    // ✅ Complete Service - MANUAL
     public function completeService(Request $request)
     {
         try {
             $token = Token::findOrFail($request->token_id);
             $department = $token->department;
+            
+            // ✅ Only 'serving' tokens can be completed
+            if ($token->status !== 'serving') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'This token is not being served!'
+                ], 400);
+            }
+            
             $token->status = 'completed';
             $token->completed_at = now();
             $token->save();
 
             $this->recalculatePositions($department);
-            $this->callNext();
+            
+            // ❌ AUTO-CALL REMOVED
 
             return response()->json(['success' => true]);
         } catch (\Exception $e) {
@@ -270,21 +273,55 @@ class StaffController extends Controller
         }
     }
 
-    // ✅ Cancel Token
+    // ✅ Cancel Token - MANUAL
     public function cancelToken(Request $request)
     {
         try {
             $token = Token::findOrFail($request->token_id);
             $department = $token->department;
+            
+            // ✅ Only 'waiting' or 'calling' tokens can be cancelled
+            if (!in_array($token->status, ['waiting', 'calling'])) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'This token cannot be cancelled!'
+                ], 400);
+            }
+            
             $token->status = 'cancelled';
             $token->save();
 
             $this->recalculatePositions($department);
-            $this->callNext();
+            
+            // ❌ AUTO-CALL REMOVED
 
             return response()->json(['success' => true]);
         } catch (\Exception $e) {
             Log::error('Cancel token error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    // ✅ Cancel Patient (Timer Timeout) - MANUAL
+    public function cancelPatient(Request $request)
+    {
+        try {
+            $token = Token::findOrFail($request->token_id);
+            $department = $token->department;
+            
+            $token->status = 'missed';
+            $token->save();
+
+            $this->recalculatePositions($department);
+            
+            // ❌ AUTO-CALL REMOVED
+
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            Log::error('Cancel patient error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage()
@@ -315,65 +352,7 @@ class StaffController extends Controller
         Log::info('Recalculated ' . $tokens->count() . ' tokens for department: ' . $department);
     }
 
-    // ✅ Call Next Patient
-    public function callNext()
-    {
-        try {
-            // Complete any serving patient
-            $serving = Token::where('status', 'serving')->first();
-            if ($serving) {
-                $department = $serving->department;
-                $serving->status = 'completed';
-                $serving->completed_at = now();
-                $serving->save();
-                
-                $this->recalculatePositions($department);
-            }
-
-            // Call next waiting patient
-            $next = Token::where('status', 'waiting')
-                         ->orderBy('position', 'asc')
-                         ->first();
-
-            if ($next) {
-                $next->status = 'calling';
-                $next->called_at = now();
-                $next->save();
-
-                return response()->json(['success' => true, 'patient' => $next]);
-            }
-
-            return response()->json(['success' => false, 'message' => 'No patients waiting']);
-        } catch (\Exception $e) {
-            Log::error('Call next error: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    // ✅ Cancel Missed Patient (Timer Timeout)
-    public function cancelPatient(Request $request)
-    {
-        try {
-            $token = Token::findOrFail($request->token_id);
-            $department = $token->department;
-            $token->status = 'missed';
-            $token->save();
-
-            $this->recalculatePositions($department);
-            $this->callNext();
-
-            return response()->json(['success' => true]);
-        } catch (\Exception $e) {
-            Log::error('Cancel patient error: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage()
-            ], 500);
-        }
-    }
+    // ❌ callNext() - COMPLETELY REMOVED (No auto-call anywhere)
 
     // ✅ Set Global Time
     public function setGlobalTime(Request $request)

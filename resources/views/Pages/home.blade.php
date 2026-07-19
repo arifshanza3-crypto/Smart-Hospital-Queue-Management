@@ -56,32 +56,28 @@
 <section class="token-status-section">
     <div class="container">
         <div class="token-status-wrapper">
-            @php
-                $tokenNumber = session('current_token');
-                $userToken = null;
-                if ($tokenNumber) {
-                    $userToken = \App\Models\Token::where('token_number', $tokenNumber)
-                                                  ->whereIn('status', ['waiting', 'calling', 'serving'])
-                                                  ->first();
-                }
-                
-                // All departments status
-                $departments = ['OPD', 'Pharmacy', 'Radiology'];
-                $allDepartments = [];
-                foreach ($departments as $dept) {
-                    $allDepartments[$dept] = [
-                        'total' => \App\Models\Token::where('department', $dept)
-                                                    ->whereIn('status', ['waiting', 'calling', 'serving'])
-                                                    ->count(),
-                        'serving' => \App\Models\Token::where('department', $dept)
-                                                      ->where('status', 'serving')
-                                                      ->first()
-                    ];
-                }
-            @endphp
+            
+            {{-- ✅ All Active Serving Tokens --}}
+            @if(isset($servingTokens) && $servingTokens->count() > 0)
+                <div class="serving-tokens-section">
+                    <h4 class="section-title">🟢 Currently Being Served</h4>
+                    <div class="serving-tokens-grid">
+                        @foreach($servingTokens as $token)
+                        <div class="serving-token-card">
+                            <div class="serving-token-number">{{ $token->token_number }}</div>
+                            <div class="serving-token-details">
+                                <span class="serving-dept">{{ $token->department }}</span>
+                                <span class="serving-patient">{{ $token->patient_name ?? 'N/A' }}</span>
+                            </div>
+                            <div class="serving-status-badge">SERVING</div>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
 
-            {{-- ✅ Only show if user has active token --}}
-            @if($userToken)
+            {{-- ✅ User's Own Active Token --}}
+            @if(isset($userToken) && $userToken)
                 <div class="user-token-card">
                     <div class="token-card-header">
                         <span class="token-icon">✅</span>
