@@ -68,13 +68,7 @@
                             </div>
                         </div>
 
-                        {{-- Progress Bar --}}
-                        <div class="progress-container">
-                            <div class="progress-bar">
-                                <div class="progress-fill" id="patientProgress" style="width: 0%"></div>
-                            </div>
-                            <span class="progress-text" id="progressText">0%</span>
-                        </div>
+                        {{-- ❌ Progress Bar Removed --}}
 
                         {{-- Buttons --}}
                         <div class="token-actions">

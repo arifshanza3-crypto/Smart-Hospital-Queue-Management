@@ -88,10 +88,11 @@ body {
 .stat-item h2 {
     margin: 10px 0 0 0;
     font-size: 1.8rem;
+    min-height: 40px;
 }
 
 /* -----------------------------------------------------------
-   3.1 NOW SERVING - MULTIPLE TOKENS STYLE
+   3.1 NOW SERVING - BETTER STYLE
 ----------------------------------------------------------- */
 .stat-serving-wrapper {
     display: flex;
@@ -103,12 +104,18 @@ body {
 .stat-serving-token {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
-    background: rgba(0, 212, 255, 0.1);
-    border: 1px solid rgba(0, 212, 255, 0.12);
-    padding: 3px 10px;
-    border-radius: 6px;
+    gap: 6px;
+    background: rgba(0, 212, 255, 0.08);
+    padding: 3px 12px 3px 10px;
+    border-radius: 16px;
     font-size: 13px;
+    border: 1px solid rgba(0, 212, 255, 0.06);
+    transition: all 0.3s ease;
+}
+
+.stat-serving-token:hover {
+    background: rgba(0, 212, 255, 0.14);
+    border-color: rgba(0, 212, 255, 0.15);
 }
 
 .stat-serving-token .token {
@@ -119,21 +126,44 @@ body {
 .stat-serving-token .dept {
     font-size: 10px;
     color: rgba(255, 255, 255, 0.4);
-    background: rgba(255, 255, 255, 0.05);
-    padding: 1px 6px;
-    border-radius: 3px;
+}
+
+.stat-serving-token .serving-icon {
+    width: 6px;
+    height: 6px;
+    background: #28a745;
+    border-radius: 50%;
+    display: inline-block;
+    animation: pulse-dot 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
 }
 
 .stat-serving-single {
     font-size: 18px;
     font-weight: 700;
     color: #00d4ff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .stat-serving-single .dept {
     font-size: 13px;
     font-weight: 400;
     color: rgba(255, 255, 255, 0.4);
+}
+
+.stat-serving-single .serving-icon {
+    width: 8px;
+    height: 8px;
+    background: #28a745;
+    border-radius: 50%;
+    display: inline-block;
+    animation: pulse-dot 1.5s ease-in-out infinite;
 }
 
 .stat-serving-empty {

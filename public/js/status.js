@@ -57,12 +57,7 @@
         // Update status badge
         updateStatusBadge(data.status || 'waiting');
 
-        // Update progress
-        const progress = data.progress || 0;
-        const progressFill = document.getElementById('patientProgress');
-        const progressText = document.getElementById('progressText');
-        if (progressFill) progressFill.style.width = progress + '%';
-        if (progressText) progressText.textContent = progress + '%';
+        // ❌ Progress Bar Code Removed
 
         // Update last updated time
         const lastUpdated = document.getElementById('lastUpdated');
