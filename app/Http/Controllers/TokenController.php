@@ -98,12 +98,23 @@ class TokenController extends Controller
             ]);
         }
 
+        // ✅ Calculate current position
         $position = Token::where('department', $token->department)
                          ->whereIn('status', ['waiting', 'calling'])
                          ->where('created_at', '<', $token->created_at)
                          ->count() + 1;
 
-        $estimatedTime = $position * 15;
+        // ✅ Calculate estimated wait time based on position and time per patient
+        $timePerPatient = 15; // 15 minutes per patient
+        $estimatedTime = $position * $timePerPatient;
+
+        // ✅ Calculate how much time has passed since token creation
+        $createdAt = $token->created_at;
+        $now = now();
+        $minutesPassed = $createdAt->diffInMinutes($now);
+
+        // ✅ Remaining wait time = estimated time - minutes passed
+        $remainingTime = max(0, $estimatedTime - $minutesPassed);
 
         $serving = Token::where('department', $token->department)
                         ->where('status', 'serving')
@@ -129,7 +140,7 @@ class TokenController extends Controller
             'department' => $token->department,
             'status' => $token->status,
             'position' => $position,
-            'estimated_time' => $estimatedTime,
+            'estimated_time' => $remainingTime, // ✅ Dynamic remaining time
             'serving' => $serving ? $serving->token_number : '--',
             'progress' => round($progress, 0),
             'created_at' => $formattedTime

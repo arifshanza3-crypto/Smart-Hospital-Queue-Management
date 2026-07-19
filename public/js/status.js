@@ -52,11 +52,15 @@
         setElementText('patientName', data.patient_name || '--');
         setElementText('patientDepartment', data.department || '--');
         setElementText('patientPosition', '#' + (data.position || '--'));
-        setElementText('patientWaitTime', data.estimated_time ? data.estimated_time + 'm' : '--');
+        
+        // ✅ Dynamic wait time display
+        const waitTime = data.estimated_time || 0;
+        const waitTimeText = waitTime > 0 ? Math.ceil(waitTime) + 'm' : 'Now';
+        setElementText('patientWaitTime', waitTimeText);
+        
         setElementText('patientServing', data.serving || '--');
 
         // ❌ Generated time ko update nahi karein (fix rakhna hai)
-        // Time sirf page load par ek baar set ho chuka hai
 
         // Update status badge
         updateStatusBadge(data.status || 'waiting');
