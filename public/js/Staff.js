@@ -1,7 +1,6 @@
 let timerInterval = null;
 let currentToken = null;
 let timeLeft = 300;
-let currentDepartment = 'all';
 const BASE_URL = '/staff';
 
 // ========== CSRF TOKEN HELPER ==========
@@ -23,23 +22,6 @@ function showToast(message, type = 'success') {
     toast.innerHTML = message;
     document.body.appendChild(toast);
     setTimeout(() => toast.remove(), 3000);
-}
-
-// ========== DEPARTMENT SWITCH ==========
-function switchDepartment(dept) {
-    console.log('Switching to department:', dept);
-    currentDepartment = dept;
-    
-    document.querySelectorAll('.dept-tab').forEach(tab => {
-        tab.style.background = 'rgba(255,255,255,0.1)';
-        tab.style.color = 'white';
-        if (tab.dataset.dept === dept) {
-            tab.style.background = '#00d4ff';
-            tab.style.color = '#0b2e33';
-        }
-    });
-    
-    loadQueue();
 }
 
 // ========== TIMER FUNCTIONS ==========
@@ -107,7 +89,6 @@ function cancelPatientAndCallNext() {
 
 // ========== PATIENT ARRIVED - START SERVICE ==========
 function patientArrived() {
-    // Clear timer
     clearInterval(timerInterval);
     document.getElementById('timerModal').style.display = 'none';
     
@@ -139,9 +120,6 @@ function patientArrived() {
 // ========== QUEUE FUNCTIONS ==========
 function loadQueue() {
     let url = BASE_URL + '/get-queue';
-    if (currentDepartment !== 'all') {
-        url = BASE_URL + '/get-department-queue?dept=' + encodeURIComponent(currentDepartment);
-    }
     
     console.log('Loading queue from:', url);
     
@@ -236,10 +214,7 @@ function updateQueueTable(queue) {
 
 function updateStats(total, serving, avgWait) {
     document.getElementById('stat-total').innerText = total || 0;
-    
-    // ✅ Now serving can show multiple tokens with department names
     document.getElementById('stat-serving').innerHTML = serving || '--';
-    
     document.getElementById('stat-avg-time').innerText = (avgWait || 0) + 'm';
 }
 
@@ -331,10 +306,8 @@ function submitPatient() {
     console.log('===== SUBMIT PATIENT CALLED =====');
     
     const name = document.getElementById('p_name').value.trim();
-    const department = document.getElementById('p_department')?.value || 'OPD';
     
     console.log('Name:', name);
-    console.log('Department:', department);
     
     if (!name) {
         showToast('Please enter patient name', 'error');
@@ -358,8 +331,7 @@ function submitPatient() {
             'Accept': 'application/json'
         },
         body: JSON.stringify({
-            name: name,
-            department: department
+            name: name
         })
     })
     .then(response => {
@@ -481,13 +453,6 @@ style.textContent = `
     .status-missed { background: #dc3545; color: #fff; }
     .status-cancelled { background: #6c757d; color: #fff; }
     .badge { background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 4px; font-size: 11px; }
-    .dept-tab {
-        transition: all 0.3s ease;
-    }
-    .dept-tab:hover {
-        transform: scale(1.02);
-        opacity: 0.9;
-    }
     .btn-success {
         transition: all 0.3s ease;
     }

@@ -8,33 +8,28 @@ use Illuminate\Support\Facades\Log;
 
 class StaffController extends Controller
 {
-    // ✅ Staff Dashboard
     public function dashboard()
     {
         return view('Pages.Staff');
     }
 
-    // ✅ Get Combined Queue (Guest + Physical)
+    // ✅ Simple queue - no department filter
     public function getQueue()
     {
         try {
             $tokens = Token::whereIn('status', ['waiting', 'calling', 'serving'])
-                           ->orderBy('department', 'asc')
                            ->orderBy('position', 'asc')
                            ->get();
 
             $total = $tokens->count();
             
-            // ✅ Get ALL serving tokens from all departments
             $servingTokens = Token::where('status', 'serving')
-                                  ->orderBy('department', 'asc')
                                   ->get();
             
-            // ✅ Format serving tokens with department names
             $servingText = '';
             if ($servingTokens->count() > 0) {
                 $servingText = $servingTokens->map(function($token) {
-                    return $token->token_number . ' (' . $token->department . ')';
+                    return $token->token_number;
                 })->implode(', ');
             } else {
                 $servingText = '--';
@@ -58,46 +53,76 @@ class StaffController extends Controller
         }
     }
 
-    // ✅ Get Department-wise Queue
-    public function getDepartmentQueue(Request $request)
+    // ✅ Add Physical Patient - Simple (No Department)
+    public function addPatient(Request $request)
     {
+        Log::info('Add patient called', $request->all());
+
         try {
-            $department = $request->query('dept');
+            $request->validate([
+                'name' => 'required|string|max:255',
+            ]);
+
+            $lastToken = Token::orderBy('id', 'desc')->first();
             
-            Log::info('Department queue requested: ' . $department);
-            
-            if (!$department || $department === 'all') {
-                return $this->getQueue();
+            if ($lastToken && $lastToken->token_number) {
+                $lastNumber = intval(substr($lastToken->token_number, 4));
+                $newNumber = $lastNumber + 1;
+                $tokenNumber = 'TKN-' . str_pad($newNumber, 3, '0', STR_PAD_LEFT);
+            } else {
+                $tokenNumber = 'TKN-001';
             }
 
-            $tokens = Token::where('department', $department)
-                           ->whereIn('status', ['waiting', 'calling', 'serving'])
-                           ->orderBy('position', 'asc')
-                           ->get();
+            // ✅ Simple position - global queue
+            $position = Token::whereIn('status', ['waiting', 'calling'])->count() + 1;
+            
+            $estimatedTime = $position * 15;
 
-            $total = $tokens->count();
-            
-            $servingToken = Token::where('department', $department)
-                                 ->where('status', 'serving')
-                                 ->first();
-            
-            $servingText = $servingToken ? $servingToken->token_number : '--';
-            $avgWait = $this->calculateDepartmentWait($tokens, $department);
+            $token = Token::create([
+                'token_number' => $tokenNumber,
+                'patient_id' => null,
+                'patient_name' => $request->name,
+                'department' => 'General',
+                'status' => 'waiting',
+                'type' => 'physical',
+                'position' => $position,
+                'estimated_time' => $estimatedTime,
+                'created_at' => now()
+            ]);
+
+            $this->recalculatePositions();
+
+            Log::info('Token created: ' . $token->id . ' - ' . $tokenNumber);
 
             return response()->json([
                 'success' => true,
-                'queue' => $tokens,
-                'total' => $total,
-                'serving' => $servingText,
-                'avgWait' => $avgWait,
-                'department' => $department
+                'message' => 'Patient added to queue!',
+                'token_number' => $tokenNumber,
+                'token' => $token
             ]);
+
         } catch (\Exception $e) {
-            Log::error('Get department queue error: ' . $e->getMessage());
+            Log::error('Add patient error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => 'Error adding patient: ' . $e->getMessage()
             ], 500);
+        }
+    }
+
+    // ✅ Simple recalculate positions
+    private function recalculatePositions()
+    {
+        $tokens = Token::whereIn('status', ['waiting', 'calling'])
+                       ->orderBy('created_at', 'asc')
+                       ->get();
+
+        $position = 1;
+        foreach ($tokens as $token) {
+            $token->position = $position;
+            $token->estimated_time = $position * 15;
+            $token->save();
+            $position++;
         }
     }
 
@@ -113,95 +138,7 @@ class StaffController extends Controller
         return round($totalWait / $tokens->count());
     }
 
-    // ✅ Calculate department-wise wait time
-    private function calculateDepartmentWait($tokens, $department)
-    {
-        if ($tokens->isEmpty()) return 0;
-        
-        $timePerPatient = $this->getDepartmentTime($department);
-        $waiting = $tokens->where('status', 'waiting')->count();
-        return $waiting * $timePerPatient;
-    }
-
-    // ✅ Department-wise time per patient
-    private function getDepartmentTime($department)
-    {
-        $times = [
-            'OPD' => 15,
-            'Pharmacy' => 15,
-            'Radiology' => 15,
-            'General' => 15
-        ];
-        return $times[$department] ?? 15;
-    }
-
-    // ✅ Add Physical Patient
-    public function addPatient(Request $request)
-    {
-        Log::info('Add patient called', $request->all());
-
-        try {
-            $request->validate([
-                'name' => 'required|string|max:255',
-                'department' => 'nullable|string|max:50'
-            ]);
-
-            $lastToken = Token::orderBy('id', 'desc')->first();
-            
-            if ($lastToken && $lastToken->token_number) {
-                $lastNumber = intval(substr($lastToken->token_number, 4));
-                $newNumber = $lastNumber + 1;
-                $tokenNumber = 'TKN-' . str_pad($newNumber, 3, '0', STR_PAD_LEFT);
-            } else {
-                $tokenNumber = 'TKN-001';
-            }
-
-            $department = $request->department ?? 'OPD';
-            $position = Token::where('department', $department)
-                             ->whereIn('status', ['waiting', 'calling'])
-                             ->count() + 1;
-            
-            $estimatedTime = $position * $this->getDepartmentTime($department);
-
-            $token = Token::create([
-                'token_number' => $tokenNumber,
-                'patient_id' => null,
-                'patient_name' => $request->name,
-                'department' => $department,
-                'status' => 'waiting',
-                'type' => 'physical',
-                'position' => $position,
-                'estimated_time' => $estimatedTime,
-                'created_at' => now()
-            ]);
-
-            $this->recalculatePositions($department);
-
-            Log::info('Token created: ' . $token->id . ' - ' . $tokenNumber);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Patient added to queue!',
-                'token_number' => $tokenNumber,
-                'token' => $token
-            ]);
-
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            Log::error('Validation error: ' . json_encode($e->errors()));
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation error: ' . json_encode($e->errors())
-            ], 422);
-        } catch (\Exception $e) {
-            Log::error('Add patient error: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Error adding patient: ' . $e->getMessage()
-            ], 500);
-        }
-    }
-
-    // ✅ Start Serving (Call Patient) - MANUAL
+    // ✅ Start Serving (Call Patient)
     public function startServing(Request $request)
     {
         try {
@@ -228,7 +165,7 @@ class StaffController extends Controller
         }
     }
 
-    // ✅ Patient Arrived - Start Service - MANUAL
+    // ✅ Patient Arrived - Start Service
     public function startService(Request $request)
     {
         try {
@@ -255,25 +192,16 @@ class StaffController extends Controller
         }
     }
 
-    // ✅ Complete Service - MANUAL
+    // ✅ Complete Service
     public function completeService(Request $request)
     {
         try {
             $token = Token::findOrFail($request->token_id);
-            $department = $token->department;
-            
-            if ($token->status !== 'serving') {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'This token is not being served!'
-                ], 400);
-            }
-            
             $token->status = 'completed';
             $token->completed_at = now();
             $token->save();
 
-            $this->recalculatePositions($department);
+            $this->recalculatePositions();
 
             return response()->json(['success' => true]);
         } catch (\Exception $e) {
@@ -285,24 +213,15 @@ class StaffController extends Controller
         }
     }
 
-    // ✅ Cancel Token - MANUAL
+    // ✅ Cancel Token
     public function cancelToken(Request $request)
     {
         try {
             $token = Token::findOrFail($request->token_id);
-            $department = $token->department;
-            
-            if (!in_array($token->status, ['waiting', 'calling'])) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'This token cannot be cancelled!'
-                ], 400);
-            }
-            
             $token->status = 'cancelled';
             $token->save();
 
-            $this->recalculatePositions($department);
+            $this->recalculatePositions();
 
             return response()->json(['success' => true]);
         } catch (\Exception $e) {
@@ -314,17 +233,15 @@ class StaffController extends Controller
         }
     }
 
-    // ✅ Cancel Patient (Timer Timeout) - MANUAL
+    // ✅ Cancel Patient (Timer Timeout)
     public function cancelPatient(Request $request)
     {
         try {
             $token = Token::findOrFail($request->token_id);
-            $department = $token->department;
-            
             $token->status = 'missed';
             $token->save();
 
-            $this->recalculatePositions($department);
+            $this->recalculatePositions();
 
             return response()->json(['success' => true]);
         } catch (\Exception $e) {
@@ -336,31 +253,6 @@ class StaffController extends Controller
         }
     }
 
-    // ✅ Recalculate positions for a department
-    private function recalculatePositions($department)
-    {
-        Log::info('Recalculating positions for department: ' . $department);
-        
-        $timePerPatient = $this->getDepartmentTime($department);
-        
-        $tokens = Token::where('department', $department)
-                       ->whereIn('status', ['waiting', 'calling'])
-                       ->orderBy('created_at', 'asc')
-                       ->get();
-
-        $position = 1;
-        foreach ($tokens as $token) {
-            $token->position = $position;
-            $token->estimated_time = $position * $timePerPatient;
-            $token->save();
-            $position++;
-        }
-        
-        Log::info('Recalculated ' . $tokens->count() . ' tokens for department: ' . $department);
-    }
-
-    // ❌ callNext() - COMPLETELY REMOVED
-
     // ✅ Set Global Time
     public function setGlobalTime(Request $request)
     {
@@ -371,48 +263,6 @@ class StaffController extends Controller
             return response()->json(['success' => true]);
         } catch (\Exception $e) {
             Log::error('Set global time error: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    // ✅ Get Department Stats
-    public function getDepartmentStats()
-    {
-        try {
-            $departments = ['OPD', 'Pharmacy', 'Radiology'];
-            $stats = [];
-
-            foreach ($departments as $dept) {
-                $waiting = Token::where('department', $dept)
-                                ->where('status', 'waiting')
-                                ->count();
-                $calling = Token::where('department', $dept)
-                                ->where('status', 'calling')
-                                ->count();
-                $serving = Token::where('department', $dept)
-                                ->where('status', 'serving')
-                                ->first();
-                $total = Token::where('department', $dept)
-                              ->whereIn('status', ['waiting', 'calling', 'serving'])
-                              ->count();
-
-                $stats[$dept] = [
-                    'waiting' => $waiting,
-                    'calling' => $calling,
-                    'serving' => $serving ? $serving->token_number : '--',
-                    'total' => $total,
-                    'timePerPatient' => $this->getDepartmentTime($dept)
-                ];
-            }
-
-            return response()->json([
-                'success' => true,
-                'stats' => $stats
-            ]);
-        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage()

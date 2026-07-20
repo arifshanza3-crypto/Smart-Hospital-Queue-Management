@@ -33,22 +33,12 @@
                     <input type="text" name="patient_name" class="form-control token-input" placeholder="Enter your full name" required>
                 </div>
 
-                {{-- ❌ Phone Number Field Removed --}}
-
                 <div class="input-container">
                     <label class="input-label">Email</label>
                     <input type="email" name="email" class="form-control token-input" placeholder="Enter your email">
                 </div>
 
-                <div class="input-container">
-                    <label class="input-label">Department</label>
-                    <select name="department" class="form-control token-input" required>
-                        <option value="" disabled selected>Select Department</option>
-                        <option value="OPD">OPD</option>
-                        <option value="Pharmacy">Pharmacy</option>
-                        <option value="Radiology">Radiology</option>
-                    </select>
-                </div>
+                {{-- ❌ Department Field Removed --}}
 
                 <button type="submit" class="btn-token-generate">Generate Token</button>
             </form>
@@ -59,11 +49,8 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.querySelector('form');
-    const emailInput = document.querySelector('input[name="email"]');
 
-    // Optional: Email validation on submit
     form.addEventListener('submit', function(e) {
-        // Email is optional, no validation needed
         console.log('Form submitted');
     });
 });

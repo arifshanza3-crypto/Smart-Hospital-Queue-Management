@@ -18,10 +18,10 @@ class TokenController extends Controller
         Log::info('Token controller reached');
         Log::info($request->all());
 
+        // ✅ Department validation removed
         $request->validate([
             'patient_name' => 'required|string|max:255',
             'email' => 'nullable|email|max:255',
-            'department' => 'required|in:OPD,Pharmacy,Radiology'
         ]);
 
         $existingToken = Token::where('email', $request->email)
@@ -42,9 +42,8 @@ class TokenController extends Controller
             $tokenNumber = 'TKN-001';
         }
 
-        $position = Token::where('department', $request->department)
-                         ->whereIn('status', ['waiting', 'calling'])
-                         ->count() + 1;
+        // ✅ Simple position - no department filter
+        $position = Token::whereIn('status', ['waiting', 'calling'])->count() + 1;
 
         $estimatedTime = $position * 15;
 
@@ -55,7 +54,7 @@ class TokenController extends Controller
                 'patient_name' => $request->patient_name,
                 'phone' => null,
                 'email' => $request->email,
-                'department' => $request->department,
+                'department' => 'General', // ✅ Default department
                 'type' => 'online',
                 'status' => 'waiting',
                 'position' => $position,
@@ -77,7 +76,6 @@ class TokenController extends Controller
 
     public function getTokenStatus(Request $request)
     {
-        // ✅ Force timezone at function start
         date_default_timezone_set('Asia/Karachi');
         
         $tokenNumber = $request->query('token') ?? session('current_token');
@@ -98,36 +96,26 @@ class TokenController extends Controller
             ]);
         }
 
-        // ✅ Calculate current position
-        $position = Token::where('department', $token->department)
-                         ->whereIn('status', ['waiting', 'calling'])
+        // ✅ Simple position - no department filter
+        $position = Token::whereIn('status', ['waiting', 'calling'])
                          ->where('created_at', '<', $token->created_at)
                          ->count() + 1;
 
-        // ✅ Calculate estimated wait time based on position and time per patient
-        $timePerPatient = 15; // 15 minutes per patient
+        $timePerPatient = 15;
         $estimatedTime = $position * $timePerPatient;
 
-        // ✅ Calculate how much time has passed since token creation
         $createdAt = $token->created_at;
         $now = now();
         $minutesPassed = $createdAt->diffInMinutes($now);
-
-        // ✅ Remaining wait time = estimated time - minutes passed
         $remainingTime = max(0, $estimatedTime - $minutesPassed);
 
-        $serving = Token::where('department', $token->department)
-                        ->where('status', 'serving')
-                        ->first();
+        $serving = Token::where('status', 'serving')->first();
 
-        $totalWaiting = Token::where('department', $token->department)
-                             ->whereIn('status', ['waiting', 'calling'])
-                             ->count();
+        $totalWaiting = Token::whereIn('status', ['waiting', 'calling'])->count();
         
         $progress = $totalWaiting > 0 ? (($totalWaiting - $position + 1) / $totalWaiting * 100) : 100;
         $progress = min(100, max(0, $progress));
 
-        // ✅ Convert Carbon to Pakistan time using date()
         $formattedTime = '--';
         if ($token->created_at) {
             $formattedTime = date('h:i A', strtotime($token->created_at));
@@ -137,10 +125,10 @@ class TokenController extends Controller
             'success' => true,
             'token_number' => $token->token_number,
             'patient_name' => $token->patient_name ?? 'N/A',
-            'department' => $token->department,
+            'department' => $token->department ?? 'General',
             'status' => $token->status,
             'position' => $position,
-            'estimated_time' => $remainingTime, // ✅ Dynamic remaining time
+            'estimated_time' => $remainingTime,
             'serving' => $serving ? $serving->token_number : '--',
             'progress' => round($progress, 0),
             'created_at' => $formattedTime
