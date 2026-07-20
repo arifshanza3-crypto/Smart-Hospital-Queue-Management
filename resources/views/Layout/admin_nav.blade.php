@@ -117,11 +117,6 @@
                     <i class="fas fa-chevron-right item-arrow"></i>
                 </a>
 
-                <a href="#" class="dropdown-item">
-                    <i class="fas fa-question-circle"></i>
-                    <span>Help & Support</span>
-                    <i class="fas fa-chevron-right item-arrow"></i>
-                </a>
 
                 <div class="dropdown-divider"></div>
 
