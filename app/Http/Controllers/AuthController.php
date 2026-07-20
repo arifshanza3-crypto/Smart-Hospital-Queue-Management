@@ -19,7 +19,7 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        // Admin login
+        // Admin login (using email + password)
         if ($request->role === 'admin') {
             $credentials = $request->validate([
                 'email' => 'required|email',
@@ -32,10 +32,16 @@ class AuthController extends Controller
                 $request->session()->regenerate();
                 $user = Auth::user();
                 
-                Log::info('Admin Login Success:', ['user' => $user->email, 'role' => $user->role]);
+                Log::info('Login Success:', ['user' => $user->email, 'role' => $user->role]);
                 
+                // ✅ ROLE BASED REDIRECTION - ADMIN
                 if ($user->role === 'admin') {
-                    return redirect('/admin/doctor-management')->with('success', 'Welcome back, ' . ($user->name ?? $user->full_name) . '!');
+                    return redirect('/admin/doctor-management')->with('success', 'Welcome back, ' . $user->name . '!');
+                }
+                
+                // ✅ ROLE BASED REDIRECTION - USER (Regular)
+                if ($user->role === 'user' || $user->role === 'patient') {
+                    return redirect('/')->with('success', 'Welcome back, ' . $user->name . '!');
                 }
                 
                 return redirect('/');
@@ -48,7 +54,7 @@ class AuthController extends Controller
             ])->onlyInput('email');
         }
 
-        // Staff login
+        // Staff login (using employee_id)
         if ($request->role === 'staff') {
             $request->validate([
                 'employee_id' => 'required|string',
@@ -57,15 +63,30 @@ class AuthController extends Controller
 
             Log::info('Staff Login Attempt:', ['employee_id' => $request->employee_id]);
 
+            // Find user by employee_id
             $user = User::where('employee_id', $request->employee_id)->first();
 
-            if ($user && Hash::check($request->password, $user->password)) {
+            if ($user) {
+                Log::info('Staff found:', ['name' => $user->name, 'role' => $user->role]);
+            } else {
+                Log::error('Staff not found with employee_id: ' . $request->employee_id);
+                return back()->withErrors([
+                    'employee_id' => 'Staff not found with this Employee ID.',
+                ])->onlyInput('employee_id');
+            }
+
+            if (Hash::check($request->password, $user->password)) {
                 Auth::login($user);
                 $request->session()->regenerate();
                 
                 Log::info('Staff Login Success:', ['employee_id' => $user->employee_id]);
                 
-                return redirect('/staff/dashboard')->with('success', 'Welcome back, ' . ($user->name ?? $user->full_name) . '!');
+                // ✅ ROLE BASED REDIRECTION - STAFF
+                if ($user->role === 'staff') {
+                    return redirect('/staff/dashboard')->with('success', 'Welcome back, ' . $user->name . '!');
+                }
+                
+                return redirect('/');
             }
 
             Log::error('Staff Login Failed:', ['employee_id' => $request->employee_id]);
@@ -73,6 +94,41 @@ class AuthController extends Controller
             return back()->withErrors([
                 'employee_id' => 'Invalid staff credentials.',
             ])->onlyInput('employee_id');
+        }
+
+        // ✅ USER LOGIN (Regular User - Using email + password)
+        if ($request->role === 'user') {
+            $credentials = $request->validate([
+                'email' => 'required|email',
+                'password' => 'required',
+            ]);
+
+            Log::info('User Login Attempt:', ['email' => $request->email]);
+
+            if (Auth::attempt($credentials)) {
+                $request->session()->regenerate();
+                $user = Auth::user();
+                
+                Log::info('User Login Success:', ['user' => $user->email, 'role' => $user->role]);
+                
+                // ✅ ROLE BASED REDIRECTION - USER
+                if ($user->role === 'user' || $user->role === 'patient') {
+                    return redirect('/')->with('success', 'Welcome back, ' . $user->name . '!');
+                }
+                
+                // Agar user admin hai toh admin panel
+                if ($user->role === 'admin') {
+                    return redirect('/admin/doctor-management')->with('success', 'Welcome back, ' . $user->name . '!');
+                }
+                
+                return redirect('/');
+            }
+
+            Log::error('User Login Failed:', ['email' => $request->email]);
+
+            return back()->withErrors([
+                'email' => 'Invalid credentials.',
+            ])->onlyInput('email');
         }
 
         return back()->withErrors(['error' => 'Invalid login attempt.']);
@@ -85,23 +141,53 @@ class AuthController extends Controller
 
     public function signup(Request $request)
     {
-        $request->validate([
-            'full_name' => 'required|string|max:255',
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'full_name' => 'nullable|string|max:255',
             'email' => 'required|email|unique:users',
-            'employee_id' => 'required|unique:users',
             'password' => 'required|min:6|confirmed',
+            'phone' => 'nullable|string|max:20',
+            'role' => 'required|in:user,patient,staff,admin'
         ]);
 
-        $user = User::create([
-            'full_name' => $request->full_name,
-            'email' => $request->email,
-            'employee_id' => $request->employee_id,
-            'password' => Hash::make($request->password),
-            'role' => 'staff',
-            'status' => 'pending'
-        ]);
+        try {
+            // ✅ If user selects staff, they need employee_id
+            if ($request->role === 'staff') {
+                $request->validate([
+                    'employee_id' => 'required|unique:users,employee_id',
+                ]);
+            }
 
-        return redirect('/login')->with('success', 'Registration successful! Waiting for admin approval.');
+            $user = User::create([
+                'name' => $request->name,
+                'full_name' => $request->full_name ?? $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'phone' => $request->phone,
+                'role' => $request->role,
+                'employee_id' => $request->employee_id ?? null,
+                'status' => ($request->role === 'admin' || $request->role === 'staff') ? 'pending' : 'active',
+                'department' => $request->department ?? null,
+            ]);
+
+            Log::info('User registered:', ['email' => $user->email, 'role' => $user->role]);
+
+            // ✅ Auto login after signup
+            Auth::login($user);
+
+            // ✅ ROLE BASED REDIRECTION AFTER SIGNUP
+            if ($user->role === 'admin') {
+                return redirect('/admin/doctor-management')->with('success', 'Welcome Admin!');
+            } elseif ($user->role === 'staff') {
+                return redirect('/staff/dashboard')->with('success', 'Welcome Staff! Your account is pending admin approval.');
+            } else {
+                return redirect('/')->with('success', 'Account created successfully! Welcome to Smart Queue.');
+            }
+
+        } catch (\Exception $e) {
+            Log::error('Signup error: ' . $e->getMessage());
+            return back()->with('error', 'Error: ' . $e->getMessage())->withInput();
+        }
     }
 
     public function logout(Request $request)

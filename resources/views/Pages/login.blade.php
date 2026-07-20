@@ -84,22 +84,23 @@
     <form method="POST" action="{{ route('login.post') }}">
         @csrf
 
-        <!-- ✅ ROLE SELECTION - IMPORTANT -->
+        <!-- ✅ ROLE SELECTION - Admin, Staff, User -->
         <div class="form-group">
             <label><i class="fas fa-user-tag"></i> LOGIN AS</label>
-            <select name="role" class="form-control" required>
+            <select name="role" id="roleSelect" class="form-control" required>
                 <option value="admin">Admin</option>
                 <option value="staff">Staff</option>
+                <option value="user">User</option>
             </select>
         </div>
 
-        <!-- Email Field (for Admin) -->
-        <div class="form-group" id="adminFields">
+        <!-- Email Field (for Admin & User) -->
+        <div class="form-group" id="emailFields">
             <label><i class="fas fa-envelope"></i> Email Address</label>
             <input type="email" name="email" class="form-control" placeholder="Enter your email" value="{{ old('email') }}">
         </div>
 
-        <!-- Employee ID Field (for Staff) - Hidden by default -->
+        <!-- Employee ID Field (for Staff) -->
         <div class="form-group" id="staffFields" style="display: none;">
             <label><i class="fas fa-id-badge"></i> Employee ID</label>
             <input type="text" name="employee_id" class="form-control" placeholder="Enter your employee ID" value="{{ old('employee_id') }}">
@@ -120,22 +121,30 @@
 </div>
 
 <script>
-    // Toggle between Admin and Staff fields
+    // Toggle between fields based on role
     document.querySelector('select[name="role"]').addEventListener('change', function() {
-        const adminFields = document.getElementById('adminFields');
+        const emailFields = document.getElementById('emailFields');
         const staffFields = document.getElementById('staffFields');
+        const emailInput = document.querySelector('input[name="email"]');
+        const employeeInput = document.querySelector('input[name="employee_id"]');
         
-        if (this.value === 'admin') {
-            adminFields.style.display = 'block';
+        if (this.value === 'admin' || this.value === 'user') {
+            emailFields.style.display = 'block';
             staffFields.style.display = 'none';
-            document.querySelector('input[name="email"]').required = true;
-            document.querySelector('input[name="employee_id"]').required = false;
-        } else {
-            adminFields.style.display = 'none';
+            emailInput.required = true;
+            employeeInput.required = false;
+        } else if (this.value === 'staff') {
+            emailFields.style.display = 'none';
             staffFields.style.display = 'block';
-            document.querySelector('input[name="email"]').required = false;
-            document.querySelector('input[name="employee_id"]').required = true;
+            emailInput.required = false;
+            employeeInput.required = true;
         }
+    });
+
+    // Trigger change on load
+    document.addEventListener('DOMContentLoaded', function() {
+        const event = new Event('change');
+        document.querySelector('select[name="role"]').dispatchEvent(event);
     });
 </script>
 </body>

@@ -12,7 +12,7 @@ use App\Http\Controllers\TokenController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\StaffProfileController;  // ✅ ADDED
+use App\Http\Controllers\StaffProfileController;
 
 // =============================================
 // ✅ SETUP ROUTE - LIVE SERVER KE LIYE
@@ -84,7 +84,7 @@ Route::get('/reset-password/{token}', [AuthController::class, 'showResetForm'])-
 Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 
 // =============================================
-// ✅ STAFF ROUTES
+// ✅ STAFF ROUTES (FULL)
 // =============================================
 Route::prefix('staff')->name('staff.')->group(function () {
     Route::get('/dashboard', [StaffController::class, 'dashboard'])->name('dashboard');
@@ -99,7 +99,7 @@ Route::prefix('staff')->name('staff.')->group(function () {
     Route::get('/get-department-queue', [StaffController::class, 'getDepartmentQueue'])->name('get-department-queue');
     Route::get('/get-department-stats', [StaffController::class, 'getDepartmentStats'])->name('get-department-stats');
     
-    // ✅ STAFF PROFILE ROUTES - ADDED
+    // ✅ STAFF PROFILE ROUTES
     Route::prefix('profile')->name('profile.')->middleware('auth')->group(function () {
         Route::get('/', [StaffProfileController::class, 'index'])->name('index');
         Route::put('/update', [StaffProfileController::class, 'update'])->name('update');
@@ -108,7 +108,7 @@ Route::prefix('staff')->name('staff.')->group(function () {
 });
 
 // =============================================
-// ✅ ADMIN ROUTES (Authenticated)
+// ✅ ADMIN ROUTES (ALL IN ONE PLACE)
 // =============================================
 Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     
@@ -182,3 +182,8 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
         Route::put('/password', [ProfileController::class, 'updatePassword'])->name('password');
     });
 });
+
+// =============================================
+// ✅ USER ROUTES (Public - No Auth Required)
+// =============================================
+Route::get('/profile', [UserController::class, 'profile'])->name('user.profile');

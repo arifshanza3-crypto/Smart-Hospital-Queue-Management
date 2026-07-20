@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Token;
+use App\Models\QueueReport;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class StaffController extends Controller
@@ -11,38 +13,30 @@ class StaffController extends Controller
     // ✅ Staff Dashboard
     public function dashboard()
     {
-        return view('Pages.Staff');
-    }
-
-    // ✅ Get Combined Queue (Guest + Physical)
-    public function getQueue()
-    {
-        try {
-            $tokens = Token::whereIn('status', ['waiting', 'calling', 'serving'])
-                           ->orderBy('department', 'asc')
-                           ->orderBy('position', 'asc')
-                           ->get();
-
-            $total = $tokens->count();
-            $serving = Token::where('status', 'serving')->first();
-            
-            // Calculate average wait time
-            $avgWait = $this->calculateAverageWait($tokens);
-
-            return response()->json([
-                'success' => true,
-                'queue' => $tokens,
-                'total' => $total,
-                'serving' => $serving ? $serving->token_number : '--',
-                'avgWait' => $avgWait
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Get queue error: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage()
-            ], 500);
+        // Check if user is logged in
+        if (!Auth::check()) {
+            return redirect('/login')->with('error', 'Please login first.');
         }
+        
+        // Check if user is staff
+        if (Auth::user()->role !== 'staff') {
+            return redirect('/login')->with('error', 'Access denied. Staff only.');
+        }
+        
+        // Get patients
+        $patients = QueueReport::orderBy('created_at', 'desc')->get();
+        
+        // Statistics
+        $totalQueue = QueueReport::whereIn('status', ['waiting', 'in_progress'])->count();
+        $nowServing = QueueReport::where('status', 'in_progress')->count();
+        $nowServingToken = QueueReport::where('status', 'in_progress')->first()->token_number ?? 'N/A';
+        $completedToday = QueueReport::whereDate('created_at', today())->where('status', 'completed')->count();
+        $avgWaitTime = QueueReport::where('status', 'completed')->avg('waiting_time') ?? 0;
+        
+        return view('Pages.Staff', compact(
+            'patients', 'totalQueue', 'nowServing', 
+            'nowServingToken', 'completedToday', 'avgWaitTime'
+        ));
     }
 
     // ✅ Get Department-wise Queue
@@ -76,6 +70,26 @@ class StaffController extends Controller
             ]);
         } catch (\Exception $e) {
             Log::error('Get department queue error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    // ✅ Get Queue (All)
+    public function getQueue()
+    {
+        try {
+            $tokens = Token::whereIn('status', ['waiting', 'calling', 'serving'])
+                           ->orderBy('position', 'asc')
+                           ->get();
+
+            return response()->json([
+                'success' => true,
+                'queue' => $tokens
+            ]);
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage()
@@ -183,7 +197,13 @@ class StaffController extends Controller
             'OPD' => 15,
             'Pharmacy' => 15,
             'Radiology' => 15,
-            'General' => 15
+            'General' => 15,
+            'Cardiology' => 20,
+            'Neurology' => 25,
+            'Pediatrics' => 15,
+            'Orthopedics' => 20,
+            'Dermatology' => 15,
+            'Ophthalmology' => 15
         ];
         return $times[$department] ?? 15;
     }
@@ -358,7 +378,7 @@ class StaffController extends Controller
     public function getDepartmentStats()
     {
         try {
-            $departments = ['OPD',  'Pharmacy', 'Radiology'];
+            $departments = ['OPD', 'Pharmacy', 'Radiology', 'Cardiology', 'Neurology', 'Pediatrics'];
             $stats = [];
 
             foreach ($departments as $dept) {

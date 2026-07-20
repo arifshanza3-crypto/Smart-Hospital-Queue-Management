@@ -9,17 +9,14 @@ use Illuminate\Support\Facades\Storage;
 
 class StaffProfileController extends Controller
 {
-    // ✅ Show Staff Profile Page
     public function index()
     {
-        // Check if user is logged in
         if (!Auth::check()) {
             return redirect('/login')->with('error', 'Please login first.');
         }
         
         $user = Auth::user();
         
-        // Check if user is staff
         if ($user->role !== 'staff') {
             return redirect('/login')->with('error', 'Access denied. Staff only.');
         }
@@ -27,7 +24,6 @@ class StaffProfileController extends Controller
         return view('Pages.Staff.profile', compact('user'));
     }
 
-    // ✅ Update Staff Profile
     public function update(Request $request)
     {
         $user = Auth::user();
@@ -42,12 +38,10 @@ class StaffProfileController extends Controller
         ]);
 
         try {
-            // Update user fields
             $user->name = $request->name;
             $user->email = $request->email;
             $user->phone = $request->phone;
             
-            // Staff specific fields (if you have these columns)
             if (isset($user->employee_id)) {
                 $user->employee_id = $request->employee_id;
             }
@@ -55,7 +49,6 @@ class StaffProfileController extends Controller
                 $user->department = $request->department;
             }
 
-            // Handle avatar upload
             if ($request->hasFile('avatar')) {
                 if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
                     Storage::disk('public')->delete($user->avatar);
@@ -73,7 +66,6 @@ class StaffProfileController extends Controller
         }
     }
 
-    // ✅ Update Staff Password
     public function updatePassword(Request $request)
     {
         $user = Auth::user();
@@ -83,12 +75,10 @@ class StaffProfileController extends Controller
             'new_password' => 'required|min:8|confirmed',
         ]);
 
-        // Check current password
         if (!Hash::check($request->current_password, $user->password)) {
             return redirect()->back()->with('error', 'Current password is incorrect!');
         }
 
-        // Update password
         $user->password = Hash::make($request->new_password);
         $user->save();
 
