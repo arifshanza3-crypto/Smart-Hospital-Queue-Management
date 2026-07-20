@@ -1,135 +1,224 @@
 <nav class="admin-nav">
     <div class="nav-left">
+        <button class="mobile-toggle" onclick="toggleSidebar()" aria-label="Toggle Sidebar">
+            <i class="fas fa-bars"></i>
+        </button>
         <div class="nav-title">
-            <span class="system-label">System Overview</span>
-            <span class="dashboard-title">Admin Dashboard</span>
+            <span class="system-label">
+                <i class="fas fa-arrow-trend-up"></i> System Overview
+            </span>
+            <h1 class="dashboard-title">Admin Dashboard</h1>
         </div>
     </div>
 
     <div class="nav-right">
-        <div class="live-status">
-            <span class="live-dot"></span>
-            Live
-        </div>
-
-        <div class="notification-bell">
+        <!-- Notification Bell -->
+        <div class="notification-bell" onclick="toggleNotifications()">
             <i class="fas fa-bell"></i>
             <span class="notification-badge">3</span>
         </div>
 
-        <!-- ===== PROFILE DROPDOWN ===== -->
+        <!-- Notification Dropdown -->
+        <div class="notification-dropdown" id="notificationDropdown">
+            <div class="notification-header">
+                <span class="notification-title">Notifications</span>
+                <span class="notification-mark-all">Mark all read</span>
+            </div>
+            <div class="notification-list">
+                <div class="notification-item unread">
+                    <div class="notification-icon">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <div class="notification-content">
+                        <p class="notification-text">New user registered</p>
+                        <span class="notification-time">5 min ago</span>
+                    </div>
+                </div>
+                <div class="notification-item unread">
+                    <div class="notification-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="notification-content">
+                        <p class="notification-text">Queue is getting longer</p>
+                        <span class="notification-time">15 min ago</span>
+                    </div>
+                </div>
+                <div class="notification-item">
+                    <div class="notification-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="notification-content">
+                        <p class="notification-text">Service completed</p>
+                        <span class="notification-time">1 hour ago</span>
+                    </div>
+                </div>
+            </div>
+            <div class="notification-footer">
+                <a href="#" class="view-all-btn">View All Notifications</a>
+            </div>
+        </div>
+
+        <!-- Profile Section -->
         <div class="admin-profile" style="position: relative;">
-            <div class="profile-icon" onclick="toggleProfileDropdown()" style="cursor: pointer;">
-                @auth
-                    @if(auth()->user()->avatar)
-                        <img src="{{ Storage::url(auth()->user()->avatar) }}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+            <div class="profile-wrapper" onclick="toggleProfileDropdown()">
+                <div class="profile-icon">
+                    @auth
+                        @if(auth()->user()->avatar)
+                            <img src="{{ Storage::url(auth()->user()->avatar) }}" alt="Profile">
+                        @else
+                            {{ strtoupper(substr(auth()->user()->name ?? 'Admin', 0, 2)) }}
+                        @endif
                     @else
-                        {{ strtoupper(substr(auth()->user()->name, 0, 2)) }}
-                    @endif
-                @else
-                    AD
-                @endauth
+                        AD
+                    @endauth
+                </div>
+                <div class="profile-info">
+                    <span class="profile-name">{{ auth()->user()->name ?? 'Admin User' }}</span>
+                    <span class="profile-role">{{ ucfirst(auth()->user()->role ?? 'Administrator') }}</span>
+                </div>
+                <i class="fas fa-chevron-down profile-arrow"></i>
             </div>
 
-            <!-- Dropdown Menu -->
-            <div id="profileDropdown" style="
-                display: none;
-                position: absolute;
-                right: 0;
-                top: 50px;
-                background: #0b2e33;
-                border-radius: 12px;
-                min-width: 220px;
-                padding: 10px 0;
-                box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-                border: 1px solid #3e8686;
-                z-index: 1000;
-            ">
-                @auth
-                <div style="padding: 12px 20px; border-bottom: 1px solid #3e8686;">
-                    <div style="color: #00d4ff; font-weight: 600;">{{ auth()->user()->name }}</div>
-                    <div style="color: #a0d4d9; font-size: 12px;">{{ auth()->user()->email }}</div>
-                    <div style="color: #a0d4d9; font-size: 11px; opacity: 0.7; margin-top: 4px;">
-                        <i class="fas fa-user-shield"></i> {{ ucfirst(auth()->user()->role ?? 'Admin') }}
+            <!-- Profile Dropdown -->
+            <div class="profile-dropdown" id="profileDropdown">
+                <div class="dropdown-header">
+                    <div class="dropdown-avatar">
+                        @auth
+                            @if(auth()->user()->avatar)
+                                <img src="{{ Storage::url(auth()->user()->avatar) }}" alt="Profile">
+                            @else
+                                {{ strtoupper(substr(auth()->user()->name ?? 'Admin', 0, 2)) }}
+                            @endif
+                        @else
+                            AD
+                        @endauth
+                    </div>
+                    <div class="dropdown-user-info">
+                        <div class="dropdown-name">{{ auth()->user()->name ?? 'Admin User' }}</div>
+                        <div class="dropdown-email">{{ auth()->user()->email ?? 'admin@example.com' }}</div>
+                        <div class="dropdown-role">
+                            <i class="fas fa-user-shield"></i>
+                            {{ ucfirst(auth()->user()->role ?? 'Administrator') }}
+                        </div>
                     </div>
                 </div>
 
-                <a href="{{ route('admin.profile.index') }}" style="
-                    display: flex;
-                    align-items: center;
-                    gap: 12px;
-                    padding: 10px 20px;
-                    color: #a0d4d9;
-                    text-decoration: none;
-                    transition: all 0.2s ease;
-                " onmouseover="this.style.background='rgba(0,212,255,0.1)'" onmouseout="this.style.background='transparent'">
-                    <i class="fas fa-user" style="color: #00d4ff; width: 18px;"></i> My Profile
+                <div class="dropdown-divider"></div>
+
+                <a href="{{ route('admin.profile.index') ?? '#' }}" class="dropdown-item">
+                    <i class="fas fa-user"></i>
+                    <span>My Profile</span>
+                    <i class="fas fa-chevron-right item-arrow"></i>
                 </a>
 
-                <a href="{{ route('admin.settings.index') }}" style="
-                    display: flex;
-                    align-items: center;
-                    gap: 12px;
-                    padding: 10px 20px;
-                    color: #a0d4d9;
-                    text-decoration: none;
-                    transition: all 0.2s ease;
-                " onmouseover="this.style.background='rgba(0,212,255,0.1)'" onmouseout="this.style.background='transparent'">
-                    <i class="fas fa-cog" style="color: #00d4ff; width: 18px;"></i> Settings
+                <a href="{{ route('admin.settings.index') ?? '#' }}" class="dropdown-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                    <i class="fas fa-chevron-right item-arrow"></i>
                 </a>
 
-                <div style="border-top: 1px solid #3e8686; margin: 5px 15px;"></div>
+                <a href="#" class="dropdown-item">
+                    <i class="fas fa-question-circle"></i>
+                    <span>Help & Support</span>
+                    <i class="fas fa-chevron-right item-arrow"></i>
+                </a>
 
-                <form method="POST" action="{{ route('logout') }}" style="margin: 0;">
+                <div class="dropdown-divider"></div>
+
+                <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit" style="
-                        display: flex;
-                        align-items: center;
-                        gap: 12px;
-                        padding: 10px 20px;
-                        background: none;
-                        border: none;
-                        width: 100%;
-                        text-align: left;
-                        color: #ff4d4d;
-                        cursor: pointer;
-                        transition: all 0.2s ease;
-                        font-size: 14px;
-                    " onmouseover="this.style.background='rgba(255,77,77,0.1)'" onmouseout="this.style.background='transparent'">
-                        <i class="fas fa-sign-out-alt" style="width: 18px;"></i> Logout
+                    <button type="submit" class="dropdown-item logout-item">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                        <i class="fas fa-chevron-right item-arrow"></i>
                     </button>
                 </form>
-                @else
-                <a href="{{ route('login') }}" style="display: flex; align-items: center; gap: 12px; padding: 10px 20px; color: #a0d4d9; text-decoration: none;">
-                    <i class="fas fa-sign-in-alt" style="color: #00d4ff;"></i> Login
-                </a>
-                @endauth
             </div>
         </div>
     </div>
 </nav>
 
 <style>
+    /* ============================================
+       NAVBAR - EXACT SAME COLORS AS SIDEBAR
+       ============================================ */
+    
     .admin-nav {
         position: fixed;
-        top: 20px;
-        left: 300px;
-        right: 20px;
-        height: 70px;
-        background: #0b2e33;
+        top: 0;
+        left: var(--sidebar-width, 280px);
+        right: 0;
+        height: 68px;
+        background: linear-gradient(180deg, #0c1220 0%, #0f1a2e 50%, #142a42 100%);
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 0 30px;
-        border: 1px solid #3e8686;
-        border-radius: 15px;
+        padding: 0 28px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
         z-index: 999;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     }
 
+    /* Animated Background Glow - Same as Sidebar */
+    .admin-nav::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(ellipse at 30% 20%, rgba(14, 165, 233, 0.05) 0%, transparent 60%);
+        pointer-events: none;
+        animation: glow-float 20s ease-in-out infinite;
+    }
+
+    .admin-nav::after {
+        content: '';
+        position: absolute;
+        bottom: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(ellipse at 70% 80%, rgba(6, 182, 212, 0.05) 0%, transparent 60%);
+        pointer-events: none;
+        animation: glow-float 25s ease-in-out infinite reverse;
+    }
+
+    @keyframes glow-float {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        33% { transform: translate(10%, -10%) scale(1.1); }
+        66% { transform: translate(-10%, 10%) scale(0.9); }
+    }
+
+    /* ===== NAV LEFT ===== */
     .nav-left {
         display: flex;
         align-items: center;
+        gap: 16px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .mobile-toggle {
+        display: none;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        color: #94a3b8;
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        font-size: 18px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .mobile-toggle:hover {
+        background: rgba(14, 165, 233, 0.08);
+        border-color: rgba(14, 165, 233, 0.15);
+        color: #0ea5e9;
     }
 
     .nav-title {
@@ -139,52 +228,61 @@
 
     .system-label {
         font-size: 10px;
-        color: #00d4ff;
+        color: #64748b;
         text-transform: uppercase;
-        letter-spacing: 2px;
-        font-weight: 700;
+        letter-spacing: 1.5px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .system-label i {
+        color: #0ea5e9;
+        font-size: 10px;
     }
 
     .dashboard-title {
-        font-size: 18px;
+        font-size: 20px;
         font-weight: 800;
-        color: #00d4ff;
+        color: #ffffff;
+        margin: 0;
+        line-height: 1.2;
+        letter-spacing: -0.5px;
+        background: linear-gradient(135deg, #ffffff 0%, #93c5fd 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
     }
 
+    /* ===== NAV RIGHT ===== */
     .nav-right {
         display: flex;
         align-items: center;
-        gap: 25px;
+        gap: 12px;
+        position: relative;
+        z-index: 1;
     }
 
-    .live-status {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 12px;
-        color: #00d4ff;
-        font-weight: 600;
-    }
-
-    .live-dot {
-        width: 8px;
-        height: 8px;
-        background: #00d4ff;
-        border-radius: 50%;
-        box-shadow: 0 0 8px #00d4ff;
-        animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-        0% { opacity: 1; transform: scale(1); }
-        50% { opacity: 0.5; transform: scale(1.2); }
-        100% { opacity: 1; transform: scale(1); }
-    }
-
+    /* ===== NOTIFICATION BELL ===== */
     .notification-bell {
         position: relative;
-        color: #00d4ff;
+        color: #94a3b8;
         cursor: pointer;
+        width: 42px;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        border: 1px solid transparent;
+    }
+
+    .notification-bell:hover {
+        background: rgba(255, 255, 255, 0.04);
+        border-color: rgba(255, 255, 255, 0.06);
+        color: #e2e8f0;
     }
 
     .notification-bell i {
@@ -193,35 +291,193 @@
 
     .notification-badge {
         position: absolute;
-        top: -8px;
-        right: -10px;
-        background: #ff4d4d;
+        top: 2px;
+        right: 2px;
+        background: #ef4444;
         color: white;
         font-size: 9px;
-        padding: 2px 6px;
-        border-radius: 50%;
-        font-weight: bold;
+        font-weight: 700;
+        padding: 1px 6px;
+        border-radius: 10px;
+        border: 2px solid #0f1a2e;
+        min-width: 18px;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
     }
 
-    .admin-profile {
-        padding-left: 20px;
-        border-left: 1px solid rgba(62, 134, 134, 0.5);
+    /* ===== NOTIFICATION DROPDOWN ===== */
+    .notification-dropdown {
+        display: none;
+        position: absolute;
+        top: 58px;
+        right: 70px;
+        background: linear-gradient(180deg, #0c1220 0%, #0f1a2e 50%, #142a42 100%);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 16px;
+        min-width: 360px;
+        max-width: 400px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        overflow: hidden;
     }
 
-    .profile-icon {
-        width: 42px;
-        height: 42px;
-        border-radius: 50%;
-        border: 2px solid #00d4ff;
+    .notification-dropdown.show {
+        display: block;
+        animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .notification-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .notification-title {
+        font-weight: 700;
+        color: #e2e8f0;
+        font-size: 14px;
+    }
+
+    .notification-mark-all {
+        font-size: 11px;
+        color: #0ea5e9;
+        cursor: pointer;
+        font-weight: 500;
+        transition: color 0.3s ease;
+    }
+
+    .notification-mark-all:hover {
+        color: #38bdf8;
+    }
+
+    .notification-list {
+        max-height: 320px;
+        overflow-y: auto;
+    }
+
+    .notification-list::-webkit-scrollbar {
+        width: 3px;
+    }
+    .notification-list::-webkit-scrollbar-thumb {
+        background: #0ea5e9;
+        border-radius: 10px;
+    }
+
+    .notification-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 12px 20px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border-left: 2px solid transparent;
+    }
+
+    .notification-item:hover {
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    .notification-item.unread {
+        border-left-color: #0ea5e9;
+        background: rgba(14, 165, 233, 0.03);
+    }
+
+    .notification-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        background: rgba(14, 165, 233, 0.1);
         display: flex;
         align-items: center;
         justify-content: center;
-        background: rgba(0, 212, 255, 0.1);
-        color: #00d4ff;
-        font-weight: bold;
-        cursor: pointer;
-        overflow: hidden;
+        color: #0ea5e9;
         font-size: 14px;
+        flex-shrink: 0;
+    }
+
+    .notification-content {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .notification-text {
+        color: #e2e8f0;
+        font-size: 13px;
+        margin: 0 0 2px 0;
+        line-height: 1.4;
+    }
+
+    .notification-time {
+        font-size: 11px;
+        color: #64748b;
+    }
+
+    .notification-footer {
+        padding: 12px 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+        text-align: center;
+    }
+
+    .view-all-btn {
+        color: #0ea5e9;
+        font-size: 13px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .view-all-btn:hover {
+        color: #38bdf8;
+    }
+
+    /* ===== PROFILE SECTION ===== */
+    .admin-profile {
+        padding-left: 12px;
+        border-left: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .profile-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        cursor: pointer;
+        padding: 4px 12px 4px 4px;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        border: 1px solid transparent;
+    }
+
+    .profile-wrapper:hover {
+        background: rgba(255, 255, 255, 0.03);
+        border-color: rgba(255, 255, 255, 0.06);
+    }
+
+    .profile-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        border: 2px solid rgba(14, 165, 233, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(14, 165, 233, 0.1);
+        color: #0ea5e9;
+        font-weight: 700;
+        font-size: 14px;
+        overflow: hidden;
+        flex-shrink: 0;
+        transition: all 0.3s ease;
+    }
+
+    .profile-wrapper:hover .profile-icon {
+        border-color: rgba(14, 165, 233, 0.6);
     }
 
     .profile-icon img {
@@ -230,39 +486,391 @@
         object-fit: cover;
     }
 
-    /* Dropdown hover effect */
-    #profileDropdown a:hover,
-    #profileDropdown button:hover {
-        background: rgba(0, 212, 255, 0.1);
+    .profile-info {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.2;
+    }
+
+    .profile-name {
+        font-size: 13px;
+        font-weight: 600;
+        color: #e2e8f0;
+    }
+
+    .profile-role {
+        font-size: 10px;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 500;
+    }
+
+    .profile-arrow {
+        color: #64748b;
+        font-size: 11px;
+        transition: all 0.3s ease;
+    }
+
+    .profile-wrapper:hover .profile-arrow {
+        color: #e2e8f0;
+        transform: rotate(180deg);
+    }
+
+    /* ===== PROFILE DROPDOWN ===== */
+    .profile-dropdown {
+        display: none;
+        position: absolute;
+        right: 0;
+        top: 54px;
+        background: linear-gradient(180deg, #0c1220 0%, #0f1a2e 50%, #142a42 100%);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 16px;
+        min-width: 280px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        overflow: hidden;
+        padding: 8px 0;
+    }
+
+    .profile-dropdown.show {
+        display: block;
+        animation: slideDown 0.3s ease;
+    }
+
+    .dropdown-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 16px 20px 16px 16px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .dropdown-avatar {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        border: 2px solid rgba(14, 165, 233, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(14, 165, 233, 0.1);
+        color: #0ea5e9;
+        font-weight: 700;
+        font-size: 16px;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+
+    .dropdown-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .dropdown-user-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .dropdown-name {
+        font-size: 14px;
+        font-weight: 600;
+        color: #e2e8f0;
+    }
+
+    .dropdown-email {
+        font-size: 12px;
+        color: #94a3b8;
+    }
+
+    .dropdown-role {
+        font-size: 11px;
+        color: #0ea5e9;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        margin-top: 2px;
+    }
+
+    .dropdown-divider {
+        height: 1px;
+        background: rgba(255, 255, 255, 0.06);
+        margin: 6px 16px;
+    }
+
+    .dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 20px;
+        color: #cbd5e1;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        border: none;
+        background: none;
+        width: 100%;
+        text-align: left;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .dropdown-item:hover {
+        background: rgba(255, 255, 255, 0.04);
+        color: #e2e8f0;
+    }
+
+    .dropdown-item i:first-child {
+        width: 20px;
+        color: #64748b;
+        font-size: 15px;
+    }
+
+    .dropdown-item:hover i:first-child {
+        color: #0ea5e9;
+    }
+
+    .dropdown-item .item-arrow {
+        margin-left: auto;
+        font-size: 11px;
+        color: #64748b;
+        opacity: 0;
+        transition: all 0.3s ease;
+    }
+
+    .dropdown-item:hover .item-arrow {
+        opacity: 1;
+        transform: translateX(4px);
+        color: #0ea5e9;
+    }
+
+    .logout-item {
+        color: #f87171;
+    }
+
+    .logout-item i:first-child {
+        color: #ef4444;
+    }
+
+    .logout-item:hover {
+        background: rgba(239, 68, 68, 0.08);
+        color: #ef4444;
+    }
+
+    .logout-item:hover i:first-child {
+        color: #ef4444;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 1200px) {
+        .admin-nav {
+            left: var(--sidebar-width, 280px);
+        }
+    }
+
+    @media (max-width: 992px) {
+        .admin-nav {
+            left: 0;
+            padding: 0 20px;
+            height: 62px;
+        }
+
+        .mobile-toggle {
+            display: flex;
+        }
+
+        .profile-info {
+            display: none;
+        }
+
+        .profile-arrow {
+            display: none;
+        }
+
+        .admin-profile {
+            padding-left: 8px;
+        }
+
+        .profile-wrapper {
+            padding: 4px;
+        }
+
+        .notification-dropdown {
+            right: 60px;
+            min-width: 320px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .admin-nav {
+            padding: 0 16px;
+            height: 56px;
+        }
+
+        .dashboard-title {
+            font-size: 16px;
+        }
+
+        .system-label {
+            font-size: 9px;
+        }
+
+        .notification-bell {
+            width: 36px;
+            height: 36px;
+        }
+
+        .notification-bell i {
+            font-size: 17px;
+        }
+
+        .profile-icon {
+            width: 32px;
+            height: 32px;
+            font-size: 12px;
+        }
+
+        .notification-dropdown {
+            right: 40px;
+            min-width: 280px;
+        }
+
+        .profile-dropdown {
+            min-width: 240px;
+            right: -10px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .admin-nav {
+            padding: 0 12px;
+            height: 50px;
+        }
+
+        .dashboard-title {
+            font-size: 14px;
+        }
+
+        .system-label {
+            font-size: 8px;
+            letter-spacing: 1px;
+        }
+
+        .system-label i {
+            display: none;
+        }
+
+        .notification-badge {
+            font-size: 8px;
+            min-width: 15px;
+            padding: 0 5px;
+        }
+
+        .notification-dropdown {
+            right: 20px;
+            min-width: 260px;
+            top: 45px;
+        }
+
+        .profile-dropdown {
+            min-width: 220px;
+            right: -20px;
+            top: 44px;
+        }
     }
 </style>
 
 <script>
+    // ============================================
+    // TOGGLE FUNCTIONS
+    // ============================================
+    
+    // Toggle Profile Dropdown
     function toggleProfileDropdown() {
         const dropdown = document.getElementById('profileDropdown');
-        if (dropdown.style.display === 'none') {
-            dropdown.style.display = 'block';
-        } else {
-            dropdown.style.display = 'none';
+        const isOpen = dropdown.classList.contains('show');
+        
+        // Close all dropdowns first
+        closeAllDropdowns();
+        
+        if (!isOpen) {
+            dropdown.classList.add('show');
         }
     }
 
-    // Close dropdown when clicking outside
+    // Toggle Notifications
+    function toggleNotifications() {
+        const dropdown = document.getElementById('notificationDropdown');
+        const isOpen = dropdown.classList.contains('show');
+        
+        // Close all dropdowns first
+        closeAllDropdowns();
+        
+        if (!isOpen) {
+            dropdown.classList.add('show');
+        }
+    }
+
+    // Close all dropdowns
+    function closeAllDropdowns() {
+        document.querySelectorAll('.profile-dropdown, .notification-dropdown').forEach(el => {
+            el.classList.remove('show');
+        });
+    }
+
+    // Close dropdowns when clicking outside
     document.addEventListener('click', function(event) {
-        const dropdown = document.getElementById('profileDropdown');
-        const profileIcon = document.querySelector('.profile-icon');
-        if (dropdown && profileIcon && !profileIcon.contains(event.target) && !dropdown.contains(event.target)) {
-            dropdown.style.display = 'none';
+        const isClickInside = event.target.closest('.admin-profile') || 
+                             event.target.closest('.notification-bell') ||
+                             event.target.closest('.profile-dropdown') ||
+                             event.target.closest('.notification-dropdown');
+        
+        if (!isClickInside) {
+            closeAllDropdowns();
         }
     });
 
-    // Close dropdown on Escape key
+    // Close dropdowns on Escape key
     document.addEventListener('keydown', function(event) {
         if (event.key === 'Escape') {
-            const dropdown = document.getElementById('profileDropdown');
-            if (dropdown) {
-                dropdown.style.display = 'none';
-            }
+            closeAllDropdowns();
         }
+    });
+
+    // Toggle Sidebar (for mobile)
+    function toggleSidebar() {
+        const sidebar = document.querySelector('.sidebar');
+        if (sidebar) {
+            sidebar.classList.toggle('active');
+        }
+    }
+
+    // ============================================
+    // NOTIFICATION MARK AS READ
+    // ============================================
+    document.querySelector('.notification-mark-all')?.addEventListener('click', function() {
+        document.querySelectorAll('.notification-item.unread').forEach(item => {
+            item.classList.remove('unread');
+        });
+        const badge = document.querySelector('.notification-badge');
+        if (badge) {
+            badge.textContent = '0';
+            badge.style.display = 'none';
+        }
+    });
+
+    // ============================================
+    // NOTIFICATION ITEM CLICK
+    // ============================================
+    document.querySelectorAll('.notification-item').forEach(item => {
+        item.addEventListener('click', function() {
+            this.classList.remove('unread');
+            // Close dropdown after click
+            setTimeout(() => {
+                document.getElementById('notificationDropdown')?.classList.remove('show');
+            }, 300);
+        });
     });
 </script>
