@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'SMART QUEUE')</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -13,7 +14,6 @@
             --primary-teal: #00d4ff;
             --dark-bg: #0a0a0a;
             --accent-cyan: #00d4ff;
-            /* Medical Blue with 85% Opacity */
             --nav-bg-opaque: rgba(11, 46, 51, 0.85); 
         }
 
@@ -47,9 +47,8 @@
             align-items: center;
         }
 
-        /* --- INCREASED LOGO SIZE --- */
         .nav-logo-img {
-            height: 80px; /* Increased from 45px */
+            height: 80px;
             width: auto;
             transition: transform 0.3s ease;
             filter: drop-shadow(0 0 5px rgba(0, 212, 255, 0.3));
@@ -74,7 +73,6 @@
 
         .nav-link.active { color: #ffffff !important; }
 
-        /* --- ANIMATED DUAL BARS --- */
         .nav-link.active::before {
             content: '';
             position: absolute;
@@ -128,12 +126,229 @@
         .btn-login { background-color: transparent; color: white; border: 1px solid rgba(255,255,255,0.3); }
         .btn-pill:hover { opacity: 0.9; transform: translateY(-2px); color: white; }
 
-        /* Adjusted padding for larger navbar */
         main { padding-top: 140px; min-height: 80vh; }
+
+        /* ============================================ */
+        /* ✅ NOTIFICATION BELL - RIGHT SIDE            */
+        /* ============================================ */
+        .auth-buttons {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .notification-wrapper {
+            position: relative;
+            display: inline-block;
+            margin: 0 5px;
+        }
+
+        .notification-bell {
+            cursor: pointer;
+            color: #ffd700;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            position: relative;
+            background: rgba(255, 215, 0, 0.1);
+            padding: 8px 14px;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 215, 0, 0.15);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+        }
+
+        .notification-bell:hover {
+            transform: scale(1.05);
+            background: rgba(255, 215, 0, 0.2);
+            border-color: rgba(255, 215, 0, 0.3);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
+        }
+
+        .notification-bell .bell-icon {
+            font-size: 18px;
+        }
+
+        .notification-bell .bell-text {
+            font-size: 11px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.7);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -6px;
+            right: -4px;
+            background: #dc3545;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 2px 7px;
+            border-radius: 50%;
+            min-width: 18px;
+            text-align: center;
+            display: none;
+            animation: pulse-badge 1.5s ease-in-out infinite;
+            border: 2px solid rgba(11, 46, 51, 0.85);
+        }
+
+        @keyframes pulse-badge {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .notification-dropdown {
+            position: absolute;
+            top: 45px;
+            right: 0;
+            width: 380px;
+            max-height: 450px;
+            background: #1a1a2e;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            overflow: hidden;
+            display: none;
+        }
+
+        .notification-dropdown.active {
+            display: block !important;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .notification-header {
+            padding: 12px 18px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .notification-header h4 {
+            margin: 0;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .notification-header .mark-all {
+            color: #ffd700;
+            font-size: 12px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .notification-header .mark-all:hover {
+            text-decoration: underline;
+        }
+
+        .notification-list {
+            max-height: 350px;
+            overflow-y: auto;
+            padding: 0;
+        }
+
+        .notification-list::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .notification-list::-webkit-scrollbar-thumb {
+            background: #ffd700;
+            border-radius: 10px;
+        }
+
+        .notification-item {
+            padding: 10px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .notification-item:hover {
+            background: rgba(255, 215, 0, 0.05);
+        }
+
+        .notification-item.unread {
+            background: rgba(255, 215, 0, 0.05);
+            border-left: 3px solid #ffd700;
+        }
+
+        .notification-item .notification-icon {
+            font-size: 18px;
+            min-width: 30px;
+        }
+
+        .notification-item .notification-content {
+            flex: 1;
+        }
+
+        .notification-item .notification-title {
+            color: #fff;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .notification-item .notification-message {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 12px;
+            margin-top: 2px;
+        }
+
+        .notification-item .notification-token {
+            color: #ffd700;
+            font-size: 11px;
+            font-weight: 500;
+            margin-top: 2px;
+        }
+
+        .notification-item .notification-time {
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 10px;
+            margin-top: 3px;
+        }
+
+        .notification-empty {
+            padding: 30px 20px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .notification-empty .icon {
+            font-size: 35px;
+            margin-bottom: 8px;
+        }
+
+        .notification-footer {
+            padding: 8px 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            text-align: center;
+        }
+
+        .notification-footer a {
+            color: #ffd700;
+            font-size: 12px;
+            text-decoration: none;
+        }
+
+        .notification-footer a:hover {
+            text-decoration: underline;
+        }
 
         /* --- FOOTER --- */
         .footer-main {
-           background: var(--nav-bg-opaque) !important; ;
+           background: var(--nav-bg-opaque) !important;
             color: #FFFFFF;
             padding: 80px 0 40px 0;
             border-top: 10px solid #FFFFFF;
@@ -195,9 +410,46 @@
                         <li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
                     </ul>
                     
-                    <div class="d-flex align-items-center">
-                        <a href="/booking" class="btn btn-pill btn-book">Book Now</a>
-                        <a href="/login" class="btn btn-pill btn-login">Login</a>
+                    <div class="auth-buttons">
+                        {{-- ✅ Book Now Button --}}
+                        <a href="/Token_form" class="btn btn-pill btn-book">Book Now</a>
+                        
+                        @auth
+                            {{-- ✅ Logout Button --}}
+                            <a href="/logout" class="btn btn-pill btn-login" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                Logout
+                            </a>
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                @csrf
+                            </form>
+
+                            {{-- ✅ Notification Bell - RIGHT SIDE (after Logout) --}}
+                            <div class="notification-wrapper">
+                                <div class="notification-bell" onclick="toggleNotifications()">
+                                    <i class="bi bi-bell-fill bell-icon"></i>
+                                    <span class="bell-text">Alerts</span>
+                                    <span class="notification-badge" id="notificationBadge">0</span>
+                                </div>
+                                <div class="notification-dropdown" id="notificationDropdown">
+                                    <div class="notification-header">
+                                        <h4>Notifications</h4>
+                                        <a href="#" class="mark-all" onclick="markAllRead()">Mark all as read</a>
+                                    </div>
+                                    <div class="notification-list" id="notificationList">
+                                        <div class="notification-empty">
+                                            <div class="icon">🔕</div>
+                                            <p>No notifications</p>
+                                        </div>
+                                    </div>
+                                    <div class="notification-footer">
+                                        <a href="{{ route('notifications.page') }}">View all notifications →</a>
+                                    </div>
+                                </div>
+                            </div>
+                        @else
+                            {{-- ✅ Login Button --}}
+                            <a href="/login" class="btn btn-pill btn-login">Login</a>
+                        @endauth
                     </div>
                 </div>
             </div>
@@ -220,7 +472,6 @@
                         Efficiently managing your time with our advanced digital queuing system. 
                         Experience seamless scheduling and reduced wait times.
                     </p>
-            
                 </div>
 
                 <div class="col-lg-2 col-md-6 offset-lg-1">
@@ -258,6 +509,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ asset('js/notifications.js') }}"></script>
     
     <script>
         document.addEventListener("DOMContentLoaded", function() {

@@ -33,7 +33,38 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    // ✅ Helper methods
+    // =============================================
+    // ✅ NOTIFICATIONS RELATIONS
+    // =============================================
+    
+    /**
+     * Get all notifications for this user
+     */
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class)->orderBy('created_at', 'desc');
+    }
+
+    /**
+     * Get unread notifications
+     */
+    public function unreadNotifications()
+    {
+        return $this->hasMany(Notification::class)->where('is_read', false);
+    }
+
+    /**
+     * Get unread notification count
+     */
+    public function getUnreadNotificationCountAttribute()
+    {
+        return $this->unreadNotifications()->count();
+    }
+
+    // =============================================
+    // ✅ ROLE CHECK METHODS
+    // =============================================
+
     public function isAdmin()
     {
         return $this->role === 'admin';
@@ -44,10 +75,36 @@ class User extends Authenticatable
         return $this->role === 'staff';
     }
 
+    // ✅ "patient" ki jagah "user"
+    public function isUser()
+    {
+        return $this->role === 'user';
+    }
+
+    // ✅ Alias for backward compatibility
     public function isPatient()
     {
-        return $this->role === 'patient';
+        return $this->role === 'user';
     }
+
+    public function isPending()
+    {
+        return $this->status === 'pending';
+    }
+
+    public function isApproved()
+    {
+        return $this->status === 'approved';
+    }
+
+    public function isRejected()
+    {
+        return $this->status === 'rejected';
+    }
+
+    // =============================================
+    // ✅ HELPERS
+    // =============================================
 
     public function getAvatarUrlAttribute()
     {
@@ -55,5 +112,10 @@ class User extends Authenticatable
             return asset('storage/' . $this->avatar);
         }
         return 'https://ui-avatars.com/api/?name=' . urlencode($this->name ?? $this->full_name) . '&background=00d4ff&color=fff';
+    }
+
+    public function getNameAttribute()
+    {
+        return $this->full_name ?? $this->name;
     }
 }

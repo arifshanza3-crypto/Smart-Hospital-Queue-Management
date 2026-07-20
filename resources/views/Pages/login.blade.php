@@ -84,25 +84,26 @@
     <form method="POST" action="{{ route('login.post') }}">
         @csrf
 
-        <!-- ✅ ROLE SELECTION - IMPORTANT -->
+        <!-- ✅ ROLE SELECTION - Patient ki jagah User -->
         <div class="form-group">
             <label><i class="fas fa-user-tag"></i> LOGIN AS</label>
-            <select name="role" class="form-control" required>
+            <select name="role" id="roleSelect" class="form-control" required>
                 <option value="admin">Admin</option>
                 <option value="staff">Staff</option>
+                <option value="user">User</option>
             </select>
         </div>
 
-        <!-- Email Field (for Admin) -->
-        <div class="form-group" id="adminFields">
+        <!-- Email Field (for Admin & User) -->
+        <div class="form-group" id="emailField">
             <label><i class="fas fa-envelope"></i> Email Address</label>
-            <input type="email" name="email" class="form-control" placeholder="Enter your email" value="{{ old('email') }}">
+            <input type="email" name="email" id="emailInput" class="form-control" placeholder="Enter your email" value="{{ old('email') }}" required>
         </div>
 
         <!-- Employee ID Field (for Staff) - Hidden by default -->
-        <div class="form-group" id="staffFields" style="display: none;">
+        <div class="form-group" id="staffField" style="display: none;">
             <label><i class="fas fa-id-badge"></i> Employee ID</label>
-            <input type="text" name="employee_id" class="form-control" placeholder="Enter your employee ID" value="{{ old('employee_id') }}">
+            <input type="text" name="employee_id" id="employeeInput" class="form-control" placeholder="Enter your employee ID" value="{{ old('employee_id') }}">
         </div>
 
         <div class="form-group">
@@ -120,23 +121,33 @@
 </div>
 
 <script>
-    // Toggle between Admin and Staff fields
-    document.querySelector('select[name="role"]').addEventListener('change', function() {
-        const adminFields = document.getElementById('adminFields');
-        const staffFields = document.getElementById('staffFields');
-        
-        if (this.value === 'admin') {
-            adminFields.style.display = 'block';
-            staffFields.style.display = 'none';
-            document.querySelector('input[name="email"]').required = true;
-            document.querySelector('input[name="employee_id"]').required = false;
-        } else {
-            adminFields.style.display = 'none';
-            staffFields.style.display = 'block';
-            document.querySelector('input[name="email"]').required = false;
-            document.querySelector('input[name="employee_id"]').required = true;
+    document.addEventListener('DOMContentLoaded', function() {
+        const roleSelect = document.getElementById('roleSelect');
+        const emailField = document.getElementById('emailField');
+        const staffField = document.getElementById('staffField');
+        const emailInput = document.getElementById('emailInput');
+        const employeeInput = document.getElementById('employeeInput');
+
+        function updateFields() {
+            const role = roleSelect.value;
+
+            if (role === 'staff') {
+                emailField.style.display = 'none';
+                staffField.style.display = 'block';
+                emailInput.removeAttribute('required');
+                employeeInput.setAttribute('required', 'required');
+            } else {
+                emailField.style.display = 'block';
+                staffField.style.display = 'none';
+                emailInput.setAttribute('required', 'required');
+                employeeInput.removeAttribute('required');
+            }
         }
+
+        roleSelect.addEventListener('change', updateFields);
+        updateFields();
     });
 </script>
+
 </body>
 </html>

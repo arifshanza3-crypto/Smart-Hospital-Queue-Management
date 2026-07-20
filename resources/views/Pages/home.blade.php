@@ -110,28 +110,7 @@
                 </div>
             @endif
 
-            {{-- All Departments Status --}}
-            <div class="all-departments-status">
-                <h4>Live Department Status</h4>
-                <div class="departments-grid">
-                    @foreach($allDepartments as $dept => $data)
-                    <div class="dept-status-card">
-                        <h5>{{ $dept }}</h5>
-                        <div class="dept-stats">
-                            <div class="dept-stat">
-                                <span class="stat-label">In Queue</span>
-                                <span class="stat-number">{{ $data['total'] }}</span>
-                            </div>
-                            <div class="dept-stat">
-                                <span class="stat-label">Serving</span>
-                                <span class="stat-number">{{ $data['serving'] ? $data['serving']->token_number : '--' }}</span>
-                            </div>
-                        </div>
-                        <a href="/Status?dept={{ $dept }}" class="dept-view-link">View Queue →</a>
-                    </div>
-                    @endforeach
-                </div>
-            </div>
+            {{-- ❌ ALL DEPARTMENTS STATUS - REMOVED --}}
         </div>
     </div>
 </section>

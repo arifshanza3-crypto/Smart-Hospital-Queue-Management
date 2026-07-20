@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use App\Models\User;
+use App\Helpers\NotificationHelper;
 use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
@@ -19,7 +20,7 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        // Admin login
+        // ✅ Admin login
         if ($request->role === 'admin') {
             $credentials = $request->validate([
                 'email' => 'required|email',
@@ -48,7 +49,7 @@ class AuthController extends Controller
             ])->onlyInput('email');
         }
 
-        // Staff login
+        // ✅ Staff login (using employee_id)
         if ($request->role === 'staff') {
             $request->validate([
                 'employee_id' => 'required|string',
@@ -73,6 +74,35 @@ class AuthController extends Controller
             return back()->withErrors([
                 'employee_id' => 'Invalid staff credentials.',
             ])->onlyInput('employee_id');
+        }
+
+        // ✅ User login (using email + password) - "patient" ki jagah "user"
+        if ($request->role === 'user') {
+            $credentials = $request->validate([
+                'email' => 'required|email',
+                'password' => 'required',
+            ]);
+
+            Log::info('User Login Attempt:', ['email' => $request->email]);
+
+            if (Auth::attempt($credentials)) {
+                $request->session()->regenerate();
+                $user = Auth::user();
+                
+                Log::info('User Login Success:', ['user' => $user->email, 'role' => $user->role]);
+                
+                if ($user->role === 'user') {
+                    return redirect('/')->with('success', 'Welcome back, ' . ($user->name ?? $user->full_name) . '!');
+                }
+                
+                return redirect('/');
+            }
+
+            Log::error('User Login Failed:', ['email' => $request->email]);
+
+            return back()->withErrors([
+                'email' => 'Invalid user credentials.',
+            ])->onlyInput('email');
         }
 
         return back()->withErrors(['error' => 'Invalid login attempt.']);
@@ -100,6 +130,14 @@ class AuthController extends Controller
             'role' => 'staff',
             'status' => 'pending'
         ]);
+
+        // ✅ Notification for admin about new staff registration
+        NotificationHelper::sendToAdmin(
+            '👤 New Staff Registration',
+            "New staff member {$request->full_name} has registered and is pending approval",
+            null,
+            ['staff_name' => $request->full_name, 'email' => $request->email]
+        );
 
         return redirect('/login')->with('success', 'Registration successful! Waiting for admin approval.');
     }

@@ -13,6 +13,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StaffProfileController;
+use App\Http\Controllers\NotificationController;
 
 // =============================================
 // ✅ SETUP ROUTE - LIVE SERVER KE LIYE
@@ -110,6 +111,22 @@ Route::prefix('staff')->name('staff.')->group(function () {
         Route::put('/password', [StaffProfileController::class, 'updatePassword'])->name('password');
     });
 });
+
+// =============================================
+// ✅ NOTIFICATION ROUTES (For All Users)
+// =============================================
+Route::prefix('notifications')->name('notifications.')->middleware('auth')->group(function () {
+    Route::get('/', [NotificationController::class, 'index'])->name('index');
+    Route::post('/{id}/read', [NotificationController::class, 'markAsRead'])->name('mark-read');
+    Route::post('/read-all', [NotificationController::class, 'markAllAsRead'])->name('mark-all-read');
+    Route::get('/unread-count', [NotificationController::class, 'unreadCount'])->name('unread-count');
+    Route::delete('/{id}', [NotificationController::class, 'destroy'])->name('destroy');
+});
+
+// ✅ Notification Page (View)
+Route::get('/notifications-page', function() {
+    return view('Pages.Notifications.index');
+})->name('notifications.page')->middleware('auth');
 
 // =============================================
 // ✅ ADMIN ROUTES (Authenticated)

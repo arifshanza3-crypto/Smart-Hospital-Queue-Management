@@ -15,18 +15,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const updateFormFields = (role) => {
         if (!identifierLabel || !identifierInput) return;
         
-        if (role === 'patient') {
+        // ✅ "patient" ki jagah "user"
+        if (role === 'user' || role === 'admin') {
             identifierLabel.innerText = 'Email Address';
             identifierInput.type = 'email';
             identifierInput.placeholder = 'Enter your email';
         } else if (role === 'staff') {
-            identifierLabel.innerText = 'Username';
+            identifierLabel.innerText = 'Employee ID';
             identifierInput.type = 'text';
-            identifierInput.placeholder = 'Enter your username';
-        } else if (role === 'admin') {
-            identifierLabel.innerText = 'Email or Username';
-            identifierInput.type = 'text';
-            identifierInput.placeholder = 'Enter email or username';
+            identifierInput.placeholder = 'Enter your employee ID';
         }
     };
 
@@ -42,10 +39,7 @@ document.addEventListener('DOMContentLoaded', function() {
         forgotPasswordLink.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            
             console.log('Forgot password clicked');
-            
-            // ✅ Direct redirect to forgot password page
             window.location.href = '/forgot-password';
         });
     } else {
@@ -56,22 +50,16 @@ document.addEventListener('DOMContentLoaded', function() {
     if (loginForm) {
         loginForm.addEventListener('submit', function(e) {
             e.preventDefault();
-            const selectedRole = userRoleSelect ? userRoleSelect.value : 'patient';
+            // ✅ "patient" ki jagah "user"
+            const selectedRole = userRoleSelect ? userRoleSelect.value : 'user';
 
             if (submitBtn) {
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Authenticating...';
                 submitBtn.style.opacity = '0.8';
             }
 
-            setTimeout(() => {
-                if (selectedRole === 'patient') {
-                    window.location.href = "/";
-                } else if (selectedRole === 'staff') {
-                    window.location.href = "/staff";
-                } else if (selectedRole === 'admin') {
-                    window.location.href = "/admin";
-                }
-            }, 1200);
+            // ✅ Submit the form
+            this.submit();
         });
     }
 
