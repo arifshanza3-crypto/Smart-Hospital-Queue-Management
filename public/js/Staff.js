@@ -1,7 +1,6 @@
 let timerInterval = null;
 let currentToken = null;
 let timeLeft = 300;
-let currentDepartment = 'all';
 const BASE_URL = '/staff';
 
 // ========== CSRF TOKEN HELPER ==========
@@ -25,23 +24,6 @@ function showToast(message, type = 'success') {
     setTimeout(() => toast.remove(), 3000);
 }
 
-// ========== DEPARTMENT SWITCH ==========
-function switchDepartment(dept) {
-    console.log('Switching to department:', dept);
-    currentDepartment = dept;
-    
-    document.querySelectorAll('.dept-tab').forEach(tab => {
-        tab.style.background = 'rgba(255,255,255,0.1)';
-        tab.style.color = 'white';
-        if (tab.dataset.dept === dept) {
-            tab.style.background = '#00d4ff';
-            tab.style.color = '#0b2e33';
-        }
-    });
-    
-    loadQueue();
-}
-
 // ========== TIMER FUNCTIONS ==========
 function updateTimerDisplay() {
     const minutes = Math.floor(timeLeft / 60);
@@ -61,8 +43,13 @@ function startTimer(tokenId, tokenNumber) {
     document.getElementById('timerModal').style.display = 'flex';
     if (timerInterval) clearInterval(timerInterval);
     timerInterval = setInterval(() => {
-        if (timeLeft <= 0) { clearInterval(timerInterval); cancelPatientTimeout(); }
-        else { timeLeft--; updateTimerDisplay(); }
+        if (timeLeft <= 0) { 
+            clearInterval(timerInterval); 
+            cancelPatientTimeout(); 
+        } else { 
+            timeLeft--; 
+            updateTimerDisplay(); 
+        }
     }, 1000);
 }
 
@@ -100,12 +87,39 @@ function cancelPatientAndCallNext() {
     });
 }
 
+// ========== PATIENT ARRIVED - START SERVICE ==========
+function patientArrived() {
+    clearInterval(timerInterval);
+    document.getElementById('timerModal').style.display = 'none';
+    
+    showToast('Patient #' + currentToken.number + ' arrived! Starting service...', 'success');
+    
+    fetch(BASE_URL + '/start-service', {
+        method: 'POST',
+        headers: { 
+            'Content-Type': 'application/json', 
+            'X-CSRF-TOKEN': getCSRFToken() 
+        },
+        body: JSON.stringify({ token_id: currentToken.id })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            loadQueue();
+            showToast('Patient #' + currentToken.number + ' is now being served!', 'success');
+        } else {
+            showToast(data.message || 'Error starting service', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showToast('Error starting service', 'error');
+    });
+}
+
 // ========== QUEUE FUNCTIONS ==========
 function loadQueue() {
     let url = BASE_URL + '/get-queue';
-    if (currentDepartment !== 'all') {
-        url = BASE_URL + '/get-department-queue?dept=' + encodeURIComponent(currentDepartment);
-    }
     
     console.log('Loading queue from:', url);
     
@@ -117,7 +131,6 @@ function loadQueue() {
         .then(data => {
             console.log('Queue data:', data);
             if (data.success) {
-                // Always use data.queue for both cases
                 let queueData = data.queue || [];
                 let total = data.total || 0;
                 let serving = data.serving || '--';
@@ -201,7 +214,7 @@ function updateQueueTable(queue) {
 
 function updateStats(total, serving, avgWait) {
     document.getElementById('stat-total').innerText = total || 0;
-    document.getElementById('stat-serving').innerText = serving || '--';
+    document.getElementById('stat-serving').innerHTML = serving || '--';
     document.getElementById('stat-avg-time').innerText = (avgWait || 0) + 'm';
 }
 
@@ -217,7 +230,7 @@ function startServing(tokenId, tokenNumber) {
         if (data.success) { 
             startTimer(tokenId, tokenNumber); 
             loadQueue(); 
-            showToast('Calling patient #' + tokenNumber, 'warning');
+            showToast('Calling patient #' + tokenNumber + ' - waiting for arrival', 'warning');
         } else {
             showToast(data.message || 'Error calling patient', 'error');
         }
@@ -293,10 +306,8 @@ function submitPatient() {
     console.log('===== SUBMIT PATIENT CALLED =====');
     
     const name = document.getElementById('p_name').value.trim();
-    const department = document.getElementById('p_department')?.value || 'OPD';
     
     console.log('Name:', name);
-    console.log('Department:', department);
     
     if (!name) {
         showToast('Please enter patient name', 'error');
@@ -320,8 +331,7 @@ function submitPatient() {
             'Accept': 'application/json'
         },
         body: JSON.stringify({
-            name: name,
-            department: department
+            name: name
         })
     })
     .then(response => {
@@ -443,12 +453,12 @@ style.textContent = `
     .status-missed { background: #dc3545; color: #fff; }
     .status-cancelled { background: #6c757d; color: #fff; }
     .badge { background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 4px; font-size: 11px; }
-    .dept-tab {
+    .btn-success {
         transition: all 0.3s ease;
     }
-    .dept-tab:hover {
-        transform: scale(1.02);
-        opacity: 0.9;
+    .btn-success:hover {
+        transform: scale(1.05);
+        background: #218838 !important;
     }
 `;
 document.head.appendChild(style);

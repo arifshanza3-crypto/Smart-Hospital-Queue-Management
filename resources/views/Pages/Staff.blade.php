@@ -36,13 +36,7 @@
     </section>
 
     <main class="container">
-        {{-- ✅ Department Tabs --}}
-        <div class="department-tabs" style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
-            <button class="dept-tab active" data-dept="all" onclick="switchDepartment('all')" style="padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; background: #00d4ff; color: #0b2e33; font-weight: bold;">All Departments</button>
-            <button class="dept-tab" data-dept="OPD" onclick="switchDepartment('OPD')" style="padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; background: rgba(255,255,255,0.1); color: white;">🏥 OPD</button>
-            <button class="dept-tab" data-dept="Pharmacy" onclick="switchDepartment('Pharmacy')" style="padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; background: rgba(255,255,255,0.1); color: white;">💊 Pharmacy</button>
-            <button class="dept-tab" data-dept="Radiology" onclick="switchDepartment('Radiology')" style="padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; background: rgba(255,255,255,0.1); color: white;">🩻 Radiology</button>
-        </div>
+        {{-- ❌ Department Tabs Removed --}}
 
         <div class="data-card">
             <table class="queue-table">
@@ -61,15 +55,16 @@
         </div>
     </main>
 
-    <!-- Timer Modal -->
+    <!-- ✅ Timer Modal with Patient Arrived Button -->
     <div id="timerModal" class="modal" style="display: none;">
         <div class="modal-content" style="text-align: center;">
             <h3>⏰ Waiting for Patient</h3>
             <div id="timerDisplay" style="font-size: 48px; font-weight: bold; margin: 20px 0;">05:00</div>
             <p>Patient has <span id="minutesLeft">5</span> minutes to arrive</p>
-            <div class="modal-footer">
-                <button class="btn btn-primary" onclick="extendTimer()">⏰ Extend (2 min)</button>
-                <button class="btn btn-danger" onclick="cancelCurrentPatient()">❌ Cancel & Next</button>
+            <div class="modal-footer" style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+                <button class="btn btn-success" onclick="patientArrived()" style="background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold;">✅ Patient Arrived - Start Service</button>
+                <button class="btn btn-primary" onclick="extendTimer()" style="background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold;">⏰ Extend (2 min)</button>
+                <button class="btn btn-danger" onclick="cancelCurrentPatient()" style="background: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold;">❌ Cancel & Next</button>
             </div>
         </div>
     </div>
@@ -82,14 +77,7 @@
                 <label>Full Name</label>
                 <input type="text" id="p_name" placeholder="Enter name..." required>
             </div>
-            <div class="form-group">
-                <label>Department</label>
-                <select id="p_department" style="width: 100%; padding: 12px; margin-top: 8px; border: 1px solid #00d4ff; border-radius: 8px; background: #0b2e33; color: #ffffff; outline: none;">
-                    <option value="OPD">OPD</option>
-                    <option value="Pharmacy">Pharmacy</option>
-                    <option value="Radiology">Radiology</option>
-                </select>
-            </div>
+            {{-- ❌ Department Field Removed --}}
             <div class="modal-footer">
                 <button class="btn btn-text" onclick="closeModal('patientModal')">Cancel</button>
                 <button class="btn btn-primary" onclick="submitPatient()">Add to Queue</button>

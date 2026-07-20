@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const slides = document.querySelectorAll('.hero-slide');
     let currentSlideIndex = 0;
-    const slideInterval = 7000; // 7 seconds for better readability
+    const slideInterval = 7000;
 
     function showSlide(index) {
         slides.forEach(slide => slide.classList.remove('active'));
@@ -20,8 +20,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let slideTimer = setInterval(nextSlide, slideInterval);
 
-    // Pause on interaction
+    // Pause on hover
     const heroSection = document.querySelector('.hero-slider-section');
-    heroSection.addEventListener('mouseenter', () => clearInterval(slideTimer));
-    heroSection.addEventListener('mouseleave', () => slideTimer = setInterval(nextSlide, slideInterval));
+    if (heroSection) {
+        heroSection.addEventListener('mouseenter', () => clearInterval(slideTimer));
+        heroSection.addEventListener('mouseleave', () => {
+            slideTimer = setInterval(nextSlide, slideInterval);
+        });
+    }
+
+    // ✅ Auto-start with first slide
+    showSlide(0);
 });

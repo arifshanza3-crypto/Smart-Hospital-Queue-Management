@@ -90,6 +90,10 @@ Route::prefix('staff')->name('staff.')->group(function () {
     Route::get('/dashboard', [StaffController::class, 'dashboard'])->name('dashboard');
     Route::post('/add-patient', [StaffController::class, 'addPatient'])->name('add-patient');
     Route::post('/start-serving', [StaffController::class, 'startServing'])->name('start-serving');
+    
+    // ✅ NEW ROUTE - Patient Arrived - Start Service
+    Route::post('/start-service', [StaffController::class, 'startService'])->name('start-service');
+    
     Route::post('/complete-service', [StaffController::class, 'completeService'])->name('complete-service');
     Route::post('/cancel-token', [StaffController::class, 'cancelToken'])->name('cancel-token');
     Route::post('/call-next', [StaffController::class, 'callNext'])->name('call-next');

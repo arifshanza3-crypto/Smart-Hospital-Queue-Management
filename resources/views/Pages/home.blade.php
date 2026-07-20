@@ -2,7 +2,8 @@
 
 @section('content')
 <link href="{{ asset('css/home.css') }}" rel="stylesheet">
-	<section class="hero-slider-section" >
+
+<section class="hero-slider-section">
     <div class="hero-slider">
         <div class="hero-slide active">
             <div class="hero-content-container">
@@ -50,13 +51,96 @@
         </div>
     </div>
 </section>
+
+{{-- ✅ TOKEN STATUS SECTION --}}
+<section class="token-status-section">
+    <div class="container">
+        <div class="token-status-wrapper">
+            
+            {{-- ✅ All Active Serving Tokens --}}
+            @if(isset($servingTokens) && $servingTokens->count() > 0)
+                <div class="serving-tokens-section">
+                    <h4 class="section-title">🟢 Currently Being Served</h4>
+                    <div class="serving-tokens-grid">
+                        @foreach($servingTokens as $token)
+                        <div class="serving-token-card">
+                            <div class="serving-token-number">{{ $token->token_number }}</div>
+                            <div class="serving-token-details">
+                                <span class="serving-dept">{{ $token->department }}</span>
+                                <span class="serving-patient">{{ $token->patient_name ?? 'N/A' }}</span>
+                            </div>
+                            <div class="serving-status-badge">SERVING</div>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
+            {{-- ✅ User's Own Active Token --}}
+            @if(isset($userToken) && $userToken)
+                <div class="user-token-card">
+                    <div class="token-card-header">
+                        <span class="token-icon">✅</span>
+                        <h3>Your Active Token</h3>
+                    </div>
+                    <div class="token-card-body">
+                        <div class="token-number-large">{{ $userToken->token_number }}</div>
+                        <div class="token-details">
+                            <div class="token-detail-item">
+                                <span class="label">Status</span>
+                                <span class="value status-{{ $userToken->status }}">{{ strtoupper($userToken->status) }}</span>
+                            </div>
+                            <div class="token-detail-item">
+                                <span class="label">Department</span>
+                                <span class="value">{{ $userToken->department }}</span>
+                            </div>
+                            <div class="token-detail-item">
+                                <span class="label">Position</span>
+                                <span class="value">#{{ $userToken->position }}</span>
+                            </div>
+                            <div class="token-detail-item">
+                                <span class="label">Est. Wait</span>
+                                <span class="value">{{ $userToken->estimated_time }} min</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="token-card-footer">
+                        <a href="{{ route('status.page', ['token' => $userToken->token_number]) }}" class="btn-view-status">View Full Status →</a>
+                    </div>
+                </div>
+            @endif
+
+            {{-- All Departments Status --}}
+            <div class="all-departments-status">
+                <h4>Live Department Status</h4>
+                <div class="departments-grid">
+                    @foreach($allDepartments as $dept => $data)
+                    <div class="dept-status-card">
+                        <h5>{{ $dept }}</h5>
+                        <div class="dept-stats">
+                            <div class="dept-stat">
+                                <span class="stat-label">In Queue</span>
+                                <span class="stat-number">{{ $data['total'] }}</span>
+                            </div>
+                            <div class="dept-stat">
+                                <span class="stat-label">Serving</span>
+                                <span class="stat-number">{{ $data['serving'] ? $data['serving']->token_number : '--' }}</span>
+                            </div>
+                        </div>
+                        <a href="/Status?dept={{ $dept }}" class="dept-view-link">View Queue →</a>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 <script src="{{ asset('js/home.js') }}"></script>
 
 @include("component/Get_token")
 @include("component/about-special")
 @include("component/Doctors_details")
 @include("component/contact_form")
-
-
 
 @endsection
