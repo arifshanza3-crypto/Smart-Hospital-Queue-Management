@@ -414,16 +414,17 @@
                         {{-- ✅ Book Now Button --}}
                         <a href="/Token_form" class="btn btn-pill btn-book">Book Now</a>
                         
+                        {{-- ✅ Check if user is logged in --}}
                         @auth
-                            {{-- ✅ Logout Button --}}
-                            <a href="/logout" class="btn btn-pill btn-login" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                            {{-- ✅ Logged In User --}}
+                            <a href="{{ route('logout') }}" class="btn btn-pill btn-login" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                 Logout
                             </a>
                             <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                                 @csrf
                             </form>
 
-                            {{-- ✅ Notification Bell - RIGHT SIDE (after Logout) --}}
+                            {{-- ✅ Notification Bell (Only for logged in users) --}}
                             <div class="notification-wrapper">
                                 <div class="notification-bell" onclick="toggleNotifications()">
                                     <i class="bi bi-bell-fill bell-icon"></i>
@@ -447,8 +448,8 @@
                                 </div>
                             </div>
                         @else
-                            {{-- ✅ Login Button --}}
-                            <a href="/login" class="btn btn-pill btn-login">Login</a>
+                            {{-- ✅ Logged Out User --}}
+                            <a href="{{ route('login') }}" class="btn btn-pill btn-login">Login</a>
                         @endauth
                     </div>
                 </div>
