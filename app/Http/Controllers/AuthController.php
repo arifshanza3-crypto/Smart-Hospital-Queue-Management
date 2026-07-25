@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use App\Models\User;
+use App\Helpers\NotificationHelper;
 use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
@@ -19,7 +20,11 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
+<<<<<<< HEAD
         // Admin login (using email + password)
+=======
+        // ✅ Admin login
+>>>>>>> 6b3e1247f30e0d61f40e6ce48d469327b3ab9296
         if ($request->role === 'admin') {
             $credentials = $request->validate([
                 'email' => 'required|email',
@@ -54,7 +59,11 @@ class AuthController extends Controller
             ])->onlyInput('email');
         }
 
+<<<<<<< HEAD
         // Staff login (using employee_id)
+=======
+        // ✅ Staff login (using employee_id)
+>>>>>>> 6b3e1247f30e0d61f40e6ce48d469327b3ab9296
         if ($request->role === 'staff') {
             $request->validate([
                 'employee_id' => 'required|string',
@@ -96,7 +105,11 @@ class AuthController extends Controller
             ])->onlyInput('employee_id');
         }
 
+<<<<<<< HEAD
         // ✅ USER LOGIN (Regular User - Using email + password)
+=======
+        // ✅ User login (using email + password) - "patient" ki jagah "user"
+>>>>>>> 6b3e1247f30e0d61f40e6ce48d469327b3ab9296
         if ($request->role === 'user') {
             $credentials = $request->validate([
                 'email' => 'required|email',
@@ -111,6 +124,7 @@ class AuthController extends Controller
                 
                 Log::info('User Login Success:', ['user' => $user->email, 'role' => $user->role]);
                 
+<<<<<<< HEAD
                 // ✅ ROLE BASED REDIRECTION - USER
                 if ($user->role === 'user' || $user->role === 'patient') {
                     return redirect('/')->with('success', 'Welcome back, ' . $user->name . '!');
@@ -119,6 +133,10 @@ class AuthController extends Controller
                 // Agar user admin hai toh admin panel
                 if ($user->role === 'admin') {
                     return redirect('/admin/doctor-management')->with('success', 'Welcome back, ' . $user->name . '!');
+=======
+                if ($user->role === 'user') {
+                    return redirect('/')->with('success', 'Welcome back, ' . ($user->name ?? $user->full_name) . '!');
+>>>>>>> 6b3e1247f30e0d61f40e6ce48d469327b3ab9296
                 }
                 
                 return redirect('/');
@@ -127,7 +145,11 @@ class AuthController extends Controller
             Log::error('User Login Failed:', ['email' => $request->email]);
 
             return back()->withErrors([
+<<<<<<< HEAD
                 'email' => 'Invalid credentials.',
+=======
+                'email' => 'Invalid user credentials.',
+>>>>>>> 6b3e1247f30e0d61f40e6ce48d469327b3ab9296
             ])->onlyInput('email');
         }
 
@@ -158,6 +180,7 @@ class AuthController extends Controller
                 ]);
             }
 
+<<<<<<< HEAD
             $user = User::create([
                 'name' => $request->name,
                 'full_name' => $request->full_name ?? $request->name,
@@ -188,6 +211,17 @@ class AuthController extends Controller
             Log::error('Signup error: ' . $e->getMessage());
             return back()->with('error', 'Error: ' . $e->getMessage())->withInput();
         }
+=======
+        // ✅ Notification for admin about new staff registration
+        NotificationHelper::sendToAdmin(
+            '👤 New Staff Registration',
+            "New staff member {$request->full_name} has registered and is pending approval",
+            null,
+            ['staff_name' => $request->full_name, 'email' => $request->email]
+        );
+
+        return redirect('/login')->with('success', 'Registration successful! Waiting for admin approval.');
+>>>>>>> 6b3e1247f30e0d61f40e6ce48d469327b3ab9296
     }
 
     public function logout(Request $request)

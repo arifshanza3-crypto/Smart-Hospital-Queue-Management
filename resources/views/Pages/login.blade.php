@@ -84,7 +84,11 @@
     <form method="POST" action="{{ route('login.post') }}">
         @csrf
 
+<<<<<<< HEAD
         <!-- ✅ ROLE SELECTION - Admin, Staff, User -->
+=======
+        <!-- ✅ ROLE SELECTION - Patient ki jagah User -->
+>>>>>>> 6b3e1247f30e0d61f40e6ce48d469327b3ab9296
         <div class="form-group">
             <label><i class="fas fa-user-tag"></i> LOGIN AS</label>
             <select name="role" id="roleSelect" class="form-control" required>
@@ -95,15 +99,24 @@
         </div>
 
         <!-- Email Field (for Admin & User) -->
+<<<<<<< HEAD
         <div class="form-group" id="emailFields">
+=======
+        <div class="form-group" id="emailField">
+>>>>>>> 6b3e1247f30e0d61f40e6ce48d469327b3ab9296
             <label><i class="fas fa-envelope"></i> Email Address</label>
-            <input type="email" name="email" class="form-control" placeholder="Enter your email" value="{{ old('email') }}">
+            <input type="email" name="email" id="emailInput" class="form-control" placeholder="Enter your email" value="{{ old('email') }}" required>
         </div>
 
+<<<<<<< HEAD
         <!-- Employee ID Field (for Staff) -->
         <div class="form-group" id="staffFields" style="display: none;">
+=======
+        <!-- Employee ID Field (for Staff) - Hidden by default -->
+        <div class="form-group" id="staffField" style="display: none;">
+>>>>>>> 6b3e1247f30e0d61f40e6ce48d469327b3ab9296
             <label><i class="fas fa-id-badge"></i> Employee ID</label>
-            <input type="text" name="employee_id" class="form-control" placeholder="Enter your employee ID" value="{{ old('employee_id') }}">
+            <input type="text" name="employee_id" id="employeeInput" class="form-control" placeholder="Enter your employee ID" value="{{ old('employee_id') }}">
         </div>
 
         <div class="form-group">
@@ -121,6 +134,7 @@
 </div>
 
 <script>
+<<<<<<< HEAD
     // Toggle between fields based on role
     document.querySelector('select[name="role"]').addEventListener('change', function() {
         const emailFields = document.getElementById('emailFields');
@@ -138,7 +152,33 @@
             staffFields.style.display = 'block';
             emailInput.required = false;
             employeeInput.required = true;
+=======
+    document.addEventListener('DOMContentLoaded', function() {
+        const roleSelect = document.getElementById('roleSelect');
+        const emailField = document.getElementById('emailField');
+        const staffField = document.getElementById('staffField');
+        const emailInput = document.getElementById('emailInput');
+        const employeeInput = document.getElementById('employeeInput');
+
+        function updateFields() {
+            const role = roleSelect.value;
+
+            if (role === 'staff') {
+                emailField.style.display = 'none';
+                staffField.style.display = 'block';
+                emailInput.removeAttribute('required');
+                employeeInput.setAttribute('required', 'required');
+            } else {
+                emailField.style.display = 'block';
+                staffField.style.display = 'none';
+                emailInput.setAttribute('required', 'required');
+                employeeInput.removeAttribute('required');
+            }
+>>>>>>> 6b3e1247f30e0d61f40e6ce48d469327b3ab9296
         }
+
+        roleSelect.addEventListener('change', updateFields);
+        updateFields();
     });
 
     // Trigger change on load
@@ -147,5 +187,6 @@
         document.querySelector('select[name="role"]').dispatchEvent(event);
     });
 </script>
+
 </body>
 </html>
