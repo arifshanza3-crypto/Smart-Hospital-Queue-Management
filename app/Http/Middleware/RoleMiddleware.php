@@ -10,26 +10,47 @@ class RoleMiddleware
 {
     public function handle(Request $request, Closure $next, ...$roles)
     {
+        // Check if user is logged in
         if (!Auth::check()) {
-            return redirect('/login');
+            return redirect('/login')->with('error', 'Please login first.');
         }
 
         $user = Auth::user();
 
-        if (in_array($user->role, $roles)) {
+        // ✅ ADMIN - Can access everything
+        if ($user->role === 'admin') {
             return $next($request);
         }
 
-        // If user is admin, allow all admin routes
-        if ($user->role === 'admin' && in_array('admin', $roles)) {
-            return $next($request);
+        // ✅ STAFF - Can access staff and website only
+        if ($user->role === 'staff') {
+            // Check if trying to access admin routes
+            if ($request->route()->getPrefix() === 'admin') {
+                return abort(403, '❌ Access Denied! Staff cannot access Admin Panel.');
+            }
+            // Check if role allows staff
+            if (in_array('staff', $roles) || in_array('user', $roles)) {
+                return $next($request);
+            }
+            return abort(403, '❌ Access Denied!');
         }
 
-        // If user is staff, allow staff routes
-        if ($user->role === 'staff' && in_array('staff', $roles)) {
-            return $next($request);
+        // ✅ USER - Can access website only
+        if ($user->role === 'user' || $user->role === 'patient') {
+            // Check if trying to access admin or staff routes
+            if ($request->route()->getPrefix() === 'admin') {
+                return abort(403, '❌ Access Denied! Users cannot access Admin Panel.');
+            }
+            if ($request->route()->getPrefix() === 'staff') {
+                return abort(403, '❌ Access Denied! Users cannot access Staff Panel.');
+            }
+            // Only allow user routes
+            if (in_array('user', $roles) || in_array('patient', $roles)) {
+                return $next($request);
+            }
+            return abort(403, '❌ Access Denied!');
         }
 
-        return abort(403, 'Unauthorized access.');
+        return abort(403, '❌ Unauthorized access.');
     }
 }

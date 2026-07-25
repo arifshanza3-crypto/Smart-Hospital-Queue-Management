@@ -15,7 +15,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StaffProfileController;
 
 // =============================================
-// ✅ SETUP ROUTE - LIVE SERVER KE LIYE
+// ✅ SETUP ROUTE
 // =============================================
 Route::get('/setup', function() {
     try {
@@ -25,7 +25,7 @@ Route::get('/setup', function() {
         \Artisan::call('view:clear');
         \Artisan::call('route:clear');
         \Artisan::call('storage:link');
-        return "✅ Setup complete! All migrations run successfully!";
+        return "✅ Setup complete!";
     } catch (\Exception $e) {
         return "❌ Error: " . $e->getMessage();
     }
@@ -39,14 +39,7 @@ Route::get('/test', function () {
 });
 
 // =============================================
-// ✅ ADMIN REDIRECT
-// =============================================
-Route::get('/admin', function () {
-    return redirect('/admin/doctor-management');
-})->name('admin.redirect');
-
-// =============================================
-// ✅ MAIN WEBSITE ROUTES (Public Pages)
+// ✅ PUBLIC ROUTES (No Auth Required - Everyone can access)
 // =============================================
 Route::get('/', [PageController::class, 'home'])->name('home');
 Route::get('/about', [PageController::class, 'about'])->name('about');
@@ -54,13 +47,6 @@ Route::get('/services', [PageController::class, 'services'])->name('services');
 Route::get('/contact', [PageController::class, 'contact'])->name('contact');
 Route::get('/booking', [PageController::class, 'booking'])->name('booking');
 Route::get('/Doctors', [PageController::class, 'Doctors'])->name('doctors');
-
-// ✅ STAFF PAGE ROUTE
-Route::get('/Staff', [PageController::class, 'Staff'])->name('Staff');
-
-// =============================================
-// ✅ TOKEN ROUTES
-// =============================================
 Route::get('/Token_form', [TokenController::class, 'showForm'])->name('token.form');
 Route::post('/token/generate', [TokenController::class, 'generateToken'])->name('token.generate');
 Route::get('/Status', [PageController::class, 'Status'])->name('status.page');
@@ -84,16 +70,13 @@ Route::get('/reset-password/{token}', [AuthController::class, 'showResetForm'])-
 Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 
 // =============================================
-// ✅ STAFF ROUTES (FULL)
+// ✅ STAFF ROUTES (Only Staff & Admin can access)
 // =============================================
-Route::prefix('staff')->name('staff.')->group(function () {
+Route::prefix('staff')->name('staff.')->middleware(['auth', 'role:staff,admin'])->group(function () {
     Route::get('/dashboard', [StaffController::class, 'dashboard'])->name('dashboard');
     Route::post('/add-patient', [StaffController::class, 'addPatient'])->name('add-patient');
     Route::post('/start-serving', [StaffController::class, 'startServing'])->name('start-serving');
-    
-    // ✅ NEW ROUTE - Patient Arrived - Start Service
     Route::post('/start-service', [StaffController::class, 'startService'])->name('start-service');
-    
     Route::post('/complete-service', [StaffController::class, 'completeService'])->name('complete-service');
     Route::post('/cancel-token', [StaffController::class, 'cancelToken'])->name('cancel-token');
     Route::post('/call-next', [StaffController::class, 'callNext'])->name('call-next');
@@ -103,8 +86,8 @@ Route::prefix('staff')->name('staff.')->group(function () {
     Route::get('/get-department-queue', [StaffController::class, 'getDepartmentQueue'])->name('get-department-queue');
     Route::get('/get-department-stats', [StaffController::class, 'getDepartmentStats'])->name('get-department-stats');
     
-    // ✅ STAFF PROFILE ROUTES
-    Route::prefix('profile')->name('profile.')->middleware('auth')->group(function () {
+    // Staff Profile
+    Route::prefix('profile')->name('profile.')->group(function () {
         Route::get('/', [StaffProfileController::class, 'index'])->name('index');
         Route::put('/update', [StaffProfileController::class, 'update'])->name('update');
         Route::put('/password', [StaffProfileController::class, 'updatePassword'])->name('password');
@@ -112,9 +95,9 @@ Route::prefix('staff')->name('staff.')->group(function () {
 });
 
 // =============================================
-// ✅ ADMIN ROUTES (ALL IN ONE PLACE)
+// ✅ ADMIN ROUTES (Only Admin can access)
 // =============================================
-Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function () {
     
     // Admin Dashboard
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
@@ -130,7 +113,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/user-management', [UserController::class, 'index'])->name('user-management');
     Route::get('/services-management', [ServiceController::class, 'index'])->name('services-management');
 
-    // DOCTOR MANAGEMENT ROUTES
+    // DOCTOR MANAGEMENT
     Route::prefix('doctors')->name('doctors.')->group(function () {
         Route::get('/', [DoctorController::class, 'index'])->name('index');
         Route::get('/create', [DoctorController::class, 'create'])->name('create');
@@ -140,7 +123,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
         Route::delete('/{id}', [DoctorController::class, 'destroy'])->name('destroy');
     });
     
-    // SERVICE MANAGEMENT ROUTES
+    // SERVICE MANAGEMENT
     Route::prefix('services')->name('services.')->group(function () {
         Route::get('/', [ServiceController::class, 'index'])->name('index');
         Route::get('/create', [ServiceController::class, 'create'])->name('create');
@@ -154,7 +137,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
         Route::post('/bulk-delete', [ServiceController::class, 'bulkDelete'])->name('bulk-delete');
     });
     
-    // USER MANAGEMENT ROUTES
+    // USER MANAGEMENT
     Route::prefix('users')->name('users.')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('index');
         Route::get('/create', [UserController::class, 'create'])->name('create');
@@ -166,28 +149,23 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
         Route::get('/search', [UserController::class, 'search'])->name('search');
     });
 
-    // QUEUE REPORTS ROUTES
+    // QUEUE REPORTS
     Route::prefix('queue-reports')->name('queue-reports.')->group(function () {
         Route::get('/', [QueueReportController::class, 'index'])->name('index');
         Route::get('/{id}', [QueueReportController::class, 'show'])->name('show');
         Route::get('/export/csv', [QueueReportController::class, 'export'])->name('export');
     });
 
-    // SETTINGS ROUTES
+    // SETTINGS
     Route::prefix('settings')->name('settings.')->group(function () {
         Route::get('/', [SettingController::class, 'index'])->name('index');
         Route::put('/update', [SettingController::class, 'update'])->name('update');
     });
 
-    // ✅ ADMIN PROFILE ROUTES
+    // ADMIN PROFILE
     Route::prefix('profile')->name('profile.')->group(function () {
         Route::get('/', [ProfileController::class, 'index'])->name('index');
         Route::put('/update', [ProfileController::class, 'update'])->name('update');
         Route::put('/password', [ProfileController::class, 'updatePassword'])->name('password');
     });
 });
-
-// =============================================
-// ✅ USER ROUTES (Public - No Auth Required)
-// =============================================
-Route::get('/profile', [UserController::class, 'profile'])->name('user.profile');
