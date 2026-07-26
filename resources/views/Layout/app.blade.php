@@ -8,6 +8,7 @@
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <style>
         :root {
@@ -20,7 +21,7 @@
         html { scroll-behavior: smooth; }
         body { background-color: #3e8686; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; }
 
-        /* --- STATIC NAVIGATION --- */
+        /* --- FULL WIDTH STATIC NAVIGATION --- */
         .navbar-wrapper {
             padding: 25px 0;
             display: flex;
@@ -38,8 +39,8 @@
             padding: 0px 0px !important;
             box-shadow: 0 15px 35px rgba(0,0,0,0.4);
             border: 1px solid rgba(255,255,255,0.15);
-            width: auto;
-            min-width: 85%;
+            width: 100%;
+            max-width: 95%;
         }
 
         .navbar-brand {
@@ -129,18 +130,20 @@
         main { padding-top: 140px; min-height: 80vh; }
 
         /* ============================================ */
-        /* ✅ NOTIFICATION BELL - RIGHT SIDE            */
+        /* ✅ AUTH BUTTONS - RIGHT SIDE                 */
         /* ============================================ */
         .auth-buttons {
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 8px;
         }
 
+        /* ============================================ */
+        /* ✅ NOTIFICATION BELL                         */
+        /* ============================================ */
         .notification-wrapper {
             position: relative;
             display: inline-block;
-            margin: 0 5px;
         }
 
         .notification-bell {
@@ -150,12 +153,12 @@
             transition: all 0.3s ease;
             position: relative;
             background: rgba(255, 215, 0, 0.1);
-            padding: 8px 14px;
+            padding: 8px 12px;
             border-radius: 50px;
             border: 1px solid rgba(255, 215, 0, 0.15);
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
             text-decoration: none;
         }
 
@@ -168,14 +171,6 @@
 
         .notification-bell .bell-icon {
             font-size: 18px;
-        }
-
-        .notification-bell .bell-text {
-            font-size: 11px;
-            font-weight: 600;
-            color: rgba(255, 255, 255, 0.7);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
         .notification-badge {
@@ -206,8 +201,9 @@
             right: 0;
             width: 380px;
             max-height: 450px;
-            background: #1a1a2e;
-            border: 1px solid rgba(255, 215, 0, 0.2);
+            background: var(--nav-bg-opaque);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
             z-index: 1000;
@@ -346,6 +342,149 @@
             text-decoration: underline;
         }
 
+        /* ============================================ */
+        /* ✅ PROFILE DROPDOWN - NAV BAR COLOR          */
+        /* ============================================ */
+        .profile-wrapper {
+            position: relative;
+            display: inline-block;
+            margin-left: 5px;
+        }
+
+        .profile-btn {
+            cursor: pointer;
+            color: #ffffff;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 6px 12px 6px 6px;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .profile-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: scale(1.02);
+        }
+
+        .profile-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00d4ff, #0088cc);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 14px;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-name-display {
+            font-size: 13px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.85);
+            max-width: 100px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .profile-chevron {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .profile-btn:hover .profile-chevron {
+            transform: rotate(180deg);
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .profile-dropdown {
+            position: absolute;
+            top: 45px;
+            right: 0;
+            width: 260px;
+            background: var(--nav-bg-opaque);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            overflow: hidden;
+            display: none;
+        }
+
+        .profile-dropdown.active {
+            display: block !important;
+            animation: slideDown 0.3s ease;
+        }
+
+        .profile-dropdown .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 18px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .profile-dropdown .dropdown-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+        }
+
+        .profile-dropdown .dropdown-item i {
+            width: 20px;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 16px;
+        }
+
+        .profile-dropdown .dropdown-item:hover i {
+            color: #00d4ff;
+        }
+
+        .profile-dropdown .dropdown-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.05);
+            margin: 4px 16px;
+        }
+
+        .profile-dropdown .dropdown-item.logout-item {
+            color: #f87171;
+        }
+
+        .profile-dropdown .dropdown-item.logout-item i {
+            color: #ef4444;
+        }
+
+        .profile-dropdown .dropdown-item.logout-item:hover {
+            background: rgba(239, 68, 68, 0.08);
+            color: #ef4444;
+        }
+
         /* --- FOOTER --- */
         .footer-main {
            background: var(--nav-bg-opaque) !important;
@@ -386,6 +525,45 @@
             font-size: 13px;
             color: rgba(255,255,255,0.3);
         }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .navbar {
+                max-width: 100%;
+                border-radius: 0;
+            }
+            .navbar-wrapper {
+                padding: 0;
+            }
+            main {
+                padding-top: 80px;
+            }
+            .profile-name-display {
+                display: none;
+            }
+            .auth-buttons {
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .btn-pill {
+                padding: 6px 14px;
+                font-size: 10px;
+            }
+            .nav-logo-img {
+                height: 50px;
+            }
+            .notification-dropdown {
+                width: 320px;
+                right: -20px;
+            }
+            .profile-dropdown {
+                width: 220px;
+                right: -20px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -406,7 +584,6 @@
                         <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
                         <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
                         <li class="nav-item"><a class="nav-link" href="/services">Services</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/Staff">Staff</a></li>
                         <li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
                     </ul>
                     
@@ -416,19 +593,51 @@
                         
                         {{-- ✅ Check if user is logged in --}}
                         @auth
-                            {{-- ✅ Logged In User --}}
-                            <a href="{{ route('logout') }}" class="btn btn-pill btn-login" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                Logout
-                            </a>
-                            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                                @csrf
-                            </form>
+                            {{-- ✅ Logged In User - Profile + Notifications --}}
+                            
+                            {{-- Profile Dropdown --}}
+                            <div class="profile-wrapper">
+                                <div class="profile-btn" onclick="toggleProfileDropdown()">
+                                    <div class="profile-avatar">
+                                        @if(auth()->user()->avatar)
+                                            <img src="{{ Storage::url(auth()->user()->avatar) }}" alt="Profile">
+                                        @else
+                                            {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 2)) }}
+                                        @endif
+                                    </div>
+                                    <span class="profile-name-display">{{ auth()->user()->name ?? 'User' }}</span>
+                                    <i class="fas fa-chevron-down profile-chevron"></i>
+                                </div>
+                                
+                                <div class="profile-dropdown" id="profileDropdown">
+                                    {{-- My Profile - Always Visible --}}
+                                    <a href="{{ route('admin.profile.index') ?? '#' }}" class="dropdown-item">
+                                        <i class="fas fa-user"></i> My Profile
+                                    </a>
+                                    
+                                    {{-- My Dashboard - Always Visible for all logged in users --}}
+                                    <a href="/dashboard" class="dropdown-item">
+                                        <i class="fas fa-chart-line"></i> My Dashboard
+                                    </a>
+                                    
+                                    {{-- Staff Dashboard - Only for Admin & Staff --}}
+                                    @if(auth()->user()->role === 'admin' || auth()->user()->role === 'staff')
+                                        <a href="/staff/dashboard" class="dropdown-item">
+                                            <i class="fas fa-users-cog"></i> Staff Dashboard
+                                        </a>
+                                    @endif
+                                    
+                                    <div class="dropdown-divider"></div>
+                                    <a href="#" class="dropdown-item logout-item" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                        <i class="fas fa-sign-out-alt"></i> Logout
+                                    </a>
+                                </div>
+                            </div>
 
-                            {{-- ✅ Notification Bell (Only for logged in users) --}}
+                            {{-- Notification Bell (Only Icon) --}}
                             <div class="notification-wrapper">
                                 <div class="notification-bell" onclick="toggleNotifications()">
                                     <i class="bi bi-bell-fill bell-icon"></i>
-                                    <span class="bell-text">Alerts</span>
                                     <span class="notification-badge" id="notificationBadge">0</span>
                                 </div>
                                 <div class="notification-dropdown" id="notificationDropdown">
@@ -447,6 +656,10 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                @csrf
+                            </form>
                         @else
                             {{-- ✅ Logged Out User --}}
                             <a href="{{ route('login') }}" class="btn btn-pill btn-login">Login</a>
@@ -513,6 +726,65 @@
     <script src="{{ asset('js/notifications.js') }}"></script>
     
     <script>
+        // ============================================
+        // TOGGLE FUNCTIONS
+        // ============================================
+        
+        // Toggle Profile Dropdown
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            const isOpen = dropdown.classList.contains('active');
+            
+            // Close all dropdowns first
+            closeAllDropdowns();
+            
+            if (!isOpen) {
+                dropdown.classList.add('active');
+            }
+        }
+
+        // Toggle Notifications
+        function toggleNotifications() {
+            const dropdown = document.getElementById('notificationDropdown');
+            const isOpen = dropdown.classList.contains('active');
+            
+            // Close all dropdowns first
+            closeAllDropdowns();
+            
+            if (!isOpen) {
+                dropdown.classList.add('active');
+            }
+        }
+
+        // Close all dropdowns
+        function closeAllDropdowns() {
+            document.querySelectorAll('.profile-dropdown, .notification-dropdown').forEach(el => {
+                el.classList.remove('active');
+            });
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(event) {
+            const isClickInside = event.target.closest('.profile-wrapper') || 
+                                 event.target.closest('.notification-wrapper') ||
+                                 event.target.closest('.profile-dropdown') ||
+                                 event.target.closest('.notification-dropdown');
+            
+            if (!isClickInside) {
+                closeAllDropdowns();
+            }
+        });
+
+        // Close dropdowns on Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeAllDropdowns();
+            }
+        });
+
+        // ============================================
+        // ACTIVE NAV LINK
+        // ============================================
         document.addEventListener("DOMContentLoaded", function() {
             const currentPath = window.location.pathname;
             const navLinks = document.querySelectorAll('.nav-link');
@@ -525,6 +797,20 @@
                 }
             });
         });
+
+        // ============================================
+        // NOTIFICATION MARK ALL READ
+        // ============================================
+        function markAllRead() {
+            document.querySelectorAll('.notification-item.unread').forEach(item => {
+                item.classList.remove('unread');
+            });
+            const badge = document.getElementById('notificationBadge');
+            if (badge) {
+                badge.textContent = '0';
+                badge.style.display = 'none';
+            }
+        }
     </script>
 </body>
 </html>

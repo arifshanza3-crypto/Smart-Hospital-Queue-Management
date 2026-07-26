@@ -153,23 +153,54 @@ class AuthController extends Controller
                 ]);
             }
 
-        // ✅ Notification for admin about new staff registration
-        NotificationHelper::sendToAdmin(
-            '👤 New Staff Registration',
-            "New staff member {$request->full_name} has registered and is pending approval",
-            null,
-            ['staff_name' => $request->full_name, 'email' => $request->email]
-        );
+            // Create user
+            $user = User::create([
+                'name' => $request->name,
+                'full_name' => $request->full_name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'phone' => $request->phone,
+                'role' => $request->role,
+                'employee_id' => $request->employee_id,
+                'status' => $request->role === 'staff' ? 'pending' : 'active',
+            ]);
 
-        return redirect('/login')->with('success', 'Registration successful! Waiting for admin approval.');
+            // ✅ Notification for admin about new staff registration
+            NotificationHelper::sendToAdmin(
+                '👤 New Staff Registration',
+                "New staff member {$request->full_name} has registered and is pending approval",
+                null,
+                ['staff_name' => $request->full_name, 'email' => $request->email]
+            );
+
+            return redirect('/login')->with('success', 'Registration successful! Waiting for admin approval.');
+        } catch (\Exception $e) {
+            Log::error('Signup Error: ' . $e->getMessage());
+            return back()->with('error', 'Registration failed: ' . $e->getMessage())->withInput();
+        }
     }
 
     public function logout(Request $request)
     {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-        return redirect('/login');
+        try {
+            // Log the user out
+            Auth::logout();
+            
+            // Invalidate the session
+            $request->session()->invalidate();
+            
+            // Regenerate the CSRF token
+            $request->session()->regenerateToken();
+            
+            // Clear all session data
+            $request->session()->flush();
+            
+            return redirect('/login')->with('success', 'You have been logged out successfully.');
+        } catch (\Exception $e) {
+            Log::error('Logout Error: ' . $e->getMessage());
+            // Even if there's an error, try to redirect to login
+            return redirect('/login')->with('error', 'Logout completed.');
+        }
     }
 
     public function showForgotForm()
