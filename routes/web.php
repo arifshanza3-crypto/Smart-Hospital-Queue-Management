@@ -96,7 +96,7 @@ Route::prefix('staff')->name('staff.')->middleware(['auth', 'role:staff,admin'])
 });
 
 // =============================================
-// ✅ NOTIFICATION ROUTES (For All Users)
+// ✅ NOTIFICATION ROUTES (For All Authenticated Users)
 // =============================================
 Route::prefix('notifications')->name('notifications.')->middleware('auth')->group(function () {
     Route::get('/', [NotificationController::class, 'index'])->name('index');
@@ -106,13 +106,13 @@ Route::prefix('notifications')->name('notifications.')->middleware('auth')->grou
     Route::delete('/{id}', [NotificationController::class, 'destroy'])->name('destroy');
 });
 
-// ✅ Notification Page (View)
+// ✅ Notification Page (View) - For All Authenticated Users
 Route::get('/notifications-page', function() {
     return view('Pages.Notifications.index');
 })->name('notifications.page')->middleware('auth');
 
 // =============================================
-// ✅ ADMIN ROUTES (Authenticated)
+// ✅ ADMIN ROUTES (Only Admin can access)
 // =============================================
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function () {
     
@@ -186,3 +186,19 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
         Route::put('/password', [ProfileController::class, 'updatePassword'])->name('password');
     });
 });
+
+// =============================================
+// ✅ USER DASHBOARD (For All Authenticated Users)
+// =============================================
+Route::get('/dashboard', function() {
+    $user = auth()->user();
+    
+    // Redirect based on role
+    if ($user->role === 'admin') {
+        return redirect('/admin/doctor-management');
+    } elseif ($user->role === 'staff') {
+        return redirect('/staff/dashboard');
+    } else {
+        return redirect('/');
+    }
+})->middleware('auth')->name('dashboard');

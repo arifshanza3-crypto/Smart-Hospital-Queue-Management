@@ -593,8 +593,6 @@
                         
                         {{-- ✅ Check if user is logged in --}}
                         @auth
-                            {{-- ✅ Logged In User - Profile + Notifications --}}
-                            
                             {{-- Profile Dropdown --}}
                             <div class="profile-wrapper">
                                 <div class="profile-btn" onclick="toggleProfileDropdown()">
@@ -615,15 +613,27 @@
                                         <i class="fas fa-user"></i> My Profile
                                     </a>
                                     
-                                    {{-- My Dashboard - Always Visible for all logged in users --}}
-                                    <a href="/dashboard" class="dropdown-item">
-                                        <i class="fas fa-chart-line"></i> My Dashboard
-                                    </a>
-                                    
-                                    {{-- Staff Dashboard - Only for Admin & Staff --}}
-                                    @if(auth()->user()->role === 'admin' || auth()->user()->role === 'staff')
+                                    {{-- Role-based menu items --}}
+                                    @if(auth()->user()->role === 'admin')
+                                        <a href="/admin/doctor-management" class="dropdown-item">
+                                            <i class="fas fa-chart-line"></i> Admin Dashboard
+                                        </a>
                                         <a href="/staff/dashboard" class="dropdown-item">
                                             <i class="fas fa-users-cog"></i> Staff Dashboard
+                                        </a>
+                                        <a href="/" class="dropdown-item">
+                                            <i class="fas fa-globe"></i> Website
+                                        </a>
+                                    @elseif(auth()->user()->role === 'staff')
+                                        <a href="/staff/dashboard" class="dropdown-item">
+                                            <i class="fas fa-users-cog"></i> Staff Dashboard
+                                        </a>
+                                        <a href="/" class="dropdown-item">
+                                            <i class="fas fa-globe"></i> Website
+                                        </a>
+                                    @else
+                                        <a href="/" class="dropdown-item">
+                                            <i class="fas fa-globe"></i> Website
                                         </a>
                                     @endif
                                     

@@ -8,6 +8,14 @@ use Illuminate\Support\Facades\Auth;
 
 class RoleMiddleware
 {
+    /**
+     * Handle an incoming request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Closure  $next
+     * @param  mixed  ...$roles
+     * @return mixed
+     */
     public function handle(Request $request, Closure $next, ...$roles)
     {
         // Check if user is logged in
@@ -16,41 +24,51 @@ class RoleMiddleware
         }
 
         $user = Auth::user();
+        $userRole = $user->role;
+        $routePrefix = $request->route()->getPrefix();
+        $routeName = $request->route()->getName();
 
-        // ✅ ADMIN - Can access everything
-        if ($user->role === 'admin') {
+        // ✅ ADMIN - Can access everything (full access)
+        if ($userRole === 'admin') {
             return $next($request);
         }
 
-        // ✅ STAFF - Can access staff and website only
-        if ($user->role === 'staff') {
-            // Check if trying to access admin routes
-            if ($request->route()->getPrefix() === 'admin') {
+        // ✅ STAFF - Can access staff routes and website, but NOT admin routes
+        if ($userRole === 'staff') {
+            // Block access to admin routes
+            if ($routePrefix === 'admin' || str_starts_with($routeName, 'admin.')) {
                 return abort(403, '❌ Access Denied! Staff cannot access Admin Panel.');
             }
-            // Check if role allows staff
-            if (in_array('staff', $roles) || in_array('user', $roles)) {
+            
+            // Allow access to staff routes and website
+            if (in_array('staff', $roles) || in_array('user', $roles) || $routePrefix === null) {
                 return $next($request);
             }
-            return abort(403, '❌ Access Denied!');
+            
+            return abort(403, '❌ Access Denied! You do not have permission to access this page.');
         }
 
-        // ✅ USER - Can access website only
-        if ($user->role === 'user' || $user->role === 'patient') {
-            // Check if trying to access admin or staff routes
-            if ($request->route()->getPrefix() === 'admin') {
+        // ✅ USER / PATIENT - Can access website only
+        if ($userRole === 'user' || $userRole === 'patient') {
+            // Block access to admin routes
+            if ($routePrefix === 'admin' || str_starts_with($routeName, 'admin.')) {
                 return abort(403, '❌ Access Denied! Users cannot access Admin Panel.');
             }
-            if ($request->route()->getPrefix() === 'staff') {
+            
+            // Block access to staff routes
+            if ($routePrefix === 'staff' || str_starts_with($routeName, 'staff.')) {
                 return abort(403, '❌ Access Denied! Users cannot access Staff Panel.');
             }
-            // Only allow user routes
-            if (in_array('user', $roles) || in_array('patient', $roles)) {
+            
+            // Allow access to public routes (website)
+            if (in_array('user', $roles) || in_array('patient', $roles) || $routePrefix === null) {
                 return $next($request);
             }
-            return abort(403, '❌ Access Denied!');
+            
+            return abort(403, '❌ Access Denied! You do not have permission to access this page.');
         }
 
-        return abort(403, '❌ Unauthorized access.');
+        // ✅ If no role matches, deny access
+        return abort(403, '❌ Unauthorized access. Please contact administrator.');
     }
 }

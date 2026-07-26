@@ -49,15 +49,19 @@
         .mt-3 { margin-top: 15px; }
         .text-muted { color: #666; font-size: 14px; }
         .text-accent { color: #00d4ff; text-decoration: none; font-weight: 600; }
-        select.form-control {
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 15px center;
-            cursor: pointer;
-        }
         .forgot-link { color: #00d4ff; text-decoration: none; font-size: 14px; }
         .forgot-link:hover { text-decoration: underline; }
+        
+        /* Role Badge */
+        .role-hint {
+            text-align: center;
+            margin-top: 5px;
+            font-size: 12px;
+            color: #999;
+        }
+        .role-hint i {
+            color: #00d4ff;
+        }
     </style>
 </head>
 <body>
@@ -84,30 +88,15 @@
     <form method="POST" action="{{ route('login.post') }}">
         @csrf
 
-        <!-- ✅ ROLE SELECTION - Patient ki jagah User -->
+        <!-- Email Field -->
         <div class="form-group">
-            <label><i class="fas fa-user-tag"></i> LOGIN AS</label>
-            <select name="role" id="roleSelect" class="form-control" required>
-                <option value="admin">Admin</option>
-                <option value="staff">Staff</option>
-                <option value="user">User</option>
-            </select>
-        </div>
-
-        <!-- Email Field (for Admin & User) -->
-        <div class="form-group" id="emailField">
             <label><i class="fas fa-envelope"></i> Email Address</label>
-            <input type="email" name="email" id="emailInput" class="form-control" placeholder="Enter your email" value="{{ old('email') }}" required>
+            <input type="email" name="email" class="form-control" placeholder="Enter your email" value="{{ old('email') }}" required>
         </div>
 
-        <!-- Employee ID Field (for Staff) - Hidden by default -->
-        <div class="form-group" id="staffField" style="display: none;">
-            <label><i class="fas fa-id-badge"></i> Employee ID</label>
-            <input type="text" name="employee_id" id="employeeInput" class="form-control" placeholder="Enter your employee ID" value="{{ old('employee_id') }}">
-        </div>
-
+        <!-- Password Field -->
         <div class="form-group">
-            <label><i class="fas fa-lock"></i> PASSWORD</label>
+            <label><i class="fas fa-lock"></i> Password</label>
             <input type="password" name="password" class="form-control" placeholder="Enter your password" required>
         </div>
 
@@ -117,43 +106,9 @@
     <div class="text-center mt-3">
         <p class="text-muted">Don't have an account? <a href="{{ route('signup') }}" class="text-accent">Sign Up Now</a></p>
         <p><a href="{{ route('password.request') }}" class="forgot-link">Forgot Password?</a></p>
+        <p class="role-hint"><i class="fas fa-info-circle"></i> Access based on your role (Admin/Staff/User)</p>
     </div>
 </div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const roleSelect = document.getElementById('roleSelect');
-        const emailField = document.getElementById('emailField');
-        const staffField = document.getElementById('staffField');
-        const emailInput = document.getElementById('emailInput');
-        const employeeInput = document.getElementById('employeeInput');
-
-        function updateFields() {
-            const role = roleSelect.value;
-
-            if (role === 'staff') {
-                emailField.style.display = 'none';
-                staffField.style.display = 'block';
-                emailInput.removeAttribute('required');
-                employeeInput.setAttribute('required', 'required');
-            } else {
-                emailField.style.display = 'block';
-                staffField.style.display = 'none';
-                emailInput.setAttribute('required', 'required');
-                employeeInput.removeAttribute('required');
-            }
-        }
-
-        roleSelect.addEventListener('change', updateFields);
-        updateFields();
-    });
-
-    // Trigger change on load
-    document.addEventListener('DOMContentLoaded', function() {
-        const event = new Event('change');
-        document.querySelector('select[name="role"]').dispatchEvent(event);
-    });
-</script>
 
 </body>
 </html>

@@ -20,113 +20,41 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        // ✅ Admin login
-        if ($request->role === 'admin') {
-            $credentials = $request->validate([
-                'email' => 'required|email',
-                'password' => 'required',
-            ]);
+        // ✅ Validate credentials
+        $credentials = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
 
-            Log::info('Admin Login Attempt:', ['email' => $request->email]);
+        Log::info('Login Attempt:', ['email' => $request->email]);
 
-            if (Auth::attempt($credentials)) {
-                $request->session()->regenerate();
-                $user = Auth::user();
-                
-                Log::info('Login Success:', ['user' => $user->email, 'role' => $user->role]);
-                
-                // ✅ ROLE BASED REDIRECTION - ADMIN
-                if ($user->role === 'admin') {
-                    return redirect('/admin/doctor-management')->with('success', 'Welcome back, ' . $user->name . '!');
-                }
-                
-                // ✅ ROLE BASED REDIRECTION - USER (Regular)
-                if ($user->role === 'user' || $user->role === 'patient') {
-                    return redirect('/')->with('success', 'Welcome back, ' . $user->name . '!');
-                }
-                
-                return redirect('/');
+        if (Auth::attempt($credentials)) {
+            $request->session()->regenerate();
+            $user = Auth::user();
+            
+            Log::info('Login Success:', ['user' => $user->email, 'role' => $user->role]);
+            
+            // ✅ ROLE BASED REDIRECTION
+            if ($user->role === 'admin') {
+                return redirect('/admin/doctor-management')->with('success', 'Welcome back, ' . $user->name . '!');
             }
-
-            Log::error('Admin Login Failed:', ['email' => $request->email]);
-
-            return back()->withErrors([
-                'email' => 'Invalid admin credentials.',
-            ])->onlyInput('email');
+            
+            if ($user->role === 'staff') {
+                return redirect('/staff/dashboard')->with('success', 'Welcome back, ' . $user->name . '!');
+            }
+            
+            if ($user->role === 'user' || $user->role === 'patient') {
+                return redirect('/')->with('success', 'Welcome back, ' . $user->name . '!');
+            }
+            
+            return redirect('/')->with('success', 'Welcome back, ' . $user->name . '!');
         }
 
-        // ✅ Staff login (using employee_id)
-        if ($request->role === 'staff') {
-            $request->validate([
-                'employee_id' => 'required|string',
-                'password' => 'required',
-            ]);
+        Log::error('Login Failed:', ['email' => $request->email]);
 
-            Log::info('Staff Login Attempt:', ['employee_id' => $request->employee_id]);
-
-            // Find user by employee_id
-            $user = User::where('employee_id', $request->employee_id)->first();
-
-            if ($user) {
-                Log::info('Staff found:', ['name' => $user->name, 'role' => $user->role]);
-            } else {
-                Log::error('Staff not found with employee_id: ' . $request->employee_id);
-                return back()->withErrors([
-                    'employee_id' => 'Staff not found with this Employee ID.',
-                ])->onlyInput('employee_id');
-            }
-
-            if (Hash::check($request->password, $user->password)) {
-                Auth::login($user);
-                $request->session()->regenerate();
-                
-                Log::info('Staff Login Success:', ['employee_id' => $user->employee_id]);
-                
-                // ✅ ROLE BASED REDIRECTION - STAFF
-                if ($user->role === 'staff') {
-                    return redirect('/staff/dashboard')->with('success', 'Welcome back, ' . $user->name . '!');
-                }
-                
-                return redirect('/');
-            }
-
-            Log::error('Staff Login Failed:', ['employee_id' => $request->employee_id]);
-
-            return back()->withErrors([
-                'employee_id' => 'Invalid staff credentials.',
-            ])->onlyInput('employee_id');
-        }
-
-        // ✅ User login (using email + password) - "patient" ki jagah "user"
-        if ($request->role === 'user') {
-            $credentials = $request->validate([
-                'email' => 'required|email',
-                'password' => 'required',
-            ]);
-
-            Log::info('User Login Attempt:', ['email' => $request->email]);
-
-            if (Auth::attempt($credentials)) {
-                $request->session()->regenerate();
-                $user = Auth::user();
-                
-                Log::info('User Login Success:', ['user' => $user->email, 'role' => $user->role]);
-                
-                if ($user->role === 'user') {
-                    return redirect('/')->with('success', 'Welcome back, ' . ($user->name ?? $user->full_name) . '!');
-                }
-                
-                return redirect('/');
-            }
-
-            Log::error('User Login Failed:', ['email' => $request->email]);
-
-            return back()->withErrors([
-                'email' => 'Invalid user credentials.',
-            ])->onlyInput('email');
-        }
-
-        return back()->withErrors(['error' => 'Invalid login attempt.']);
+        return back()->withErrors([
+            'email' => 'Invalid credentials. Please check your email and password.',
+        ])->onlyInput('email');
     }
 
     public function showSignupForm()
@@ -161,19 +89,21 @@ class AuthController extends Controller
                 'password' => Hash::make($request->password),
                 'phone' => $request->phone,
                 'role' => $request->role,
-                'employee_id' => $request->employee_id,
+                'employee_id' => $request->employee_id ?? null,
                 'status' => $request->role === 'staff' ? 'pending' : 'active',
             ]);
 
             // ✅ Notification for admin about new staff registration
-            NotificationHelper::sendToAdmin(
-                '👤 New Staff Registration',
-                "New staff member {$request->full_name} has registered and is pending approval",
-                null,
-                ['staff_name' => $request->full_name, 'email' => $request->email]
-            );
+            if ($request->role === 'staff') {
+                NotificationHelper::sendToAdmin(
+                    '👤 New Staff Registration',
+                    "New staff member {$request->full_name} has registered and is pending approval",
+                    null,
+                    ['staff_name' => $request->full_name, 'email' => $request->email]
+                );
+            }
 
-            return redirect('/login')->with('success', 'Registration successful! Waiting for admin approval.');
+            return redirect('/login')->with('success', 'Registration successful! Please login.');
         } catch (\Exception $e) {
             Log::error('Signup Error: ' . $e->getMessage());
             return back()->with('error', 'Registration failed: ' . $e->getMessage())->withInput();
@@ -183,22 +113,14 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         try {
-            // Log the user out
             Auth::logout();
-            
-            // Invalidate the session
             $request->session()->invalidate();
-            
-            // Regenerate the CSRF token
             $request->session()->regenerateToken();
-            
-            // Clear all session data
             $request->session()->flush();
             
             return redirect('/login')->with('success', 'You have been logged out successfully.');
         } catch (\Exception $e) {
             Log::error('Logout Error: ' . $e->getMessage());
-            // Even if there's an error, try to redirect to login
             return redirect('/login')->with('error', 'Logout completed.');
         }
     }
