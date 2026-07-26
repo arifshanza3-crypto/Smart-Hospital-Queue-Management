@@ -96,9 +96,6 @@ Route::prefix('staff')->name('staff.')->middleware(['auth', 'role:staff,admin'])
 });
 
 // =============================================
-<<<<<<< HEAD
-// ✅ ADMIN ROUTES (Only Admin can access)
-=======
 // ✅ NOTIFICATION ROUTES (For All Users)
 // =============================================
 Route::prefix('notifications')->name('notifications.')->middleware('auth')->group(function () {
@@ -116,7 +113,6 @@ Route::get('/notifications-page', function() {
 
 // =============================================
 // ✅ ADMIN ROUTES (Authenticated)
->>>>>>> 6b3e1247f30e0d61f40e6ce48d469327b3ab9296
 // =============================================
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function () {
     

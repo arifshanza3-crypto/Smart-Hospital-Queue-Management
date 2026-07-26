@@ -34,9 +34,6 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-<<<<<<< HEAD
-    // ✅ Role Check Methods
-=======
     // =============================================
     // ✅ NOTIFICATIONS RELATIONS
     // =============================================
@@ -69,7 +66,6 @@ class User extends Authenticatable
     // ✅ ROLE CHECK METHODS
     // =============================================
 
->>>>>>> 6b3e1247f30e0d61f40e6ce48d469327b3ab9296
     public function isAdmin()
     {
         return $this->role === 'admin';
@@ -80,13 +76,6 @@ class User extends Authenticatable
         return $this->role === 'staff';
     }
 
-<<<<<<< HEAD
-    public function isUser()
-    {
-        return $this->role === 'user' || $this->role === 'patient';
-    }
-
-=======
     // ✅ "patient" ki jagah "user"
     public function isUser()
     {
@@ -94,20 +83,11 @@ class User extends Authenticatable
     }
 
     // ✅ Alias for backward compatibility
->>>>>>> 6b3e1247f30e0d61f40e6ce48d469327b3ab9296
     public function isPatient()
     {
         return $this->role === 'user';
     }
 
-<<<<<<< HEAD
-    public function isActive()
-    {
-        return $this->status === 'active';
-    }
-
-=======
->>>>>>> 6b3e1247f30e0d61f40e6ce48d469327b3ab9296
     public function isPending()
     {
         return $this->status === 'pending';
@@ -123,14 +103,10 @@ class User extends Authenticatable
         return $this->status === 'rejected';
     }
 
-<<<<<<< HEAD
-    // ✅ Get Avatar URL
-=======
     // =============================================
     // ✅ HELPERS
     // =============================================
 
->>>>>>> 6b3e1247f30e0d61f40e6ce48d469327b3ab9296
     public function getAvatarUrlAttribute()
     {
         if ($this->avatar) {
@@ -139,28 +115,8 @@ class User extends Authenticatable
         return 'https://ui-avatars.com/api/?name=' . urlencode($this->name ?? $this->full_name) . '&background=00d4ff&color=fff';
     }
 
-<<<<<<< HEAD
-    // ✅ Get Full Name
-    public function getFullNameAttribute()
-    {
-        return $this->full_name ?? $this->name;
-    }
-
-    // ✅ Scope for active users
-    public function scopeActive($query)
-    {
-        return $query->where('status', 'active');
-    }
-
-    // ✅ Scope for staff
-    public function scopeStaff($query)
-    {
-        return $query->where('role', 'staff');
-    }
-=======
     public function getNameAttribute()
     {
         return $this->full_name ?? $this->name;
     }
->>>>>>> 6b3e1247f30e0d61f40e6ce48d469327b3ab9296
 }

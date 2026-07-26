@@ -54,7 +54,7 @@
                 </div>
             </div>
             <div class="notification-footer">
-                <a href="#" class="view-all-btn">View All Notifications</a>
+                <a href="{{ route('notifications.page') }}" class="view-all-btn">View All Notifications</a>
             </div>
         </div>
 
@@ -105,21 +105,30 @@
 
                 <div class="dropdown-divider"></div>
 
-                <a href="{{ route('admin.profile.index') ?? '#' }}" class="dropdown-item">
+                <!-- My Profile -->
+                <a href="{{ route('admin.profile.index') }}" class="dropdown-item">
                     <i class="fas fa-user"></i>
                     <span>My Profile</span>
                     <i class="fas fa-chevron-right item-arrow"></i>
                 </a>
 
-                <a href="{{ route('admin.settings.index') ?? '#' }}" class="dropdown-item">
-                    <i class="fas fa-cog"></i>
-                    <span>Settings</span>
+                <!-- Staff Dashboard -->
+                <a href="{{ route('staff.dashboard') }}" class="dropdown-item">
+                    <i class="fas fa-users-cog"></i>
+                    <span>Staff Dashboard</span>
                     <i class="fas fa-chevron-right item-arrow"></i>
                 </a>
 
+                <!-- My Website (Navigate to Home) -->
+                <a href="{{ route('home') }}" class="dropdown-item">
+                    <i class="fas fa-globe"></i>
+                    <span>My Website</span>
+                    <i class="fas fa-chevron-right item-arrow"></i>
+                </a>
 
                 <div class="dropdown-divider"></div>
 
+                <!-- Logout -->
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit" class="dropdown-item logout-item">
