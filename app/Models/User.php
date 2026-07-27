@@ -76,13 +76,11 @@ class User extends Authenticatable
         return $this->role === 'staff';
     }
 
-    // ✅ "patient" ki jagah "user"
     public function isUser()
     {
         return $this->role === 'user';
     }
 
-    // ✅ Alias for backward compatibility
     public function isPatient()
     {
         return $this->role === 'user';
@@ -112,11 +110,11 @@ class User extends Authenticatable
         if ($this->avatar) {
             return asset('storage/' . $this->avatar);
         }
-        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name ?? $this->full_name) . '&background=00d4ff&color=fff';
+        // ✅ FIXED: Use full_name or name directly, not through accessor
+        $displayName = $this->full_name ?? $this->name ?? 'User';
+        return 'https://ui-avatars.com/api/?name=' . urlencode($displayName) . '&background=00d4ff&color=fff';
     }
 
-    public function getNameAttribute()
-    {
-        return $this->full_name ?? $this->name;
-    }
+    // ✅ REMOVED the problematic getNameAttribute() that was causing the infinite loop
+    // The name field already exists in the database, so we don't need an accessor
 }

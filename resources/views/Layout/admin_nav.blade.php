@@ -5,9 +5,32 @@
         </button>
         <div class="nav-title">
             <span class="system-label">
-                <i class="fas fa-arrow-trend-up"></i> System Overview
+                <i class="fas fa-arrow-trend-up"></i> 
+                @auth
+                    @if(auth()->user()->role === 'admin')
+                        Admin Panel
+                    @elseif(auth()->user()->role === 'staff')
+                        Staff Panel
+                    @else
+                        Dashboard
+                    @endif
+                @else
+                    Dashboard
+                @endauth
             </span>
-            <h1 class="dashboard-title">Admin Dashboard</h1>
+            <h1 class="dashboard-title">
+                @auth
+                    @if(auth()->user()->role === 'admin')
+                        Admin Dashboard
+                    @elseif(auth()->user()->role === 'staff')
+                        Staff Dashboard
+                    @else
+                        Dashboard
+                    @endif
+                @else
+                    Dashboard
+                @endauth
+            </h1>
         </div>
     </div>
 
@@ -66,15 +89,15 @@
                         @if(auth()->user()->avatar)
                             <img src="{{ Storage::url(auth()->user()->avatar) }}" alt="Profile">
                         @else
-                            {{ strtoupper(substr(auth()->user()->name ?? 'Admin', 0, 2)) }}
+                            {{ strtoupper(substr(auth()->user()->name ?? 'User', 0, 2)) }}
                         @endif
                     @else
-                        AD
+                        U
                     @endauth
                 </div>
                 <div class="profile-info">
-                    <span class="profile-name">{{ auth()->user()->name ?? 'Admin User' }}</span>
-                    <span class="profile-role">{{ ucfirst(auth()->user()->role ?? 'Administrator') }}</span>
+                    <span class="profile-name">{{ auth()->user()->name ?? 'User' }}</span>
+                    <span class="profile-role">{{ ucfirst(auth()->user()->role ?? 'User') }}</span>
                 </div>
                 <i class="fas fa-chevron-down profile-arrow"></i>
             </div>
@@ -87,39 +110,64 @@
                             @if(auth()->user()->avatar)
                                 <img src="{{ Storage::url(auth()->user()->avatar) }}" alt="Profile">
                             @else
-                                {{ strtoupper(substr(auth()->user()->name ?? 'Admin', 0, 2)) }}
+                                {{ strtoupper(substr(auth()->user()->name ?? 'User', 0, 2)) }}
                             @endif
                         @else
-                            AD
+                            U
                         @endauth
                     </div>
                     <div class="dropdown-user-info">
-                        <div class="dropdown-name">{{ auth()->user()->name ?? 'Admin User' }}</div>
-                        <div class="dropdown-email">{{ auth()->user()->email ?? 'admin@example.com' }}</div>
+                        <div class="dropdown-name">{{ auth()->user()->name ?? 'User' }}</div>
+                        <div class="dropdown-email">{{ auth()->user()->email ?? 'user@example.com' }}</div>
                         <div class="dropdown-role">
                             <i class="fas fa-user-shield"></i>
-                            {{ ucfirst(auth()->user()->role ?? 'Administrator') }}
+                            {{ ucfirst(auth()->user()->role ?? 'User') }}
                         </div>
                     </div>
                 </div>
 
                 <div class="dropdown-divider"></div>
 
-                <!-- My Profile -->
-                <a href="{{ route('admin.profile.index') }}" class="dropdown-item">
-                    <i class="fas fa-user"></i>
-                    <span>My Profile</span>
-                    <i class="fas fa-chevron-right item-arrow"></i>
-                </a>
+                <!-- My Profile - Available to all -->
+                @auth
+                    @if(auth()->user()->role === 'admin')
+                        <a href="{{ route('admin.profile.index') }}" class="dropdown-item">
+                            <i class="fas fa-user"></i>
+                            <span>My Profile</span>
+                            <i class="fas fa-chevron-right item-arrow"></i>
+                        </a>
+                    @elseif(auth()->user()->role === 'staff')
+                        <a href="{{ route('staff.profile.index') }}" class="dropdown-item">
+                            <i class="fas fa-user"></i>
+                            <span>My Profile</span>
+                            <i class="fas fa-chevron-right item-arrow"></i>
+                        </a>
+                    @endif
+                @endauth
 
-                <!-- Staff Dashboard -->
-                <a href="{{ route('staff.dashboard') }}" class="dropdown-item">
-                    <i class="fas fa-users-cog"></i>
-                    <span>Staff Dashboard</span>
-                    <i class="fas fa-chevron-right item-arrow"></i>
-                </a>
+                <!-- Admin Dashboard - Only Admin -->
+                @auth
+                    @if(auth()->user()->role === 'admin')
+                        <a href="{{ route('admin.dashboard') }}" class="dropdown-item">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Admin Dashboard</span>
+                            <i class="fas fa-chevron-right item-arrow"></i>
+                        </a>
+                    @endif
+                @endauth
 
-                <!-- My Website (Navigate to Home) -->
+                <!-- Staff Dashboard - Admin and Staff -->
+                @auth
+                    @if(in_array(auth()->user()->role, ['admin', 'staff']))
+                        <a href="{{ route('staff.dashboard') }}" class="dropdown-item">
+                            <i class="fas fa-users-cog"></i>
+                            <span>Staff Dashboard</span>
+                            <i class="fas fa-chevron-right item-arrow"></i>
+                        </a>
+                    @endif
+                @endauth
+
+                <!-- My Website - All users -->
                 <a href="{{ route('home') }}" class="dropdown-item">
                     <i class="fas fa-globe"></i>
                     <span>My Website</span>
@@ -791,12 +839,10 @@
     // TOGGLE FUNCTIONS
     // ============================================
     
-    // Toggle Profile Dropdown
     function toggleProfileDropdown() {
         const dropdown = document.getElementById('profileDropdown');
         const isOpen = dropdown.classList.contains('show');
         
-        // Close all dropdowns first
         closeAllDropdowns();
         
         if (!isOpen) {
@@ -804,12 +850,10 @@
         }
     }
 
-    // Toggle Notifications
     function toggleNotifications() {
         const dropdown = document.getElementById('notificationDropdown');
         const isOpen = dropdown.classList.contains('show');
         
-        // Close all dropdowns first
         closeAllDropdowns();
         
         if (!isOpen) {
@@ -817,14 +861,12 @@
         }
     }
 
-    // Close all dropdowns
     function closeAllDropdowns() {
         document.querySelectorAll('.profile-dropdown, .notification-dropdown').forEach(el => {
             el.classList.remove('show');
         });
     }
 
-    // Close dropdowns when clicking outside
     document.addEventListener('click', function(event) {
         const isClickInside = event.target.closest('.admin-profile') || 
                              event.target.closest('.notification-bell') ||
@@ -836,14 +878,12 @@
         }
     });
 
-    // Close dropdowns on Escape key
     document.addEventListener('keydown', function(event) {
         if (event.key === 'Escape') {
             closeAllDropdowns();
         }
     });
 
-    // Toggle Sidebar (for mobile)
     function toggleSidebar() {
         const sidebar = document.querySelector('.sidebar');
         if (sidebar) {
@@ -851,9 +891,6 @@
         }
     }
 
-    // ============================================
-    // NOTIFICATION MARK AS READ
-    // ============================================
     document.querySelector('.notification-mark-all')?.addEventListener('click', function() {
         document.querySelectorAll('.notification-item.unread').forEach(item => {
             item.classList.remove('unread');
@@ -865,13 +902,9 @@
         }
     });
 
-    // ============================================
-    // NOTIFICATION ITEM CLICK
-    // ============================================
     document.querySelectorAll('.notification-item').forEach(item => {
         item.addEventListener('click', function() {
             this.classList.remove('unread');
-            // Close dropdown after click
             setTimeout(() => {
                 document.getElementById('notificationDropdown')?.classList.remove('show');
             }, 300);

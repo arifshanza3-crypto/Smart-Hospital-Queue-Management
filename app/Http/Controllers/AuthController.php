@@ -20,41 +20,80 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        // ✅ Validate credentials
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
+        try {
+            // ✅ Validate credentials
+            $credentials = $request->validate([
+                'email' => 'required|email',
+                'password' => 'required',
+            ]);
 
-        Log::info('Login Attempt:', ['email' => $request->email]);
+            Log::info('Login Attempt:', ['email' => $request->email]);
 
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
-            $user = Auth::user();
+            // Check if user exists first
+            $user = User::where('email', $request->email)->first();
             
-            Log::info('Login Success:', ['user' => $user->email, 'role' => $user->role]);
-            
-            // ✅ ROLE BASED REDIRECTION
-            if ($user->role === 'admin') {
-                return redirect('/admin/doctor-management')->with('success', 'Welcome back, ' . $user->name . '!');
+            if (!$user) {
+                Log::error('Login Failed - User not found:', ['email' => $request->email]);
+                return back()->withErrors([
+                    'email' => 'Invalid credentials. Please check your email and password.',
+                ])->onlyInput('email');
             }
-            
-            if ($user->role === 'staff') {
-                return redirect('/staff/dashboard')->with('success', 'Welcome back, ' . $user->name . '!');
+
+            // ✅ Check user status
+            if (!in_array($user->status, ['active', 'approved'])) {
+                Log::warning('Login Failed - User not active:', ['email' => $request->email, 'status' => $user->status]);
+                
+                if ($user->status === 'pending') {
+                    return back()->withErrors([
+                        'email' => 'Your account is pending approval. Please wait for admin approval.',
+                    ])->onlyInput('email');
+                }
+                
+                return back()->withErrors([
+                    'email' => 'Your account is not active. Please contact administrator.',
+                ])->onlyInput('email');
             }
-            
-            if ($user->role === 'user' || $user->role === 'patient') {
-                return redirect('/')->with('success', 'Welcome back, ' . $user->name . '!');
+
+            // ✅ Attempt login
+            if (Auth::attempt($credentials)) {
+                // Regenerate session to prevent fixation
+                $request->session()->regenerate();
+                
+                $user = Auth::user();
+                
+                Log::info('Login Success:', [
+                    'user' => $user->email, 
+                    'role' => $user->role,
+                    'session_id' => session()->getId()
+                ]);
+                
+                // ✅ ROLE BASED REDIRECTION
+                if ($user->role === 'admin') {
+                    return redirect()->intended('/admin/doctor-management')->with('success', 'Welcome back, ' . $user->name . '!');
+                }
+                
+                if ($user->role === 'staff') {
+                    return redirect()->intended('/staff/dashboard')->with('success', 'Welcome back, ' . $user->name . '!');
+                }
+                
+                // User/Patient
+                return redirect()->intended('/')->with('success', 'Welcome back, ' . $user->name . '!');
             }
+
+            Log::error('Login Failed - Invalid password:', ['email' => $request->email]);
+
+            return back()->withErrors([
+                'email' => 'Invalid credentials. Please check your email and password.',
+            ])->onlyInput('email');
             
-            return redirect('/')->with('success', 'Welcome back, ' . $user->name . '!');
+        } catch (\Exception $e) {
+            Log::error('Login Exception: ' . $e->getMessage());
+            Log::error('Login Exception Trace: ' . $e->getTraceAsString());
+            
+            return back()->withErrors([
+                'email' => 'An error occurred during login. Please try again.',
+            ])->onlyInput('email');
         }
-
-        Log::error('Login Failed:', ['email' => $request->email]);
-
-        return back()->withErrors([
-            'email' => 'Invalid credentials. Please check your email and password.',
-        ])->onlyInput('email');
     }
 
     public function showSignupForm()
@@ -64,16 +103,21 @@ class AuthController extends Controller
 
     public function signup(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'full_name' => 'nullable|string|max:255',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|min:6|confirmed',
-            'phone' => 'nullable|string|max:20',
-            'role' => 'required|in:user,patient,staff,admin'
-        ]);
-
         try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'full_name' => 'nullable|string|max:255',
+                'email' => 'required|email|unique:users',
+                'password' => 'required|min:6|confirmed',
+                'phone' => 'nullable|string|max:20',
+                'role' => 'required|in:user,patient,staff,admin'
+            ]);
+
+            // ✅ Prevent regular users from signing up as admin
+            if ($request->role === 'admin') {
+                return back()->with('error', 'Admin accounts cannot be created through registration.')->withInput();
+            }
+
             // ✅ If user selects staff, they need employee_id
             if ($request->role === 'staff') {
                 $request->validate([

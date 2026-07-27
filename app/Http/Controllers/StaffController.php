@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Log;
 
 class StaffController extends Controller
 {
-    // ✅ Staff Dashboard
+    // ✅ Staff Dashboard - Allow both Admin and Staff
     public function dashboard()
     {
         // Check if user is logged in
@@ -18,9 +18,11 @@ class StaffController extends Controller
             return redirect('/login')->with('error', 'Please login first.');
         }
         
-        // Check if user is staff
-        if (Auth::user()->role !== 'staff') {
-            return redirect('/login')->with('error', 'Access denied. Staff only.');
+        $user = Auth::user();
+        
+        // ✅ Allow admin and staff to access staff dashboard
+        if (!in_array($user->role, ['admin', 'staff'])) {
+            return redirect('/login')->with('error', 'Access denied. Only Admin and Staff can access this page.');
         }
         
         // Get patients

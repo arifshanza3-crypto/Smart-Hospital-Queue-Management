@@ -33,13 +33,6 @@ Route::get('/setup', function() {
 });
 
 // =============================================
-// ✅ TEST ROUTE
-// =============================================
-Route::get('/test', function () {
-    return "Test page working!";
-});
-
-// =============================================
 // ✅ PUBLIC ROUTES (No Auth Required - Everyone can access)
 // =============================================
 Route::get('/', [PageController::class, 'home'])->name('home');
@@ -71,7 +64,7 @@ Route::get('/reset-password/{token}', [AuthController::class, 'showResetForm'])-
 Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 
 // =============================================
-// ✅ STAFF ROUTES (Only Staff & Admin can access)
+// ✅ STAFF ROUTES (Admin & Staff can access)
 // =============================================
 Route::prefix('staff')->name('staff.')->middleware(['auth', 'role:staff,admin'])->group(function () {
     Route::get('/dashboard', [StaffController::class, 'dashboard'])->name('dashboard');
@@ -87,7 +80,6 @@ Route::prefix('staff')->name('staff.')->middleware(['auth', 'role:staff,admin'])
     Route::get('/get-department-queue', [StaffController::class, 'getDepartmentQueue'])->name('get-department-queue');
     Route::get('/get-department-stats', [StaffController::class, 'getDepartmentStats'])->name('get-department-stats');
     
-    // Staff Profile
     Route::prefix('profile')->name('profile.')->group(function () {
         Route::get('/', [StaffProfileController::class, 'index'])->name('index');
         Route::put('/update', [StaffProfileController::class, 'update'])->name('update');
@@ -106,7 +98,6 @@ Route::prefix('notifications')->name('notifications.')->middleware('auth')->grou
     Route::delete('/{id}', [NotificationController::class, 'destroy'])->name('destroy');
 });
 
-// ✅ Notification Page (View) - For All Authenticated Users
 Route::get('/notifications-page', function() {
     return view('Pages.Notifications.index');
 })->name('notifications.page')->middleware('auth');
@@ -115,22 +106,15 @@ Route::get('/notifications-page', function() {
 // ✅ ADMIN ROUTES (Only Admin can access)
 // =============================================
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function () {
-    
-    // Admin Dashboard
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/doctor-management', [AdminController::class, 'dashboard'])->name('doctor-management');
-    
-    // Staff Approval Routes
     Route::post('/approve-staff/{id}', [AdminController::class, 'approveStaff'])->name('approve-staff');
     Route::post('/reject-staff/{id}', [AdminController::class, 'rejectStaff'])->name('reject-staff');
-    
-    // Static Pages
     Route::get('/report', [QueueReportController::class, 'index'])->name('report');
     Route::get('/settings', [SettingController::class, 'index'])->name('settings');
     Route::get('/user-management', [UserController::class, 'index'])->name('user-management');
     Route::get('/services-management', [ServiceController::class, 'index'])->name('services-management');
 
-    // DOCTOR MANAGEMENT
     Route::prefix('doctors')->name('doctors.')->group(function () {
         Route::get('/', [DoctorController::class, 'index'])->name('index');
         Route::get('/create', [DoctorController::class, 'create'])->name('create');
@@ -140,7 +124,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
         Route::delete('/{id}', [DoctorController::class, 'destroy'])->name('destroy');
     });
     
-    // SERVICE MANAGEMENT
     Route::prefix('services')->name('services.')->group(function () {
         Route::get('/', [ServiceController::class, 'index'])->name('index');
         Route::get('/create', [ServiceController::class, 'create'])->name('create');
@@ -154,7 +137,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
         Route::post('/bulk-delete', [ServiceController::class, 'bulkDelete'])->name('bulk-delete');
     });
     
-    // USER MANAGEMENT
     Route::prefix('users')->name('users.')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('index');
         Route::get('/create', [UserController::class, 'create'])->name('create');
@@ -166,20 +148,17 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
         Route::get('/search', [UserController::class, 'search'])->name('search');
     });
 
-    // QUEUE REPORTS
     Route::prefix('queue-reports')->name('queue-reports.')->group(function () {
         Route::get('/', [QueueReportController::class, 'index'])->name('index');
         Route::get('/{id}', [QueueReportController::class, 'show'])->name('show');
         Route::get('/export/csv', [QueueReportController::class, 'export'])->name('export');
     });
 
-    // SETTINGS
     Route::prefix('settings')->name('settings.')->group(function () {
         Route::get('/', [SettingController::class, 'index'])->name('index');
         Route::put('/update', [SettingController::class, 'update'])->name('update');
     });
 
-    // ADMIN PROFILE
     Route::prefix('profile')->name('profile.')->group(function () {
         Route::get('/', [ProfileController::class, 'index'])->name('index');
         Route::put('/update', [ProfileController::class, 'update'])->name('update');
@@ -193,7 +172,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
 Route::get('/dashboard', function() {
     $user = auth()->user();
     
-    // Redirect based on role
     if ($user->role === 'admin') {
         return redirect('/admin/doctor-management');
     } elseif ($user->role === 'staff') {

@@ -225,33 +225,6 @@
             box-shadow: 0 0 15px rgba(255, 77, 77, 0.4);
         }
 
-<<<<<<< HEAD
-        /* Staff Info in Dropdown */
-        .staff-info-display {
-            padding: 12px 20px;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .staff-info-display .name {
-            font-weight: 600;
-            color: #0b2e33;
-            font-size: 15px;
-        }
-
-        .staff-info-display .email {
-            font-size: 12px;
-            color: #999;
-        }
-
-        .staff-info-display .role {
-            font-size: 11px;
-            color: #00d4ff;
-            background: #f0f7ff;
-            padding: 2px 12px;
-            border-radius: 12px;
-            display: inline-block;
-            margin-top: 4px;
-=======
         /* ============================================ */
         /* ✅ NOTIFICATION BELL STYLES - YELLOW COLOR   */
         /* ============================================ */
@@ -444,7 +417,6 @@
 
         .notification-footer a:hover {
             text-decoration: underline;
->>>>>>> 6b3e1247f30e0d61f40e6ce48d469327b3ab9296
         }
 
         main {
@@ -490,55 +462,6 @@
                     <span class="staff-role">{{ Auth::user()->role ?? 'Operator' }}</span>
                 </div>
                 
-<<<<<<< HEAD
-                <!-- Profile Dropdown -->
-                <div class="profile-dropdown">
-                    <div class="profile-circle" onclick="toggleStaffDropdown()">
-                        @auth
-                            @if(Auth::user()->avatar)
-                                <img src="{{ Storage::url(Auth::user()->avatar) }}" alt="{{ Auth::user()->name }}">
-                            @else
-                                <span class="initials">{{ strtoupper(substr(Auth::user()->name, 0, 2)) }}</span>
-                            @endif
-                        @else
-                            <i class="bi bi-person-badge"></i>
-                        @endauth
-                    </div>
-
-                    <!-- Dropdown Menu -->
-                    <div class="dropdown-menu-custom" id="staffDropdown">
-                        @auth
-                        <div class="staff-info-display">
-                            <div class="name">{{ Auth::user()->name }}</div>
-                            <div class="email">{{ Auth::user()->email }}</div>
-                            <div class="role"><i class="bi bi-person-badge"></i> {{ ucfirst(Auth::user()->role ?? 'Staff') }}</div>
-                        </div>
-
-                        <!-- ✅ My Profile Link -->
-                        <a href="{{ route('staff.profile.index') }}" class="dropdown-item-custom">
-                            <i class="bi bi-person"></i> My Profile
-                        </a>
-                        
-                        <a href="{{ route('staff.dashboard') }}" class="dropdown-item-custom">
-                            <i class="bi bi-speedometer2"></i> Dashboard
-                        </a>
-                        
-                        <div class="dropdown-divider-custom"></div>
-
-                        <!-- ✅ Logout Button -->
-                        <form method="POST" action="{{ route('logout') }}" style="margin: 0;">
-                            @csrf
-                            <button type="submit" class="dropdown-item-custom logout">
-                                <i class="bi bi-power"></i> Logout
-                            </button>
-                        </form>
-                        @else
-                        <a href="{{ route('login') }}" class="dropdown-item-custom">
-                            <i class="bi bi-box-arrow-in-right"></i> Login
-                        </a>
-                        @endauth
-                    </div>
-=======
                 {{-- ✅ Notification Bell - YELLOW --}}
                 <div class="notification-wrapper">
                     <div class="notification-bell" onclick="toggleNotifications()">
@@ -564,7 +487,6 @@
 
                 <div class="profile-circle">
                     <i class="bi bi-person-badge"></i>
->>>>>>> 6b3e1247f30e0d61f40e6ce48d469327b3ab9296
                 </div>
 
                 <!-- Logout Button (Old - Replaced with dropdown) -->

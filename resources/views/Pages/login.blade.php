@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Login - SMART QUEUE</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
@@ -51,8 +52,6 @@
         .text-accent { color: #00d4ff; text-decoration: none; font-weight: 600; }
         .forgot-link { color: #00d4ff; text-decoration: none; font-size: 14px; }
         .forgot-link:hover { text-decoration: underline; }
-        
-        /* Role Badge */
         .role-hint {
             text-align: center;
             margin-top: 5px;
@@ -61,6 +60,32 @@
         }
         .role-hint i {
             color: #00d4ff;
+        }
+        
+        /* Loading spinner */
+        .btn-login.loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top: 3px solid #fff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto;
+        }
+        .btn-login.loading .spinner {
+            display: inline-block;
+        }
+        .btn-login.loading .btn-text {
+            display: none;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -77,6 +102,10 @@
         <div class="alert-success"><i class="fas fa-check-circle"></i> {{ session('success') }}</div>
     @endif
 
+    @if(session('error'))
+        <div class="alert-danger"><i class="fas fa-exclamation-circle"></i> {{ session('error') }}</div>
+    @endif
+
     @if($errors->any())
         <div class="alert-danger">
             @foreach($errors->all() as $error)
@@ -85,22 +114,23 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('login.post') }}">
+    <form method="POST" action="{{ route('login.post') }}" id="loginForm">
         @csrf
 
-        <!-- Email Field -->
         <div class="form-group">
             <label><i class="fas fa-envelope"></i> Email Address</label>
-            <input type="email" name="email" class="form-control" placeholder="Enter your email" value="{{ old('email') }}" required>
+            <input type="email" name="email" id="email" class="form-control" placeholder="Enter your email" value="{{ old('email') }}" required autofocus>
         </div>
 
-        <!-- Password Field -->
         <div class="form-group">
             <label><i class="fas fa-lock"></i> Password</label>
-            <input type="password" name="password" class="form-control" placeholder="Enter your password" required>
+            <input type="password" name="password" id="password" class="form-control" placeholder="Enter your password" required>
         </div>
 
-        <button type="submit" class="btn-login"><i class="fas fa-sign-in-alt"></i> SIGN IN</button>
+        <button type="submit" class="btn-login" id="loginBtn">
+            <span class="btn-text"><i class="fas fa-sign-in-alt"></i> SIGN IN</span>
+            <span class="spinner"></span>
+        </button>
     </form>
 
     <div class="text-center mt-3">
@@ -109,6 +139,13 @@
         <p class="role-hint"><i class="fas fa-info-circle"></i> Access based on your role (Admin/Staff/User)</p>
     </div>
 </div>
+
+<script>
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        const btn = document.getElementById('loginBtn');
+        btn.classList.add('loading');
+    });
+</script>
 
 </body>
 </html>
