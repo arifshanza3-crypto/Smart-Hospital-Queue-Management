@@ -248,7 +248,7 @@
     padding: 0 20px;
 }
 
-/* ✅ User Token Card - Only Shows When Token Exists */
+/* ✅ User Token Card */
 .user-token-card {
     background: #ffffff;
     border-radius: 16px;
@@ -337,87 +337,117 @@
     box-shadow: 0 4px 15px rgba(11, 46, 51, 0.3);
 }
 
-/* ❌ No Token Card - Completely Removed */
-
-/* All Departments */
-.all-departments-status {
-    max-width: 800px;
-    margin: 0 auto;
+/* ============================================ */
+/* DOCTORS HOME SECTION                        */
+/* ============================================ */
+.doctors-home-section {
+    margin-top: 40px;
+    padding: 40px 0;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.all-departments-status h4 {
-    text-align: center;
+.section-header {
+    margin-bottom: 30px;
+}
+
+.section-title {
     color: #ffffff;
-    margin-bottom: 20px;
-    font-size: 18px;
-    letter-spacing: 1px;
-}
-
-.departments-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px;
-}
-
-.dept-status-card {
-    background: #ffffff;
-    border-radius: 12px;
-    padding: 20px;
-    text-align: center;
-    border: 1px solid rgba(0, 212, 255, 0.08);
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-}
-
-.dept-status-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-}
-
-.dept-status-card h5 {
-    color: #0b2e33;
-    margin: 0 0 10px 0;
-    font-size: 16px;
+    font-size: 32px;
     font-weight: 700;
+    margin-bottom: 12px;
 }
 
-.dept-stats {
-    display: flex;
-    justify-content: space-around;
+.section-subtitle {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 14px;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
 }
 
-.dept-stat {
+.doctors-home-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.doctor-home-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 14px;
+    padding: 24px 20px;
     text-align: center;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.dept-stat .stat-label {
-    display: block;
-    font-size: 10px;
-    color: #7a8a8e;
+.doctor-home-card:hover {
+    transform: translateY(-6px);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(0, 212, 255, 0.2);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+}
+
+.doctor-home-avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0b2e33, #1a7a82);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 12px;
+    color: white;
+    font-size: 28px;
+}
+
+.doctor-home-name {
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.doctor-home-specialty {
+    color: #00d4ff;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.doctor-home-qualification {
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 12px;
+    margin-bottom: 10px;
+}
+
+.doctor-home-status {
+    display: inline-block;
+    padding: 4px 16px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
-.dept-stat .stat-number {
-    display: block;
-    font-size: 20px;
-    font-weight: 700;
-    color: #0b2e33;
+.doctor-home-status.status-active {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.2);
 }
 
-.dept-view-link {
-    display: inline-block;
-    margin-top: 12px;
-    font-size: 13px;
-    color: #00d4ff;
-    text-decoration: none;
-    font-weight: 600;
-    transition: all 0.3s ease;
+.doctor-home-status.status-on_duty {
+    background: rgba(14, 165, 233, 0.15);
+    color: #0ea5e9;
+    border: 1px solid rgba(14, 165, 233, 0.2);
 }
 
-.dept-view-link:hover {
-    color: #0099cc;
-    text-decoration: underline;
+.doctor-home-status.status-inactive {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.2);
 }
 
 /* ============================================ */
@@ -473,12 +503,27 @@
         grid-template-columns: 1fr;
     }
     
-    .departments-grid {
+    .serving-tokens-grid {
         grid-template-columns: 1fr 1fr;
     }
     
-    .serving-tokens-grid {
-        grid-template-columns: 1fr 1fr;
+    .doctors-home-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 12px;
+    }
+    
+    .doctor-home-card {
+        padding: 16px;
+    }
+    
+    .doctor-home-avatar {
+        width: 56px;
+        height: 56px;
+        font-size: 22px;
+    }
+    
+    .section-title {
+        font-size: 24px;
     }
 }
 
@@ -500,10 +545,6 @@
         font-size: 32px;
     }
     
-    .departments-grid {
-        grid-template-columns: 1fr;
-    }
-    
     .serving-tokens-grid {
         grid-template-columns: 1fr;
     }
@@ -511,5 +552,24 @@
     .user-token-card {
         padding: 20px;
         margin: 0 10px 20px;
+    }
+    
+    .doctors-home-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+    
+    .doctor-home-card {
+        padding: 12px;
+    }
+    
+    .doctor-home-name {
+        font-size: 13px;
+    }
+    
+    .doctor-home-avatar {
+        width: 44px;
+        height: 44px;
+        font-size: 18px;
     }
 }

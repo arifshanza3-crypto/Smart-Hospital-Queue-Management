@@ -1,87 +1,244 @@
+/**
+ * Doctors Page - JavaScript
+ */
+
 document.addEventListener('DOMContentLoaded', function() {
     
-    // 1. Array Data
-    const doctors = [
-        { id: 1, name: "Dr. Farhan Ali", edu: "MBBS", prof: "Dentist", time: "09:00 AM - 02:00 PM", status: "Active", img: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?q=80&w=800" },
-        { id: 2, name: "Dr. Sarah Khan", edu: "MBBS, MD", prof: "Cardiologist", time: "03:00 PM - 08:00 PM", status: "Offline", img: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?q=80&w=800" },
-        { id: 3, name: "Dr. Ahmed Hassan", edu: "BDS", prof: "Dentist", time: "10:00 AM - 04:00 PM", status: "Active", img: "https://images.unsplash.com/photo-1537368910025-700350fe46c7?q=80&w=800" },
-        { id: 4, name: "Dr. Maria Qureshi", edu: "MD Neurology", prof: "Neurologist", time: "11:00 AM - 05:00 PM", status: "Active", img: "https://images.unsplash.com/photo-1594824476967-48c8b964273f?q=80&w=1200" },
-        { id: 5, name: "Dr. Usman Sheikh", edu: "MBBS", prof: "Orthopedic", time: "02:00 PM - 09:00 PM", status: "Active", img: "https://images.unsplash.com/photo-1622253692010-333f2da6031d?q=80&w=1200" },
-        { id: 6, name: "Dr. Zainab Malik", edu: "MBBS, MD", prof: "Pediatrician", time: "01:00 PM - 06:00 PM", status: "Offline", img: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?q=80&w=800" },
-        { id: 7, name: "Dr. Bilal Raza", edu: "BDS", prof: "Dentist", time: "12:00 PM - 05:00 PM", status: "Active", img: "https://images.unsplash.com/photo-1537368910025-700350fe46c7?q=80&w=800" },
-        { id: 8, name: "Dr. Hina Shahid", edu: "MD Neurology", prof: "Neurologist", time: "12:30 PM - 06:30 PM", status: "Active", img: "https://images.unsplash.com/photo-1594824476967-48c8b964273f?q=80&w=1200" },
-       
-    ];
-
+    // ============================================
+    // ✅ Get doctors from window object
+    // ============================================
+    const doctors = window.doctorsData || [];
+    
+    console.log('✅ Doctors loaded from window:', doctors);
+    console.log('✅ Total doctors:', doctors.length);
+    
+    // ============================================
+    // ✅ Elements
+    // ============================================
     const grid = document.getElementById('doctorsGrid');
     const searchInput = document.getElementById('drSearchInput');
-    const modal = document.getElementById('customDrModal');
-
-    // 2. Render Function
-    function render(list) {
+    const resultCount = document.getElementById('resultCount');
+    
+    // ============================================
+    // ✅ Helper Functions
+    // ============================================
+    function getStatusColor(status) {
+        const colors = {
+            'active': '#10b981',
+            'on_duty': '#0ea5e9',
+            'inactive': '#ef4444',
+            'ACTIVE': '#10b981',
+            'ON_DUTY': '#0ea5e9',
+            'INACTIVE': '#ef4444'
+        };
+        return colors[status] || '#f59e0b';
+    }
+    
+    function getStatusText(status) {
+        if (!status) return 'Active';
+        const s = status.toLowerCase();
+        if (s === 'on_duty') return 'On Duty';
+        if (s === 'active') return 'Active';
+        if (s === 'inactive') return 'Inactive';
+        return status;
+    }
+    
+    // ============================================
+    // ✅ Get Doctor Display Name
+    // ============================================
+    function getDoctorDisplayName(dr) {
+        // Priority: 1. Name, 2. Specialization, 3. Default
+        if (dr.name && dr.name.toString().trim() !== '' && dr.name !== 'null' && dr.name !== 'undefined') {
+            return `Dr. ${dr.name.toString().trim()}`;
+        } else if (dr.specialization && dr.specialization.toString().trim() !== '') {
+            return dr.specialization.toString().trim();
+        } else {
+            return 'Doctor';
+        }
+    }
+    
+    function getAvatarName(dr) {
+        if (dr.name && dr.name.toString().trim() !== '' && dr.name !== 'null' && dr.name !== 'undefined') {
+            return dr.name.toString().trim();
+        } else if (dr.specialization && dr.specialization.toString().trim() !== '') {
+            return dr.specialization.toString().trim();
+        } else {
+            return 'D';
+        }
+    }
+    
+    // ============================================
+    // ✅ Render Doctors
+    // ============================================
+    function renderDoctors(list) {
+        if (!grid) {
+            console.error('❌ doctorsGrid element not found!');
+            return;
+        }
+        
         grid.innerHTML = '';
+        
+        if (!list || list.length === 0) {
+            grid.innerHTML = `
+                <div class="col-12 text-center py-5">
+                    <div class="empty-state">
+                        <i class="fas fa-user-md" style="font-size: 48px; color: rgba(255,255,255,0.3);"></i>
+                        <h3 style="color: #fff; margin-top: 16px;">No Doctors Found</h3>
+                        <p style="color: rgba(255,255,255,0.5);">Please add doctors from admin panel.</p>
+                    </div>
+                </div>
+            `;
+            if (resultCount) resultCount.textContent = '0 specialists';
+            return;
+        }
+        
         list.forEach(dr => {
-            const badgeColor = dr.status === 'Active' ? '#00ff88' : '#ff4b2b';
+            const statusColor = getStatusColor(dr.status);
+            const statusText = getStatusText(dr.status);
+            const displayName = getDoctorDisplayName(dr);
+            const avatarName = getAvatarName(dr);
+            
             grid.innerHTML += `
                 <div class="col-sm-6 col-md-4 col-lg-3">
                     <div class="dr-item-card" onclick="openDrModal(${dr.id})">
                         <div class="dr-card-img">
-                            <img src="${dr.img}" alt="${dr.name}">
-                            <span class="status-badge" style="background:${badgeColor}">${dr.status}</span>
+                            <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(avatarName)}&background=00d4ff&color=fff&size=200" 
+                                 alt="${displayName}" 
+                                 onerror="this.src='https://ui-avatars.com/api/?name=D&background=00d4ff&color=fff&size=200'">
+                            <span class="status-badge" style="background:${statusColor}">${statusText}</span>
                         </div>
                         <div class="dr-card-body text-center">
-                            <h5 class="mb-1">${dr.name}</h5>
-                            <p class="small text-info">${dr.prof}</p>
+                            <h5 class="mb-1" style="color: #ffffff; font-weight: 600;">${displayName}</h5>
+                            <p class="small text-info" style="color: #00d4ff !important;">${dr.specialization || 'General'}</p>
+                            ${dr.experience ? `<p class="small text-white-50">${dr.experience} years experience</p>` : ''}
+                            ${dr.fee ? `<p class="small text-success" style="color: #10b981 !important;">Fee: $${dr.fee}</p>` : ''}
                         </div>
                     </div>
                 </div>
             `;
         });
-        document.getElementById('resultCount').innerText = `Showing ${list.length} specialists`;
+        
+        if (resultCount) {
+            resultCount.textContent = `Showing ${list.length} specialists`;
+        }
+        
+        console.log(`✅ Rendered ${list.length} doctors successfully`);
     }
-
-    // 3. Modal Function
+    
+    // ============================================
+    // ✅ Search Function
+    // ============================================
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const term = this.value.trim().toLowerCase();
+            if (!term) {
+                renderDoctors(doctors);
+                return;
+            }
+            const filtered = doctors.filter(d => 
+                (d.name && d.name.toString().toLowerCase().includes(term)) || 
+                (d.specialization && d.specialization.toString().toLowerCase().includes(term))
+            );
+            renderDoctors(filtered);
+        });
+    }
+    
+    // ============================================
+    // ✅ Open Modal
+    // ============================================
     window.openDrModal = function(id) {
         const dr = doctors.find(d => d.id === id);
-        document.getElementById('modalName').innerText = dr.name;
-        document.getElementById('modalEdu').innerText = dr.edu;
-        document.getElementById('modalProf').innerText = dr.prof;
-        document.getElementById('modalTime').innerText = dr.time;
-        document.getElementById('modalStatus').innerText = dr.status;
-        document.getElementById('modalImg').src = dr.img;
+        if (!dr) {
+            console.warn('❌ Doctor not found with id:', id);
+            return;
+        }
+        
+        const modal = document.getElementById('customDrModal');
+        if (!modal) return;
+        
+        const displayName = getDoctorDisplayName(dr);
+        document.getElementById('modalName').textContent = displayName;
+        document.getElementById('modalEdu').textContent = dr.qualification || 'N/A';
+        document.getElementById('modalProf').textContent = dr.specialization || 'General';
+        
+        let shiftText = '09:00 AM - 05:00 PM';
+        if (dr.availability) {
+            if (typeof dr.availability === 'object') {
+                shiftText = dr.availability.start_time || dr.availability.start || '09:00 AM';
+                shiftText += ' - ' + (dr.availability.end_time || dr.availability.end || '05:00 PM');
+            } else if (typeof dr.availability === 'string') {
+                shiftText = dr.availability;
+            }
+        }
+        document.getElementById('modalTime').textContent = shiftText;
+        
+        const statusColor = getStatusColor(dr.status);
+        const statusText = getStatusText(dr.status);
+        document.getElementById('modalStatus').innerHTML = `<span style="color: ${statusColor}; font-weight: 600;">● ${statusText}</span>`;
+        
+        const avatarName = getAvatarName(dr);
+        document.getElementById('modalImg').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(avatarName)}&background=00d4ff&color=fff&size=400`;
         
         modal.style.display = 'flex';
-        document.body.style.overflow = 'hidden'; // Stop scrolling
+        document.body.style.overflow = 'hidden';
     };
-
-    // Close Modal
-    document.querySelector('.dr-popup-close').onclick = () => {
-        modal.style.display = 'none';
-        document.body.style.overflow = 'auto';
-    };
-
-    // Join Queue Link
-    document.getElementById('generateQueueBtn').onclick = () => {
+    
+    // ============================================
+    // ✅ Close Modal
+    // ============================================
+    function closeModal() {
+        const modal = document.getElementById('customDrModal');
+        if (modal) {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+    }
+    
+    document.querySelector('.dr-popup-close')?.addEventListener('click', closeModal);
+    document.getElementById('customDrModal')?.addEventListener('click', function(e) {
+        if (e.target === this) closeModal();
+    });
+    
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeModal();
+    });
+    
+    // ============================================
+    // ✅ Join Queue Button
+    // ============================================
+    document.getElementById('generateQueueBtn')?.addEventListener('click', function() {
         window.location.href = '/Token_form';
-    };
-
-    // Search Logic
-    searchInput.oninput = (e) => {
-        const term = e.target.value.toLowerCase();
-        const filtered = doctors.filter(d => 
-            d.name.toLowerCase().includes(term) || d.prof.toLowerCase().includes(term)
-        );
-        render(filtered);
-    };
-
-    // Auto Slider
+    });
+    
+    // ============================================
+    // ✅ Auto Slider
+    // ============================================
     const slides = document.querySelectorAll('.slide');
     let cur = 0;
-    setInterval(() => {
-        slides[cur].classList.remove('active');
-        cur = (cur + 1) % slides.length;
-        slides[cur].classList.add('active');
-    }, 5000);
-
-    render(doctors); // Initial load
+    
+    if (slides.length > 0) {
+        setInterval(() => {
+            slides[cur].classList.remove('active');
+            cur = (cur + 1) % slides.length;
+            slides[cur].classList.add('active');
+        }, 5000);
+    }
+    
+    // ============================================
+    // ✅ Initial Render
+    // ============================================
+    renderDoctors(doctors);
+    
+    // ============================================
+    // ✅ Debug Info
+    // ============================================
+    console.log('=== DOCTORS DEBUG INFO ===');
+    console.log('Total doctors:', doctors.length);
+    if (doctors.length > 0) {
+        console.log('First doctor:', doctors[0]);
+        console.log('Doctor name:', doctors[0]?.name);
+        console.log('Doctor specialization:', doctors[0]?.specialization);
+        console.log('Display name will be:', getDoctorDisplayName(doctors[0]));
+    }
+    console.log('===========================');
 });

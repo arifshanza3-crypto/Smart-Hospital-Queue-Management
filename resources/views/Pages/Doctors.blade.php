@@ -16,7 +16,7 @@
                     <div class="dr-info-card">
                         <span class="exp-badge">Premium Care</span>
                         <h1 class="dr-name">Expert Specialists</h1>
-                        <p class="dr-intro">Our team of 15+ world-class doctors is here to provide exceptional care.</p>
+                        <p class="dr-intro">Our team of world-class doctors is here to provide exceptional care.</p>
                     </div>
                 </div>
             </div>
@@ -49,7 +49,8 @@
                 <p id="resultCount" class="text-white-50">Loading specialists...</p>
             </div>
             <div class="row g-4 justify-content-center" id="doctorsGrid">
-                </div>
+                {{-- Doctors will be rendered by JavaScript --}}
+            </div>
         </div>
     </section>
 
@@ -76,6 +77,26 @@
         </div>
     </div>
 </div>
+
+{{-- ✅ FIXED: Pass doctors data from database to JavaScript --}}
+<script>
+    // ✅ Define doctorsData in global scope
+    window.doctorsData = @json($doctors);
+    
+    // ✅ Debug - Check data in console
+    console.log('=== DOCTORS DATA FROM BLADE ===');
+    console.log('Total Doctors:', window.doctorsData.length);
+    
+    if (window.doctorsData.length > 0) {
+        console.log('First doctor:', window.doctorsData[0]);
+        console.log('Doctor Name:', window.doctorsData[0].name);
+        console.log('Specialization:', window.doctorsData[0].specialization);
+        console.log('Name exists?', window.doctorsData[0].name ? 'YES ✅' : 'NO ❌');
+    } else {
+        console.log('⚠️ No doctors found in database!');
+    }
+    console.log('================================');
+</script>
 
 <script src="{{ asset('js/Doctors.js') }}"></script>
 @endsection

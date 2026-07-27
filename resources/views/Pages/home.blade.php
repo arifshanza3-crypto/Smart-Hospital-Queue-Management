@@ -110,7 +110,38 @@
                 </div>
             @endif
 
-            {{-- ❌ ALL DEPARTMENTS STATUS - REMOVED --}}
+            {{-- ✅ DOCTORS SECTION - DATABASE SE --}}
+            <div class="doctors-home-section">
+                <div class="section-header text-center">
+                    <h2 class="section-title">🏥 Meet Our Expert Doctors</h2>
+                    <p class="section-subtitle">Our team of highly skilled and compassionate doctors is dedicated to providing exceptional care and personalized treatment to our patients.</p>
+                </div>
+                
+                <div class="doctors-home-grid">
+                    @if(isset($doctors) && $doctors->count() > 0)
+                        @foreach($doctors as $doctor)
+                            <div class="doctor-home-card">
+                                <div class="doctor-home-avatar">
+                                    <i class="fas fa-user-md"></i>
+                                </div>
+                                <h5 class="doctor-home-name">Dr. {{ $doctor->name }}</h5>
+                                <p class="doctor-home-specialty">{{ $doctor->specialization }}</p>
+                                @if($doctor->qualification)
+                                    <p class="doctor-home-qualification">{{ $doctor->qualification }}</p>
+                                @endif
+                                <span class="doctor-home-status status-{{ $doctor->status }}">
+                                    {{ ucfirst(str_replace('_', ' ', $doctor->status)) }}
+                                </span>
+                            </div>
+                        @endforeach
+                    @else
+                        <div class="col-12 text-center py-4">
+                            <p style="color: rgba(255,255,255,0.5);">No doctors available at the moment.</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+
         </div>
     </div>
 </section>
@@ -119,7 +150,165 @@
 
 @include("component/Get_token")
 @include("component/about-special")
-@include("component/Doctors_details")
+{{-- ❌ DOCTORS_DETAILS REMOVED --}}
 @include("component/contact_form")
+
+<style>
+    /* ============================================ */
+    /* DOCTORS HOME SECTION STYLES                 */
+    /* ============================================ */
+    .doctors-home-section {
+        margin-top: 40px;
+        padding: 40px 0;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .section-header {
+        margin-bottom: 30px;
+    }
+
+    .section-title {
+        color: #ffffff;
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 12px;
+    }
+
+    .section-subtitle {
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 14px;
+        max-width: 600px;
+        margin: 0 auto;
+        line-height: 1.6;
+    }
+
+    .doctors-home-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 20px;
+    }
+
+    .doctor-home-card {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 14px;
+        padding: 24px 20px;
+        text-align: center;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .doctor-home-card:hover {
+        transform: translateY(-6px);
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(0, 212, 255, 0.2);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .doctor-home-avatar {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #0b2e33, #1a7a82);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 12px;
+        color: white;
+        font-size: 28px;
+    }
+
+    .doctor-home-name {
+        color: #ffffff;
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 4px;
+    }
+
+    .doctor-home-specialty {
+        color: #00d4ff;
+        font-size: 13px;
+        font-weight: 500;
+        margin-bottom: 4px;
+    }
+
+    .doctor-home-qualification {
+        color: rgba(255, 255, 255, 0.4);
+        font-size: 12px;
+        margin-bottom: 10px;
+    }
+
+    .doctor-home-status {
+        display: inline-block;
+        padding: 4px 16px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .doctor-home-status.status-active {
+        background: rgba(16, 185, 129, 0.15);
+        color: #10b981;
+        border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    .doctor-home-status.status-on_duty {
+        background: rgba(14, 165, 233, 0.15);
+        color: #0ea5e9;
+        border: 1px solid rgba(14, 165, 233, 0.2);
+    }
+
+    .doctor-home-status.status-inactive {
+        background: rgba(239, 68, 68, 0.15);
+        color: #ef4444;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .doctors-home-grid {
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 12px;
+        }
+
+        .doctor-home-card {
+            padding: 16px;
+        }
+
+        .doctor-home-avatar {
+            width: 56px;
+            height: 56px;
+            font-size: 22px;
+        }
+
+        .section-title {
+            font-size: 24px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .doctors-home-grid {
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .doctor-home-card {
+            padding: 12px;
+        }
+
+        .doctor-home-name {
+            font-size: 13px;
+        }
+
+        .doctor-home-avatar {
+            width: 44px;
+            height: 44px;
+            font-size: 18px;
+        }
+    }
+</style>
 
 @endsection

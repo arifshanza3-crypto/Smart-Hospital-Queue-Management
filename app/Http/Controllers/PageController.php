@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Token;
+use App\Models\Doctor;
 
 class PageController extends Controller
 {
@@ -37,7 +38,10 @@ class PageController extends Controller
             ];
         }
         
-        return view('Pages.home', compact('servingTokens', 'userToken', 'allDepartments'));
+        // ✅ Get all doctors from database
+        $doctors = Doctor::all();
+        
+        return view('Pages.home', compact('servingTokens', 'userToken', 'allDepartments', 'doctors'));
     }
     
     public function about()
@@ -70,9 +74,11 @@ class PageController extends Controller
         return view('Pages.booking');
     }
     
+    // ✅ Updated - Pass doctors data to view
     public function Doctors()
     {
-        return view('Pages.Doctors');
+        $doctors = Doctor::all();
+        return view('Pages.Doctors', compact('doctors'));
     }
     
     public function Status()
