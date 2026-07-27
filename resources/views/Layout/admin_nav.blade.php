@@ -145,17 +145,6 @@
                     @endif
                 @endauth
 
-                <!-- Admin Dashboard - Only Admin -->
-                @auth
-                    @if(auth()->user()->role === 'admin')
-                        <a href="{{ route('admin.dashboard') }}" class="dropdown-item">
-                            <i class="fas fa-chart-line"></i>
-                            <span>Admin Dashboard</span>
-                            <i class="fas fa-chevron-right item-arrow"></i>
-                        </a>
-                    @endif
-                @endauth
-
                 <!-- Staff Dashboard - Admin and Staff -->
                 @auth
                     @if(in_array(auth()->user()->role, ['admin', 'staff']))

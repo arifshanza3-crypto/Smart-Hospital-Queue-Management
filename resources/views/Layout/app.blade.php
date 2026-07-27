@@ -632,9 +632,8 @@
                                             <i class="fas fa-globe"></i> Website
                                         </a>
                                     @else
-                                        <a href="/" class="dropdown-item">
-                                            <i class="fas fa-globe"></i> Website
-                                        </a>
+                                        {{-- Regular User - Only My Profile and Logout --}}
+                                        <!-- No extra items for regular users -->
                                     @endif
                                     
                                     <div class="dropdown-divider"></div>
