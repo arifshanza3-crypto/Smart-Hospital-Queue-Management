@@ -6,16 +6,49 @@
             <p class="section-description">Our team of highly skilled and compassionate doctors is dedicated to providing exceptional care and personalized treatment to our patients.</p>
         </div>
         <div class="container">
-        <div class="row g-4" id="doctorsGrid">
+            <div class="row g-4" id="doctorsGrid">
+                {{-- ✅ Fallback: If JavaScript fails, show doctors via Blade --}}
+                @if(isset($doctors) && $doctors->count() > 0)
+                    @foreach($doctors as $doctor)
+                        <div class="col-sm-6 col-md-4 col-lg-3">
+                            <div class="dr-item-card" onclick="openDrModal({{ $doctor->id }})">
+                                <div class="dr-card-img">
+                                    @php
+                                        $displayName = $doctor->name ?? $doctor->specialization;
+                                        $statusColor = $doctor->status == 'active' ? '#10b981' : ($doctor->status == 'on_duty' ? '#0ea5e9' : '#ef4444');
+                                        $statusText = ucfirst(str_replace('_', ' ', $doctor->status));
+                                    @endphp
+                                    <img src="https://ui-avatars.com/api/?name={{ urlencode($displayName) }}&background=00d4ff&color=fff&size=200" 
+                                         alt="{{ $displayName }}" 
+                                         onerror="this.src='https://ui-avatars.com/api/?name=D&background=00d4ff&color=fff&size=200'">
+                                    <span class="status-badge" style="background:{{ $statusColor }}">{{ $statusText }}</span>
+                                </div>
+                                <div class="dr-card-body text-center">
+                                    <h5 class="mb-1 text-white">Dr. {{ $doctor->name ?? $doctor->specialization }}</h5>
+                                    <p class="small text-info">{{ $doctor->specialization }}</p>
+                                    @if($doctor->qualification)
+                                        <p class="small text-white-50">{{ $doctor->qualification }}</p>
+                                    @endif
+                                    @if($doctor->experience)
+                                        <p class="small text-white-50">{{ $doctor->experience }} years experience</p>
+                                    @endif
+                                    @if($doctor->fee)
+                                        <p class="small text-success">Fee: ${{ $doctor->fee }}</p>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                @endif
             </div>
 
-        <div class="view-all-container text-center">
-            <a href="/Doctors" class="view-all-btn">
-                View All Doctors <span>&rarr;</span>
-            </a>
+            <div class="view-all-container text-center">
+                <a href="/Doctors" class="view-all-btn">
+                    View All Doctors <span>&rarr;</span>
+                </a>
+            </div>
         </div>
     </div>
-</div>
 
     <div id="customDrModal" class="dr-popup-overlay">
         <div class="dr-popup-content">
@@ -41,5 +74,13 @@
     </div>
 </section>
 
-<script src="{{ asset('js/Doctors_details.js') }}"></script>
+{{-- ✅ Pass doctors data to JavaScript for modal functionality --}}
+<script>
+    // ✅ Pass doctors data from Blade to JavaScript
+    const doctorsData = @json($doctors ?? []);
+    
+    console.log('✅ Doctors in Doctors_details component:', doctorsData);
+    console.log('✅ Total doctors:', doctorsData.length);
+</script>
 
+<script src="{{ asset('js/Doctors_details.js') }}"></script>
