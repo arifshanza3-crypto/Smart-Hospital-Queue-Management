@@ -128,22 +128,14 @@
 
                 <div class="dropdown-divider"></div>
 
-                <!-- My Profile - Available to all -->
-                @auth
-                    @if(auth()->user()->role === 'admin')
-                        <a href="{{ route('admin.profile.index') }}" class="dropdown-item">
-                            <i class="fas fa-user"></i>
-                            <span>My Profile</span>
-                            <i class="fas fa-chevron-right item-arrow"></i>
-                        </a>
-                    @elseif(auth()->user()->role === 'staff')
-                        <a href="{{ route('staff.profile.index') }}" class="dropdown-item">
-                            <i class="fas fa-user"></i>
-                            <span>My Profile</span>
-                            <i class="fas fa-chevron-right item-arrow"></i>
-                        </a>
-                    @endif
-                @endauth
+            <!-- ✅ FIXED - Common Profile Route for All Roles -->
+@auth
+    <a href="{{ route('profile.index') }}" class="dropdown-item">
+        <i class="fas fa-user"></i>
+        <span>My Profile</span>
+        <i class="fas fa-chevron-right item-arrow"></i>
+    </a>
+@endauth
 
                 <!-- Staff Dashboard - Admin and Staff -->
                 @auth
