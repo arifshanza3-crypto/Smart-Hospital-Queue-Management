@@ -1,45 +1,71 @@
 <link rel="stylesheet" href="{{ asset('css/Doctor_details.css') }}">
+
 <section class="doctors-section">
     <div class="container">
         <div class="section-header text-center">
             <h2 class="section-title">Meet Our Expert Doctors</h2>
             <p class="section-description">Our team of highly skilled and compassionate doctors is dedicated to providing exceptional care and personalized treatment to our patients.</p>
         </div>
-        <div class="container">
+        
+        {{-- Doctors Grid --}}
         <div class="row g-4" id="doctorsGrid">
-            </div>
+            {{-- Doctors will be rendered by JavaScript --}}
+        </div>
 
         <div class="view-all-container text-center">
-            <a href="/Doctors" class="view-all-btn">
+            <a href="{{ route('doctors') }}" class="view-all-btn">
                 View All Doctors <span>&rarr;</span>
             </a>
         </div>
     </div>
-</div>
 
+    {{-- Doctor Detail Modal --}}
     <div id="customDrModal" class="dr-popup-overlay">
         <div class="dr-popup-content">
-            <span class="dr-popup-close">&times;</span>
+            <span class="dr-popup-close" onclick="closeDoctorModal()">&times;</span>
             <div class="dr-popup-flex">
                 <div class="dr-popup-image-container">
-                    <div id="modalLoader" class="dr-loader"></div>
+                    <div id="modalLoader" class="dr-loader">
+                        <div class="spinner"></div>
+                    </div>
                     <img id="modalImg" src="" alt="Doctor">
                 </div>
                 <div class="dr-popup-details">
                     <h2 class="pop-title">Doctor Details</h2>
                     <div class="pop-info">
-                        <p><strong>Name:</strong> <span id="modalName"></span></p>
-                        <p><strong>Education:</strong> <span id="modalEdu"></span></p>
-                        <p><strong>Specialty:</strong> <span id="modalProf"></span></p>
-                        <p><strong>Shift:</strong> <span id="modalTime"></span></p>
-                        <p><strong>Status:</strong> <span id="modalStatus"></span></p>
+                        <p><strong>Name:</strong> <span id="modalName">-</span></p>
+                        <p><strong>Education:</strong> <span id="modalEdu">-</span></p>
+                        <p><strong>Specialty:</strong> <span id="modalProf">-</span></p>
+                        <p><strong>Shift:</strong> <span id="modalTime">-</span></p>
+                        <p><strong>Experience:</strong> <span id="modalExperience">-</span></p>
+                        <p><strong>Rating:</strong> <span id="modalRating">-</span></p>
+                        <p><strong>Status:</strong> <span id="modalStatus">-</span></p>
                     </div>
-                    <button class="join-btn" onclick="window.location.href='/Token_form'">Join Queue</button>
+                    <div class="modal-actions">
+                        <button class="join-btn" onclick="joinQueue()">Join Queue</button>
+                        <button class="appointment-btn" onclick="bookAppointment()">Book Appointment</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<script src="{{ asset('js/Doctors_details.js') }}"></script>
+{{-- Pass doctors data to JavaScript --}}
+<script>
+    // ✅ Doctors data from backend
+    window.doctorsData = @json($doctors ?? []);
+    
+    console.log('=== DOCTORS DETAILS PAGE ===');
+    console.log('Total Doctors:', window.doctorsData.length);
+    
+    if (window.doctorsData.length > 0) {
+        console.log('Sample Doctor:', window.doctorsData[0]);
+        console.log('Doctor Name:', window.doctorsData[0].name);
+        console.log('Specialization:', window.doctorsData[0].specialization);
+    } else {
+        console.log('⚠️ No doctors data received from controller!');
+    }
+</script>
 
+<script src="{{ asset('js/Doctors_details.js') }}"></script>

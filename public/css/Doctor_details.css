@@ -1,206 +1,403 @@
-/* ==========================================================================
-   Doctors Section & Card Grid
-   ========================================================================== */
+/* ============================================
+   DOCTORS DETAILS PAGE - UPDATED CSS
+   4 Cards Per Row with Small Images
+   ============================================ */
 
-.doctors-section {
-    background: #0b2e33;
-    padding: 60px 20px;
+/* Reset and Base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #0a0a1a;
+    color: #fff;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    border-top: 10px solid #FFFFFF;
 }
 
+/* Section Styles */
+.doctors-section {
+    padding: 60px 0;
+    background: #0a0a1a;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+/* Section Header */
 .section-header {
+    margin-bottom: 40px;
+}
+
+.section-title {
+    color: #fff;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 15px;
     text-align: center;
-    margin-bottom: 50px;
-    color: #FFFFFF;
 }
 
-.dr-item-card {
-    background: #3e8686;
-    border-radius: 15px;
+.section-title::after {
+    content: '';
+    display: block;
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, #00d4ff, #007bff);
+    margin: 15px auto 0;
+    border-radius: 2px;
+}
+
+.section-description {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.1rem;
+    max-width: 700px;
+    margin: 0 auto 0;
+    text-align: center;
+    line-height: 1.8;
+}
+
+/* ============================================
+   GRID SYSTEM - 4 CARDS PER ROW
+   ============================================ */
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -12px;
+}
+
+/* 4 columns per row */
+.col-xl-3 {
+    flex: 0 0 25%;
+    max-width: 25%;
+    padding: 0 12px;
+    margin-bottom: 24px;
+}
+
+/* For medium screens - 2 columns */
+@media (max-width: 1200px) {
+    .col-xl-3 {
+        flex: 0 0 33.333%;
+        max-width: 33.333%;
+    }
+}
+
+@media (max-width: 992px) {
+    .col-xl-3 {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+}
+
+@media (max-width: 576px) {
+    .col-xl-3 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
+
+/* ============================================
+   DOCTOR CARDS - SMALL IMAGE, LARGE INFO
+   ============================================ */
+
+.doctor-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
     overflow: hidden;
-    cursor: pointer;
     transition: all 0.3s ease;
-    border: 10px #00d4ff;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
-.dr-item-card:hover {
-    transform: translateY(-10px);
+.doctor-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+    border-color: rgba(0, 212, 255, 0.3);
     background: rgba(255, 255, 255, 0.08);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
 }
 
-/* --- Card Image & Hover Effects --- */
-.dr-card-img {
-    height: 320px;
+.doctor-card-inner {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ============================================
+   DOCTOR IMAGE - SMALL SIZE
+   ============================================ */
+
+.doctor-image-wrapper {
     position: relative;
+    width: 100%;
+    padding-top: 60%;
+    /* Smaller image height */
     overflow: hidden;
+    background: #1a1a2e;
+    flex-shrink: 0;
 }
 
-.dr-card-img img {
+.doctor-image {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: 0.5s;
+    transition: transform 0.4s ease;
 }
 
-.dr-item-card:hover .dr-card-img img {
-    transform: scale(1.1);
+.doctor-card:hover .doctor-image {
+    transform: scale(1.05);
 }
 
-.status-badge {
+/* ============================================
+   STATUS BADGE ON CARD
+   ============================================ */
+
+.doctor-status {
     position: absolute;
-    top: 15px;
-    right: 15px;
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: bold;
+    top: 10px;
+    right: 10px;
+    padding: 3px 12px;
+    border-radius: 15px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(5px);
+    border: 1px solid transparent;
+}
+
+.doctor-status.available,
+.doctor-status.active {
+    color: #4caf50;
+    border-color: #4caf50;
+}
+
+.doctor-status.busy,
+.doctor-status.on_duty {
+    color: #ff9800;
+    border-color: #ff9800;
+}
+
+.doctor-status.unavailable,
+.doctor-status.inactive {
+    color: #f44336;
+    border-color: #f44336;
+}
+
+/* ============================================
+   DOCTOR INFO - LARGE SPACE
+   ============================================ */
+
+.doctor-info {
+    padding: 16px 18px 18px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 160px;
+    /* Ensures info area is large */
+}
+
+.doctor-name {
+    color: #fff;
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 3px;
+    line-height: 1.3;
+}
+
+.doctor-specialty {
+    color: #00d4ff;
+    font-size: 0.82rem;
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+.doctor-meta {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.78rem;
+    flex-wrap: wrap;
+}
+
+.doctor-meta i {
+    margin-right: 4px;
+    color: #00d4ff;
+}
+
+/* ============================================
+   VIEW DETAILS BUTTON
+   ============================================ */
+
+.view-details-btn {
+    background: linear-gradient(135deg, #00d4ff, #007bff);
     color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: auto;
+    width: 100%;
+    text-align: center;
 }
 
-.dr-card-body {
-    padding: 25px;
+.view-details-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(0, 212, 255, 0.3);
 }
 
-/* ==========================================================================
-   Pop-Up Modal (Overlay & Content)
-   ========================================================================== */
+/* ============================================
+   VIEW ALL BUTTON
+   ============================================ */
+
+.view-all-container {
+    margin-top: 40px;
+    text-align: center;
+    padding-top: 10px;
+}
+
+.view-all-btn {
+    display: inline-block;
+    padding: 14px 45px;
+    background: linear-gradient(135deg, #00d4ff, #007bff);
+    color: white;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1.05rem;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+}
+
+.view-all-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(0, 212, 255, 0.4);
+    color: white;
+    text-decoration: none;
+}
+
+.view-all-btn span {
+    margin-left: 10px;
+    transition: transform 0.3s ease;
+    display: inline-block;
+}
+
+.view-all-btn:hover span {
+    transform: translateX(8px);
+}
+
+/* ============================================
+   MODAL / POPUP STYLES
+   ============================================ */
 
 .dr-popup-overlay {
-    display: none;
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.9);
-    z-index: 10000;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(10px);
+    z-index: 9999;
+    display: none;
     justify-content: center;
     align-items: center;
-    backdrop-filter: blur(8px);
+    padding: 20px;
 }
 
 .dr-popup-content {
-    background: #0b2e33;
-    width: 95%;
-    max-width: 850px;
+    background: linear-gradient(145deg, #1a1a2e, #16213e);
     border-radius: 25px;
-    border: 1px solid #00d4ff;
+    max-width: 800px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 30px;
     position: relative;
-    overflow: hidden;
-    animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    animation: modalSlideIn 0.3s ease;
 }
 
-@keyframes modalPop {
+@keyframes modalSlideIn {
     from {
+        transform: translateY(-50px) scale(0.95);
         opacity: 0;
-        transform: scale(0.8);
     }
     to {
+        transform: translateY(0) scale(1);
         opacity: 1;
-        transform: scale(1);
     }
-}
-
-/* --- Modal Layout --- */
-.dr-popup-flex {
-    display: flex;
-    flex-wrap: wrap;
-}
-
-.dr-popup-image-container {
-    flex: 1;
-    min-width: 320px;
-    height: 450px;
-    position: relative;
-    background: #072529;
-}
-
-#modalImg {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: none;
-}
-
-.dr-popup-details {
-    flex: 1.2;
-    padding: 45px;
-    color: white;
 }
 
 .dr-popup-close {
     position: absolute;
     top: 15px;
-    right: 25px;
-    font-size: 40px;
-    color: white;
+    right: 20px;
+    font-size: 32px;
+    color: rgba(255, 255, 255, 0.6);
     cursor: pointer;
-    z-index: 11;
-    transition: 0.3s;
+    transition: all 0.3s ease;
+    z-index: 10;
+    line-height: 1;
+    background: none;
+    border: none;
 }
 
 .dr-popup-close:hover {
-    color: #00d4ff;
+    color: #fff;
+    transform: rotate(90deg);
 }
 
-/* --- Modal Typography --- */
-.pop-title {
-    color: #00d4ff;
-    font-weight: 800;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    padding-bottom: 15px;
-    margin-bottom: 20px;
+.dr-popup-flex {
+    display: flex;
+    gap: 30px;
 }
 
-.pop-info p {
-    margin: 12px 0;
-    font-size: 1.1rem;
-    line-height: 1.6;
+/* Modal Image Container */
+.dr-popup-image-container {
+    flex: 0 0 40%;
+    position: relative;
+    border-radius: 15px;
+    overflow: hidden;
+    background: #0a0a1a;
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
-
-.pop-info strong {
-    color: #00d4ff;
-    width: 120px;
-    display: inline-block;
-}
-
-/* --- Action Button --- */
-.join-btn {
-    width: 100%;
-    background: #00d4ff;
-    border: none;
-    padding: 16px;
-    border-radius: 12px;
-    font-weight: 800;
-    color: #0b2e33;
-    cursor: pointer;
-    margin-top: 25px;
-    text-transform: uppercase;
-    transition: 0.3s;
-}
-
-.join-btn:hover {
-    background: white;
-    transform: scale(1.02);
-}
-
-/* ==========================================================================
-   Refined Loader & Animations
-   ========================================================================== */
 
 .dr-loader {
-    width: 50px;
-    height: 50px;
-    border: 5px solid rgba(0, 212, 255, 0.1);
-    border-top: 5px solid #00d4ff;
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
+    display: none;
     position: absolute;
     top: 50%;
     left: 50%;
-    margin: -25px 0 0 -25px;
+    transform: translate(-50%, -50%);
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-top: 3px solid #00d4ff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
@@ -208,37 +405,299 @@
         transform: rotate(360deg);
     }
 }
-.view-all-container {
-    margin-top: 50px;
+
+#modalImg {
+    width: 100%;
+    height: 100%;
+    min-height: 300px;
+    object-fit: cover;
+    display: none;
+}
+
+/* Modal Details */
+.dr-popup-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.pop-title {
+    color: #fff;
+    font-size: 1.8rem;
+    font-weight: 700;
     margin-bottom: 20px;
 }
 
-.view-all-btn {
+.pop-title::after {
+    content: '';
+    display: block;
+    width: 50px;
+    height: 3px;
+    background: linear-gradient(90deg, #00d4ff, #007bff);
+    margin-top: 8px;
+    border-radius: 2px;
+}
+
+.pop-info {
+    flex: 1;
+}
+
+.pop-info p {
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.pop-info p:last-child {
+    border-bottom: none;
+}
+
+.pop-info p strong {
+    color: #fff;
+    min-width: 100px;
+    font-weight: 600;
+}
+
+.pop-info p span {
+    color: #90caf9;
+}
+
+/* Status Badge in Modal */
+.status-badge {
     display: inline-block;
-    padding: 15px 40px;
-    background: transparent;
-    color: #00d4ff;
-    border: 2px solid #00d4ff;
-    border-radius: 50px;
-    font-weight: 700;
-    text-decoration: none;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    padding: 3px 15px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.status-badge.available,
+.status-badge.active {
+    background: rgba(76, 175, 80, 0.2);
+    color: #4caf50;
+    border: 1px solid #4caf50;
+}
+
+.status-badge.busy,
+.status-badge.on_duty {
+    background: rgba(255, 152, 0, 0.2);
+    color: #ff9800;
+    border: 1px solid #ff9800;
+}
+
+.status-badge.unavailable,
+.status-badge.inactive {
+    background: rgba(244, 67, 54, 0.2);
+    color: #f44336;
+    border: 1px solid #f44336;
+}
+
+/* Modal Actions */
+.modal-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.join-btn,
+.appointment-btn {
+    flex: 1;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
     transition: all 0.3s ease;
 }
 
-.view-all-btn span {
-    margin-left: 10px;
-    transition: margin 0.3s ease;
+.join-btn {
+    background: linear-gradient(135deg, #00d4ff, #007bff);
+    color: white;
 }
 
-.view-all-btn:hover {
+.join-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(0, 212, 255, 0.4);
+}
+
+.appointment-btn {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.appointment-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+/* Tablet - 2 columns */
+@media (max-width: 992px) {
+    .container {
+        max-width: 100%;
+        padding: 0 20px;
+    }
+
+    .section-title {
+        font-size: 2rem;
+    }
+
+    .dr-popup-flex {
+        flex-direction: column;
+    }
+
+    .dr-popup-image-container {
+        flex: 0 0 250px;
+        min-height: 250px;
+    }
+
+    #modalImg {
+        min-height: 250px;
+    }
+}
+
+/* Mobile - 1 column */
+@media (max-width: 576px) {
+    .container {
+        padding: 0 12px;
+    }
+
+    .section-title {
+        font-size: 1.6rem;
+    }
+
+    .section-description {
+        font-size: 0.95rem;
+    }
+
+    .doctor-info {
+        padding: 14px 14px 16px;
+        min-height: 140px;
+    }
+
+    .doctor-name {
+        font-size: 0.95rem;
+    }
+
+    .doctor-specialty {
+        font-size: 0.78rem;
+    }
+
+    .doctor-meta {
+        font-size: 0.72rem;
+        gap: 8px;
+    }
+
+    .view-details-btn {
+        font-size: 0.78rem;
+        padding: 7px 14px;
+    }
+
+    .view-all-btn {
+        padding: 12px 30px;
+        font-size: 0.95rem;
+    }
+
+    .pop-info p {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 3px;
+    }
+
+    .pop-info p strong {
+        min-width: auto;
+    }
+
+    .modal-actions {
+        flex-direction: column;
+    }
+
+    .dr-popup-content {
+        padding: 20px;
+    }
+
+    .dr-popup-image-container {
+        flex: 0 0 200px;
+        min-height: 200px;
+    }
+
+    #modalImg {
+        min-height: 200px;
+    }
+}
+
+/* Extra Small Mobile */
+@media (max-width: 400px) {
+    .doctor-info {
+        padding: 10px 10px 12px;
+        min-height: 120px;
+    }
+
+    .doctor-name {
+        font-size: 0.85rem;
+    }
+
+    .doctor-specialty {
+        font-size: 0.72rem;
+        margin-bottom: 6px;
+    }
+
+    .doctor-meta {
+        font-size: 0.68rem;
+        gap: 6px;
+        margin-bottom: 8px;
+    }
+
+    .view-details-btn {
+        font-size: 0.72rem;
+        padding: 6px 10px;
+    }
+}
+
+/* ============================================
+   FONT AWESOME ICONS (fallback)
+   ============================================ */
+
+.fas {
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+}
+
+/* Fallback if Font Awesome not loaded */
+.fa-briefcase::before {
+    content: '💼';
+}
+
+.fa-star::before {
+    content: '⭐';
+}
+
+/* ============================================
+   SCROLLBAR STYLING
+   ============================================ */
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #0a0a1a;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #00d4ff, #007bff);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
     background: #00d4ff;
-    color: #0b2e33;
-    box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
-    transform: translateY(-3px);
-}
-
-.view-all-btn:hover span {
-    margin-left: 20px;
 }
