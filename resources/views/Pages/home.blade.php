@@ -111,6 +111,13 @@
                 </div>
             @endif
 
+<<<<<<< HEAD
+=======
+            {{-- ✅ DOCTORS DETAILS COMPONENT --}}
+            {{-- Pass doctors data explicitly --}}
+            @include('component.Doctors_details', ['doctors' => $doctors ?? collect()])
+
+>>>>>>> 2eb4cefef4397039eb351be26021243836677662
         </div>
     </div>
 </section>
@@ -120,6 +127,9 @@
 @include("component/about-special")
 @include("component/contact_form")
 
+<<<<<<< HEAD
 <script src="{{ asset('js/home.js') }}"></script>
 
+=======
+>>>>>>> 2eb4cefef4397039eb351be26021243836677662
 @endsection
