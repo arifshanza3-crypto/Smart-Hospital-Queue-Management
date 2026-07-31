@@ -10,12 +10,12 @@ class PageController extends Controller
 {
     public function home()
     {
-        // ✅ Get all tokens with status 'serving' from all departments
+        // ✅ Get serving tokens
         $servingTokens = Token::where('status', 'serving')
                                ->orderBy('department', 'asc')
                                ->get();
         
-        // ✅ Get user's own token from session
+        // ✅ Get user's own token
         $tokenNumber = session('current_token');
         $userToken = null;
         if ($tokenNumber) {
@@ -41,6 +41,10 @@ class PageController extends Controller
         // ✅ Get all doctors from database
         $doctors = Doctor::all();
         
+        // ✅ Debug - Check if doctors exist
+        \Log::info('Home page doctors count: ' . $doctors->count());
+        
+        // ✅ Return view with all data
         return view('Pages.home', compact('servingTokens', 'userToken', 'allDepartments', 'doctors'));
     }
     
@@ -74,7 +78,6 @@ class PageController extends Controller
         return view('Pages.booking');
     }
     
-    // ✅ Updated - Pass doctors data to view
     public function Doctors()
     {
         $doctors = Doctor::all();
