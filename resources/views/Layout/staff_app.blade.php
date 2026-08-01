@@ -15,10 +15,10 @@
             --primary-teal: #3e8686;
             --accent-cyan: #00d4ff;
             --nav-bg: #0b2e33;
-            --gold: #ffd700;
+            --gold: #ffd700; 
         }
 
-        * {
+        * { 
             margin: 0;
             padding: 0;
             box-sizing: border-box;
