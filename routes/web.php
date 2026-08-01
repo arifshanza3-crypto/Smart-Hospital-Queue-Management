@@ -180,3 +180,12 @@ Route::get('/dashboard', function() {
         return redirect('/');
     }
 })->middleware('auth')->name('dashboard');
+
+// =============================================
+// ✅ PROFILE ROUTES (For All Users - Admin, Staff, User)
+// =============================================
+Route::middleware(['auth'])->group(function () {
+    Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'index'])->name('profile.index');
+    Route::put('/profile/update', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('profile.password');
+});
