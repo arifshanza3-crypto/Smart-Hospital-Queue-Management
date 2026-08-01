@@ -2,49 +2,87 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\User;
-use App\Models\Staff;
-use App\Models\Doctor;
-use Illuminate\Support\Facades\Hash;
+use App\Models\Notification;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use App\Traits\NotificationTrait;
 
 class AdminController extends Controller
 {
+    use NotificationTrait;
+
     public function dashboard()
     {
-        $doctors = Doctor::all();
+        // Get pending staff requests
         $pendingStaff = User::where('role', 'staff')
-                            ->where('status', 'pending')
-                            ->get();
-
-        return view('Pages.Admin.Doctor_management', compact('pendingStaff', 'doctors'));
+            ->where('status', 'pending')
+            ->get();
+        
+        // Get all staff
+        $staff = User::where('role', 'staff')->get();
+        
+        return view('Pages.Admin.Doctor_management', compact('pendingStaff', 'staff'));
     }
 
     public function approveStaff($id)
     {
-        $user = User::findOrFail($id);
+        try {
+            $staff = User::findOrFail($id);
+            $staff->status = 'active';
+            $staff->save();
 
-        if ($user->role !== 'staff') {
-            return back()->with('error', 'Only staff members can be approved.');
+            // ✅ Send notification to staff
+            $this->notifyUser(
+                $staff->id,
+                'Account Approved',
+                'Your staff account has been approved. You can now access the staff dashboard.',
+                'staff_approved',
+                [
+                    'url' => route('staff.dashboard')
+                ]
+            );
+
+            // ✅ Notify all admins
+            $this->notifyAdmin(
+                'Staff Approved',
+                $staff->name . ' has been approved as a staff member',
+                'staff_approved',
+                [
+                    'staff_id' => $staff->id,
+                    'staff_name' => $staff->name,
+                    'url' => route('admin.user-management')
+                ]
+            );
+
+            return redirect()->back()->with('success', 'Staff approved successfully!');
+            
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
         }
-
-        $user->status = 'approved';
-        $user->save();
-
-        return back()->with('success', 'Staff approved successfully!');
     }
 
     public function rejectStaff($id)
     {
-        $user = User::findOrFail($id);
+        try {
+            $staff = User::findOrFail($id);
+            $staffName = $staff->name;
+            $staff->delete();
 
-        if ($user->role !== 'staff') {
-            return back()->with('error', 'Invalid operation.');
+            // ✅ Notify all admins
+            $this->notifyAdmin(
+                'Staff Rejected',
+                $staffName . '\'s staff application has been rejected',
+                'staff_rejected',
+                [
+                    'staff_name' => $staffName
+                ]
+            );
+
+            return redirect()->back()->with('success', 'Staff rejected successfully!');
+            
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
         }
-
-        $user->status = 'rejected';
-        $user->save();
-
-        return back()->with('error', 'Staff rejected.');
     }
 }

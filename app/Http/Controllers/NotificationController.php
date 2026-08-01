@@ -2,77 +2,185 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Notification;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class NotificationController extends Controller
 {
-    // ✅ Get all notifications
+    /**
+     * Display notifications page with role-based filtering
+     */
     public function index()
     {
-        $notifications = Notification::where('user_id', auth()->id())
-                                     ->orderBy('created_at', 'desc')
-                                     ->limit(50)
-                                     ->get();
+        $user = Auth::user();
+        
+        // ✅ Get notifications based on user role
+        $notifications = $this->getNotificationsByRole($user);
+        
+        // ✅ Format notifications for JSON response
+        $formatted = $notifications->map(function($notification) {
+            return [
+                'id' => $notification->id,
+                'title' => $notification->data['title'] ?? 'Notification',
+                'message' => $notification->data['message'] ?? '',
+                'type' => $notification->type ?? 'general',
+                'token_number' => $notification->data['token_number'] ?? null,
+                'is_read' => $notification->read_at ? true : false,
+                'created_at' => $notification->created_at->toISOString(),
+                'data' => $notification->data
+            ];
+        });
 
-        $unreadCount = Notification::where('user_id', auth()->id())
-                                   ->where('is_read', false)
-                                   ->count();
+        $unreadCount = $notifications->whereNull('read_at')->count();
 
-        return response()->json([
-            'success' => true,
-            'notifications' => $notifications,
-            'unread_count' => $unreadCount
-        ]);
+        // ✅ If request expects JSON (AJAX call)
+        if (request()->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'notifications' => $formatted,
+                'unread_count' => $unreadCount,
+                'total_count' => $notifications->count()
+            ]);
+        }
+
+        // ✅ Auto-detect view path
+        $viewPath = $this->getViewPath();
+        
+        return view($viewPath, compact('notifications', 'unreadCount'));
     }
 
-    // ✅ Mark as read
+    /**
+     * Auto-detect notification view path
+     */
+    private function getViewPath()
+    {
+        // ✅ Check in root directory first
+        if (view()->exists('Notification')) {
+            return 'Notification';
+        }
+        
+        // ✅ Check in Pages/Notifications folder
+        if (view()->exists('Pages.Notifications.index')) {
+            return 'Pages.Notifications.index';
+        }
+        
+        // ✅ Check in Pages folder
+        if (view()->exists('Pages.Notification')) {
+            return 'Pages.Notification';
+        }
+        
+        // ✅ If no view found, create fallback
+        return 'Notification';
+    }
+
+    /**
+     * Get notifications based on user role
+     */
+    private function getNotificationsByRole($user)
+    {
+        $role = $user->role ?? 'user';
+
+        switch ($role) {
+            case 'admin':
+                // ✅ Admin sees all notifications
+                return Notification::where('user_id', $user->id)
+                    ->orWhereNull('user_id')
+                    ->orderBy('created_at', 'desc')
+                    ->get();
+
+            case 'staff':
+                // ✅ Staff sees their notifications + general
+                return Notification::where('user_id', $user->id)
+                    ->orWhereNull('user_id')
+                    ->orderBy('created_at', 'desc')
+                    ->get();
+
+            default:
+                // ✅ Patient/User sees only their own
+                return Notification::where('user_id', $user->id)
+                    ->orWhereNull('user_id')
+                    ->orderBy('created_at', 'desc')
+                    ->get();
+        }
+    }
+
+    /**
+     * Mark a notification as read
+     */
     public function markAsRead($id)
     {
-        $notification = Notification::where('user_id', auth()->id())->findOrFail($id);
-        $notification->markAsRead();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Notification marked as read'
-        ]);
+        $user = Auth::user();
+        
+        $notification = Notification::where('id', $id)
+            ->where(function($query) use ($user) {
+                $query->where('user_id', $user->id)
+                    ->orWhereNull('user_id');
+            })
+            ->firstOrFail();
+        
+        $notification->update(['read_at' => now()]);
+        
+        return response()->json(['success' => true]);
     }
 
-    // ✅ Mark all as read
+    /**
+     * Mark all notifications as read
+     */
     public function markAllAsRead()
     {
-        Notification::where('user_id', auth()->id())
-                    ->where('is_read', false)
-                    ->update(['is_read' => true]);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'All notifications marked as read'
-        ]);
+        $user = Auth::user();
+        
+        $notifications = Notification::where(function($query) use ($user) {
+                $query->where('user_id', $user->id)
+                    ->orWhereNull('user_id');
+            })
+            ->whereNull('read_at')
+            ->get();
+        
+        foreach ($notifications as $notification) {
+            $notification->update(['read_at' => now()]);
+        }
+        
+        return response()->json(['success' => true]);
     }
 
-    // ✅ Get unread count
+    /**
+     * Get unread count
+     */
     public function unreadCount()
     {
-        $count = Notification::where('user_id', auth()->id())
-                             ->where('is_read', false)
-                             ->count();
-
+        $user = Auth::user();
+        
+        $count = Notification::where(function($query) use ($user) {
+                $query->where('user_id', $user->id)
+                    ->orWhereNull('user_id');
+            })
+            ->whereNull('read_at')
+            ->count();
+        
         return response()->json([
             'success' => true,
             'count' => $count
         ]);
     }
 
-    // ✅ Delete notification
+    /**
+     * Delete a notification
+     */
     public function destroy($id)
     {
-        $notification = Notification::where('user_id', auth()->id())->findOrFail($id);
+        $user = Auth::user();
+        
+        $notification = Notification::where('id', $id)
+            ->where(function($query) use ($user) {
+                $query->where('user_id', $user->id)
+                    ->orWhereNull('user_id');
+            })
+            ->firstOrFail();
+        
         $notification->delete();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Notification deleted'
-        ]);
+        
+        return response()->json(['success' => true]);
     }
 }

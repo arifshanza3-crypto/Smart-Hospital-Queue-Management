@@ -98,9 +98,8 @@ Route::prefix('notifications')->name('notifications.')->middleware('auth')->grou
     Route::delete('/{id}', [NotificationController::class, 'destroy'])->name('destroy');
 });
 
-Route::get('/notifications-page', function() {
-    return view('Pages.Notifications.index');
-})->name('notifications.page')->middleware('auth');
+// ✅ Fixed: Notification Page Route - Direct to Controller
+Route::get('/notifications-page', [NotificationController::class, 'index'])->name('notifications.page')->middleware('auth');
 
 // =============================================
 // ✅ ADMIN ROUTES (Only Admin can access)
