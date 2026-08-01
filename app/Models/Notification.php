@@ -2,54 +2,90 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Notification extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
         'user_id',
-        'type',
         'title',
         'message',
-        'token_number',
-        'is_read',
-        'data'
+        'type',
+        'data',
+        'read_at'
     ];
 
     protected $casts = [
-        'is_read' => 'boolean',
-        'data' => 'array'
+        'data' => 'array',
+        'read_at' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime'
     ];
 
-    // ✅ Relations
-    public function user()
+    protected $dates = ['read_at', 'created_at', 'updated_at'];
+
+    /**
+     * Get the user that owns the notification
+     */
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function token()
+    /**
+     * Check if notification is read
+     */
+    public function isRead(): bool
     {
-        return $this->belongsTo(Token::class, 'token_number', 'token_number');
+        return $this->read_at !== null;
     }
 
-    // ✅ Mark as read
-    public function markAsRead()
+    /**
+     * Mark notification as read
+     */
+    public function markAsRead(): void
     {
-        $this->is_read = true;
-        $this->save();
+        $this->update(['read_at' => now()]);
     }
 
-    // ✅ Scopes
+    /**
+     * Scope for unread notifications
+     */
     public function scopeUnread($query)
     {
-        return $query->where('is_read', false);
+        return $query->whereNull('read_at');
     }
 
-    public function scopeForUser($query, $userId)
+    /**
+     * Scope for read notifications
+     */
+    public function scopeRead($query)
     {
-        return $query->where('user_id', $userId);
+        return $query->whereNotNull('read_at');
+    }
+
+    /**
+     * Get formatted notification time
+     */
+    public function getFormattedTimeAttribute()
+    {
+        return $this->created_at->diffForHumans();
+    }
+
+    /**
+     * Get notification icon from data
+     */
+    public function getIconAttribute()
+    {
+        return $this->data['icon'] ?? 'fa-bell';
+    }
+
+    /**
+     * Get notification URL from data
+     */
+    public function getUrlAttribute()
+    {
+        return $this->data['url'] ?? '#';
     }
 }
