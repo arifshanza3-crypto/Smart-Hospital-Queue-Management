@@ -1,4 +1,5 @@
 <?php
+// app/Models/User.php
 
 namespace App\Models;
 
@@ -34,18 +35,28 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    // ✅ Relationship with Profile
+    // Role Constants
+    const ROLE_ADMIN = 'admin';
+    const ROLE_STAFF = 'staff';
+    const ROLE_USER = 'user';
+
+    // Status Constants
+    const STATUS_ACTIVE = 'active';
+    const STATUS_PENDING = 'pending';
+    const STATUS_INACTIVE = 'inactive';
+
+    // Relationship with Profile
     public function profile()
     {
         return $this->hasOne(Profile::class);
     }
 
-    // ✅ Get or create profile
+    // Get or create profile
     public function getProfile()
     {
         if (!$this->profile) {
-            $this->profile()->create([
-                'full_name' => $this->name,
+            $profile = $this->profile()->create([
+                'full_name' => $this->full_name ?? $this->name,
                 'join_date' => now(),
                 'status' => 'active'
             ]);
@@ -54,49 +65,49 @@ class User extends Authenticatable
         return $this->profile;
     }
 
-    // ✅ Role Check Methods
+    // Role Check Methods
     public function isAdmin()
     {
-        return $this->role === 'admin';
+        return $this->role === self::ROLE_ADMIN;
     }
 
     public function isStaff()
     {
-        return $this->role === 'staff';
+        return $this->role === self::ROLE_STAFF;
     }
 
     public function isUser()
     {
-        return $this->role === 'user';
+        return $this->role === self::ROLE_USER;
     }
 
-    public function isPatient()
+    // Get Role Badge Class
+    public function getRoleBadgeClass()
     {
-        return $this->role === 'user';
+        return [
+            self::ROLE_ADMIN => 'badge-admin',
+            self::ROLE_STAFF => 'badge-staff',
+            self::ROLE_USER => 'badge-user',
+        ][$this->role] ?? 'badge-user';
     }
 
-    public function isPending()
+    // Get Status Badge Class
+    public function getStatusBadgeClass()
     {
-        return $this->status === 'pending';
+        return [
+            self::STATUS_ACTIVE => 'status-active',
+            self::STATUS_PENDING => 'status-pending',
+            self::STATUS_INACTIVE => 'status-inactive',
+        ][$this->status] ?? 'status-pending';
     }
 
-    public function isApproved()
-    {
-        return $this->status === 'approved';
-    }
-
-    public function isRejected()
-    {
-        return $this->status === 'rejected';
-    }
-
-    // ✅ Get Avatar URL
+    // Get Avatar URL
     public function getAvatarUrlAttribute()
     {
         if ($this->avatar) {
             return asset('storage/' . $this->avatar);
         }
         $displayName = $this->full_name ?? $this->name ?? 'User';
-        return 'https://ui-avatars.com/api/?name=' . urlencode($displayName) . '&background=00d4ff&color=fff';
+        return 'https://ui-avatars.com/api/?name=' . urlencode($displayName) . '&background=6366f1&color=fff&size=128';
     }
 }

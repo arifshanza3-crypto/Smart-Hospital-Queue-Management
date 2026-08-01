@@ -2,49 +2,49 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\User;
-use App\Models\Staff;
 use App\Models\Doctor;
-use Illuminate\Support\Facades\Hash;
+use App\Models\User;
+use App\Models\Token;
+use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
     public function dashboard()
     {
+        // ✅ Get all required data
         $doctors = Doctor::all();
-        $pendingStaff = User::where('role', 'staff')
-                            ->where('status', 'pending')
-                            ->get();
-
-        return view('Pages.Admin.Doctor_management', compact('pendingStaff', 'doctors'));
+        $totalDoctors = Doctor::count();
+        $totalPatients = User::where('role', 'user')->count();
+        $totalStaff = User::where('role', 'staff')->count();
+        $pendingStaff = User::where('role', 'staff')->where('status', 'pending')->get();
+        $todayTokens = Token::whereDate('created_at', today())->count();
+        $servingTokens = Token::where('status', 'serving')->count();
+        
+        return view('Pages.Admin.Doctor_management', compact(
+            'doctors',
+            'totalDoctors',
+            'totalPatients',
+            'totalStaff',
+            'pendingStaff',
+            'todayTokens',
+            'servingTokens'
+        ));
     }
 
     public function approveStaff($id)
     {
-        $user = User::findOrFail($id);
-
-        if ($user->role !== 'staff') {
-            return back()->with('error', 'Only staff members can be approved.');
-        }
-
-        $user->status = 'approved';
-        $user->save();
-
-        return back()->with('success', 'Staff approved successfully!');
+        $staff = User::findOrFail($id);
+        $staff->status = 'active';
+        $staff->save();
+        
+        return redirect()->back()->with('success', 'Staff approved successfully!');
     }
 
     public function rejectStaff($id)
     {
-        $user = User::findOrFail($id);
-
-        if ($user->role !== 'staff') {
-            return back()->with('error', 'Invalid operation.');
-        }
-
-        $user->status = 'rejected';
-        $user->save();
-
-        return back()->with('error', 'Staff rejected.');
+        $staff = User::findOrFail($id);
+        $staff->delete();
+        
+        return redirect()->back()->with('success', 'Staff rejected successfully!');
     }
 }

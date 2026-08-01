@@ -36,9 +36,9 @@
 
     <div class="nav-right">
         <!-- Notification Bell -->
-        <div class="notification-bell" onclick="toggleNotifications()">
+        <div class="notification-bell" onclick="toggleNotifications()" id="notificationBell">
             <i class="fas fa-bell"></i>
-            <span class="notification-badge">3</span>
+            <span class="notification-badge" id="notificationBadge">3</span>
         </div>
 
         <!-- Notification Dropdown -->
@@ -128,16 +128,14 @@
 
                 <div class="dropdown-divider"></div>
 
-            <!-- ✅ FIXED - Common Profile Route for All Roles -->
-@auth
-    <a href="{{ route('profile.index') }}" class="dropdown-item">
-        <i class="fas fa-user"></i>
-        <span>My Profile</span>
-        <i class="fas fa-chevron-right item-arrow"></i>
-    </a>
-@endauth
+                @auth
+                    <a href="{{ route('profile.index') }}" class="dropdown-item">
+                        <i class="fas fa-user"></i>
+                        <span>My Profile</span>
+                        <i class="fas fa-chevron-right item-arrow"></i>
+                    </a>
+                @endauth
 
-                <!-- Staff Dashboard - Admin and Staff -->
                 @auth
                     @if(in_array(auth()->user()->role, ['admin', 'staff']))
                         <a href="{{ route('staff.dashboard') }}" class="dropdown-item">
@@ -148,7 +146,6 @@
                     @endif
                 @endauth
 
-                <!-- My Website - All users -->
                 <a href="{{ route('home') }}" class="dropdown-item">
                     <i class="fas fa-globe"></i>
                     <span>My Website</span>
@@ -157,7 +154,6 @@
 
                 <div class="dropdown-divider"></div>
 
-                <!-- Logout -->
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit" class="dropdown-item logout-item">
@@ -193,7 +189,6 @@
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     }
 
-    /* Animated Background Glow - Same as Sidebar */
     .admin-nav::before {
         content: '';
         position: absolute;
@@ -224,7 +219,6 @@
         66% { transform: translate(-10%, 10%) scale(0.9); }
     }
 
-    /* ===== NAV LEFT ===== */
     .nav-left {
         display: flex;
         align-items: center;
@@ -288,7 +282,6 @@
         background-clip: text;
     }
 
-    /* ===== NAV RIGHT ===== */
     .nav-right {
         display: flex;
         align-items: center;
@@ -817,6 +810,90 @@
 
 <script>
     // ============================================
+    // ✅ NOTIFICATION SOUND
+    // ============================================
+    
+    let notificationAudio = null;
+    let previousBadgeCount = parseInt(document.getElementById('notificationBadge')?.textContent || 0);
+
+    function initAudio() {
+        try {
+            notificationAudio = new Audio('/Notification%20Sound/notification.wav');
+            notificationAudio.volume = 0.8;
+            notificationAudio.preload = 'auto';
+            
+            notificationAudio.onerror = function() {
+                console.warn('⚠️ Sound file not found');
+                notificationAudio = null;
+            };
+            
+            notificationAudio.oncanplaythrough = function() {
+                console.log('✅ Notification sound loaded!');
+            };
+        } catch (error) {
+            console.warn('Audio init failed:', error);
+            notificationAudio = null;
+        }
+    }
+
+    function playNotificationSound() {
+        if (notificationAudio) {
+            try {
+                notificationAudio.currentTime = 0;
+                notificationAudio.play()
+                    .then(() => console.log('🔊 Notification sound played!'))
+                    .catch(() => playFallbackSound());
+            } catch (error) {
+                playFallbackSound();
+            }
+        } else {
+            playFallbackSound();
+        }
+    }
+
+    function playFallbackSound() {
+        try {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.frequency.value = 880;
+            osc.type = 'sine';
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+            osc.start(audioCtx.currentTime);
+            osc.stop(audioCtx.currentTime + 0.3);
+            console.log('🔊 Fallback sound played!');
+        } catch (error) {
+            console.warn('Fallback sound failed:', error);
+        }
+    }
+
+    // ✅ Check for new notifications every 10 seconds
+    function checkNewNotifications() {
+        fetch('/notifications/unread-count')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const currentCount = data.count;
+                    const badge = document.getElementById('notificationBadge');
+                    
+                    if (currentCount > previousBadgeCount && currentCount > 0) {
+                        playNotificationSound();
+                    }
+                    previousBadgeCount = currentCount;
+                    
+                    if (badge) {
+                        badge.textContent = currentCount > 99 ? '99+' : currentCount;
+                        badge.style.display = currentCount > 0 ? 'block' : 'none';
+                    }
+                }
+            })
+            .catch(error => console.warn('Error checking notifications:', error));
+    }
+
+    // ============================================
     // TOGGLE FUNCTIONS
     // ============================================
     
@@ -839,6 +916,8 @@
         
         if (!isOpen) {
             dropdown.classList.add('show');
+            // Fetch notifications when opened
+            fetchNotifications();
         }
     }
 
@@ -847,6 +926,125 @@
             el.classList.remove('show');
         });
     }
+
+    // ============================================
+    // FETCH NOTIFICATIONS
+    // ============================================
+
+    function fetchNotifications() {
+        fetch('/notifications')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    renderNotifications(data.notifications);
+                }
+            })
+            .catch(error => console.error('Error fetching notifications:', error));
+    }
+
+    function renderNotifications(notifications) {
+        const list = document.querySelector('.notification-list');
+        if (!list) return;
+
+        if (!notifications || notifications.length === 0) {
+            list.innerHTML = `
+                <div style="text-align: center; padding: 30px 20px; color: #94a3b8; font-size: 14px;">
+                    <div style="font-size: 30px; margin-bottom: 8px;">🔕</div>
+                    No notifications
+                </div>
+            `;
+            return;
+        }
+
+        let html = '';
+        const latest = notifications.slice(0, 5);
+        
+        latest.forEach(notification => {
+            const unreadClass = notification.is_read ? '' : 'unread';
+            const time = new Date(notification.created_at).toLocaleTimeString();
+            let icon = getNotificationIcon(notification.type);
+            
+            html += `
+                <div class="notification-item ${unreadClass}" onclick="markAsRead(${notification.id})">
+                    <div class="notification-icon">
+                        <i class="fas ${icon}"></i>
+                    </div>
+                    <div class="notification-content">
+                        <p class="notification-text">${notification.title}</p>
+                        <span class="notification-time">${time}</span>
+                    </div>
+                    ${!notification.is_read ? '<div style="color: #0ea5e9; font-size: 8px;">●</div>' : ''}
+                </div>
+            `;
+        });
+
+        list.innerHTML = html;
+    }
+
+    function getNotificationIcon(type) {
+        const icons = {
+            'token_generated': 'fa-ticket-alt',
+            'token_called': 'fa-phone',
+            'token_arrived': 'fa-check-circle',
+            'token_completed': 'fa-check-double',
+            'token_cancelled': 'fa-times-circle',
+            'physical_patient_added': 'fa-user-plus',
+            'staff_registered': 'fa-user-check',
+            'staff_approved': 'fa-user-check',
+            'staff_rejected': 'fa-user-times',
+            'account_approved': 'fa-check-circle',
+            'system_alert': 'fa-exclamation-triangle'
+        };
+        return icons[type] || 'fa-bell';
+    }
+
+    // ============================================
+    // MARK AS READ
+    // ============================================
+
+    window.markAsRead = function(id) {
+        fetch(`/notifications/${id}/read`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                fetchNotifications();
+                checkNewNotifications();
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    };
+
+    // ============================================
+    // MARK ALL AS READ
+    // ============================================
+
+    document.querySelector('.notification-mark-all')?.addEventListener('click', function() {
+        fetch('/notifications/read-all', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                fetchNotifications();
+                checkNewNotifications();
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
+
+    // ============================================
+    // EVENT LISTENERS
+    // ============================================
 
     document.addEventListener('click', function(event) {
         const isClickInside = event.target.closest('.admin-profile') || 
@@ -872,23 +1070,20 @@
         }
     }
 
-    document.querySelector('.notification-mark-all')?.addEventListener('click', function() {
-        document.querySelectorAll('.notification-item.unread').forEach(item => {
-            item.classList.remove('unread');
-        });
-        const badge = document.querySelector('.notification-badge');
-        if (badge) {
-            badge.textContent = '0';
-            badge.style.display = 'none';
-        }
-    });
+    // ============================================
+    // INIT
+    // ============================================
 
-    document.querySelectorAll('.notification-item').forEach(item => {
-        item.addEventListener('click', function() {
-            this.classList.remove('unread');
-            setTimeout(() => {
-                document.getElementById('notificationDropdown')?.classList.remove('show');
-            }, 300);
-        });
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize sound
+        initAudio();
+        
+        // Check for new notifications
+        setTimeout(() => {
+            checkNewNotifications();
+        }, 500);
+        
+        // Auto check every 15 seconds
+        setInterval(checkNewNotifications, 15000);
     });
 </script>

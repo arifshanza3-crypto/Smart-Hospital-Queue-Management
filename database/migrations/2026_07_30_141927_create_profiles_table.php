@@ -19,14 +19,16 @@ class CreateProfilesTable extends Migration
             $table->string('hostel')->nullable();
             $table->string('location')->nullable();
             $table->string('avatar')->nullable();
-            $table->string('bio')->nullable();
+            $table->text('bio')->nullable(); // Changed to text for longer bio
             $table->string('employee_id')->nullable(); // Only for staff
             $table->string('department')->nullable(); // Only for staff
             $table->date('join_date')->nullable();
-            $table->string('status')->default('active');
+            $table->enum('status', ['active', 'pending', 'inactive'])->default('active');
             $table->timestamp('last_login')->nullable();
             $table->timestamps();
 
+            // Added index for better performance
+            $table->index('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }

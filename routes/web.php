@@ -33,7 +33,7 @@ Route::get('/setup', function() {
 });
 
 // =============================================
-// ✅ PUBLIC ROUTES (No Auth Required - Everyone can access)
+// ✅ PUBLIC ROUTES (No Auth Required)
 // =============================================
 Route::get('/', [PageController::class, 'home'])->name('home');
 Route::get('/about', [PageController::class, 'about'])->name('about');
@@ -98,9 +98,8 @@ Route::prefix('notifications')->name('notifications.')->middleware('auth')->grou
     Route::delete('/{id}', [NotificationController::class, 'destroy'])->name('destroy');
 });
 
-Route::get('/notifications-page', function() {
-    return view('Pages.Notifications.index');
-})->name('notifications.page')->middleware('auth');
+// ✅ Notification Page Route
+Route::get('/notifications-page', [NotificationController::class, 'index'])->name('notifications.page')->middleware('auth');
 
 // =============================================
 // ✅ ADMIN ROUTES (Only Admin can access)
@@ -159,6 +158,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
         Route::put('/update', [SettingController::class, 'update'])->name('update');
     });
 
+    // ✅ Admin Profile Routes
     Route::prefix('profile')->name('profile.')->group(function () {
         Route::get('/', [ProfileController::class, 'index'])->name('index');
         Route::put('/update', [ProfileController::class, 'update'])->name('update');
@@ -182,10 +182,19 @@ Route::get('/dashboard', function() {
 })->middleware('auth')->name('dashboard');
 
 // =============================================
-// ✅ PROFILE ROUTES (For All Users - Admin, Staff, User)
+// ✅ PROFILE ROUTES (For All Users)
 // =============================================
 Route::middleware(['auth'])->group(function () {
-    Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'index'])->name('profile.index');
-    Route::put('/profile/update', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
-    Route::put('/profile/password', [App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('profile.password');
+<<<<<<< HEAD
+    // Main Profile Routes (accessible by all authenticated users)
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
+    Route::post('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar.update');
+=======
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+    Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+>>>>>>> 8776ccaeacb46683c0b04e7973288e14e26bdf2a
 });
