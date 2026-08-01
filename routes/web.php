@@ -33,7 +33,7 @@ Route::get('/setup', function() {
 });
 
 // =============================================
-// ✅ PUBLIC ROUTES (No Auth Required - Everyone can access)
+// ✅ PUBLIC ROUTES (No Auth Required)
 // =============================================
 Route::get('/', [PageController::class, 'home'])->name('home');
 Route::get('/about', [PageController::class, 'about'])->name('about');
@@ -98,7 +98,7 @@ Route::prefix('notifications')->name('notifications.')->middleware('auth')->grou
     Route::delete('/{id}', [NotificationController::class, 'destroy'])->name('destroy');
 });
 
-// ✅ Fixed: Notification Page Route - Direct to Controller
+// ✅ Notification Page Route
 Route::get('/notifications-page', [NotificationController::class, 'index'])->name('notifications.page')->middleware('auth');
 
 // =============================================
@@ -181,10 +181,10 @@ Route::get('/dashboard', function() {
 })->middleware('auth')->name('dashboard');
 
 // =============================================
-// ✅ PROFILE ROUTES (For All Users - Admin, Staff, User)
+// ✅ PROFILE ROUTES (For All Users)
 // =============================================
 Route::middleware(['auth'])->group(function () {
-    Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'index'])->name('profile.index');
-    Route::put('/profile/update', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
-    Route::put('/profile/password', [App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('profile.password');
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+    Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
 });
