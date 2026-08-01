@@ -1,0 +1,504 @@
+/* ============================================
+   پروفائل پیج کی سٹائل
+   ============================================ */
+
+* {
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    box-sizing: border-box;
+}
+
+/* ===== کنٹینر ===== */
+.profile-wrapper {
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+/* ===== الرٹ میسجز ===== */
+.alert {
+    padding: 14px 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 500;
+    font-size: 14px;
+    animation: slideDown 0.3s ease;
+}
+
+.alert-success {
+    background: #d1fae5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+}
+
+.alert-error {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fca5a5;
+}
+
+.alert ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+/* ===== پروفائل کارڈ ===== */
+.profile-card {
+    background: white;
+    border-radius: 16px;
+    border: 1px solid #e5e7eb;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+/* ===== پروفائل ہیڈر ===== */
+.profile-header {
+    background: linear-gradient(135deg, #0b2e33 0%, #1a4a50 50%, #0d3b42 100%);
+    padding: 30px 35px;
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    flex-wrap: wrap;
+    position: relative;
+}
+
+.profile-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #00d4ff, #00b8d4);
+}
+
+/* ===== ایوٹار ===== */
+.profile-avatar-wrapper {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.profile-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid rgba(0, 212, 255, 0.3);
+    background: linear-gradient(135deg, #00d4ff, #0b2e33);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.profile-avatar:hover {
+    border-color: #00d4ff;
+}
+
+.profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-avatar .initials {
+    font-size: 30px;
+    font-weight: 700;
+    color: white;
+    text-transform: uppercase;
+}
+
+.avatar-upload-btn {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    background: #00d4ff;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: 2px solid #0b2e33;
+    transition: all 0.3s ease;
+}
+
+.avatar-upload-btn:hover {
+    transform: scale(1.1);
+    background: #00b8d4;
+}
+
+.avatar-upload-btn i {
+    color: white;
+    font-size: 12px;
+}
+
+/* ===== پروفائل معلومات ===== */
+.profile-info {
+    flex: 1;
+    min-width: 180px;
+}
+
+.profile-info h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 2px 0;
+}
+
+.profile-info .email {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 14px;
+    margin: 0 0 8px 0;
+}
+
+.profile-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* ===== بیجز ===== */
+.role-badge {
+    padding: 3px 12px;
+    border-radius: 16px;
+    font-size: 11px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.role-badge.badge-admin {
+    background: #e0e7ff;
+    color: #4338ca;
+}
+
+.role-badge.badge-staff {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.role-badge.badge-user {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.status-badge {
+    padding: 3px 12px;
+    border-radius: 16px;
+    font-size: 11px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.status-badge.status-active {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.status-badge.status-pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-badge.status-inactive {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.joined-date {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* ===== ایکشن بٹن ===== */
+.profile-actions {
+    margin-left: auto;
+}
+
+.btn-edit {
+    background: #00d4ff;
+    color: #0b2e33;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.btn-edit:hover {
+    background: #00b8d4;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 212, 255, 0.3);
+    color: #0b2e33;
+    text-decoration: none;
+}
+
+.btn-edit i {
+    font-size: 13px;
+}
+
+/* ===== پروفائل باڈی ===== */
+.profile-body {
+    padding: 30px 35px;
+}
+
+/* ===== انفو سیکشن ===== */
+.info-section {
+    margin-bottom: 28px;
+}
+
+.info-section:last-child {
+    margin-bottom: 0;
+}
+
+.section-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #0b2e33;
+    margin: 0 0 16px 0;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #f0f0f0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.section-title i {
+    color: #00d4ff;
+    font-size: 16px;
+    width: 20px;
+}
+
+/* ===== انفو گرڈ ===== */
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 30px;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #f5f5f5;
+    align-items: center;
+}
+
+.info-item:last-child {
+    border-bottom: none;
+}
+
+.info-label {
+    color: #888;
+    font-size: 11px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.info-label i {
+    color: #ccc;
+    font-size: 12px;
+    width: 16px;
+}
+
+.info-value {
+    color: #0b2e33;
+    font-weight: 500;
+    font-size: 14px;
+    text-align: right;
+    max-width: 60%;
+    word-break: break-word;
+}
+
+.info-value.text-muted {
+    color: #999;
+    font-weight: 400;
+}
+
+/* ===== پرمیشنز ===== */
+.permissions-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.permission-pill {
+    background: #f0f7ff;
+    color: #00d4ff;
+    padding: 4px 14px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid rgba(0, 212, 255, 0.08);
+}
+
+.permission-pill i {
+    font-size: 11px;
+}
+
+/* ===== اینیمیشن ===== */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== ریسپانسیو ===== */
+@media (max-width: 992px) {
+    .info-grid {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+    
+    .profile-actions {
+        margin-left: 0;
+        width: 100%;
+    }
+    
+    .btn-edit {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .profile-wrapper {
+        padding: 0 12px;
+        margin: 20px auto;
+    }
+    
+    .profile-header {
+        flex-direction: column;
+        text-align: center;
+        padding: 24px 20px;
+    }
+    
+    .profile-meta {
+        justify-content: center;
+    }
+    
+    .profile-info {
+        text-align: center;
+    }
+    
+    .profile-actions {
+        flex-direction: column;
+    }
+    
+    .profile-body {
+        padding: 20px;
+    }
+    
+    .info-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+        padding: 8px 0;
+    }
+    
+    .info-value {
+        text-align: left;
+        max-width: 100%;
+        font-size: 13px;
+    }
+    
+    .section-title {
+        font-size: 13px;
+    }
+    
+    .profile-avatar {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .profile-avatar .initials {
+        font-size: 26px;
+    }
+    
+    .profile-info h2 {
+        font-size: 19px;
+    }
+    
+    .profile-info .email {
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 576px) {
+    .profile-wrapper {
+        padding: 0 10px;
+        margin: 15px auto;
+    }
+    
+    .profile-header {
+        padding: 20px 16px;
+    }
+    
+    .profile-body {
+        padding: 16px;
+    }
+    
+    .profile-avatar {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .profile-avatar .initials {
+        font-size: 22px;
+    }
+    
+    .profile-info h2 {
+        font-size: 17px;
+    }
+    
+    .info-label {
+        font-size: 10px;
+    }
+    
+    .info-value {
+        font-size: 12px;
+    }
+    
+    .btn-edit {
+        font-size: 12px;
+        padding: 6px 16px;
+        height: 36px;
+    }
+    
+    .permission-pill {
+        font-size: 11px;
+        padding: 3px 10px;
+    }
+}
