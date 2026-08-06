@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Service;
+use App\Models\User;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -88,6 +90,15 @@ class ServiceController extends Controller
             
             Log::info('Service added successfully: ' . $service->name);
             
+            // ✅ Send notification to all admins
+            $this->sendServiceNotification(
+                'Service Added',
+                'Service "' . $service->name . '" has been added to the system',
+                'service_added',
+                $service,
+                'fa-concierge-bell'
+            );
+            
             return redirect()->route('admin.services.index')
                 ->with('success', 'Service "' . $service->name . '" added successfully!');
                 
@@ -134,6 +145,7 @@ class ServiceController extends Controller
         
         try {
             $service = Service::findOrFail($id);
+            $oldName = $service->name;
             
             // Handle image upload
             if ($request->hasFile('image')) {
@@ -162,6 +174,16 @@ class ServiceController extends Controller
             $service->save();
             
             Log::info('Service updated successfully: ' . $service->name);
+            
+            // ✅ Send notification to all admins
+            $this->sendServiceNotification(
+                'Service Updated',
+                'Service "' . $service->name . '" has been updated',
+                'service_updated',
+                $service,
+                'fa-edit',
+                ['old_name' => $oldName]
+            );
             
             return redirect()->route('admin.services.index')
                 ->with('success', 'Service "' . $service->name . '" updated successfully!');
@@ -194,6 +216,9 @@ class ServiceController extends Controller
             
             Log::info('Service deleted successfully: ' . $serviceName);
             
+            // ✅ Send notification to all admins
+            $this->sendServiceDeleteNotification($serviceName);
+            
             return response()->json([
                 'success' => true,
                 'message' => 'Service "' . $serviceName . '" deleted successfully!'
@@ -215,6 +240,7 @@ class ServiceController extends Controller
     {
         try {
             $service = Service::findOrFail($id);
+            $oldStatus = $service->status;
             
             if (!in_array($status, ['active', 'inactive'])) {
                 return response()->json([
@@ -225,6 +251,16 @@ class ServiceController extends Controller
             
             $service->status = $status;
             $service->save();
+            
+            // ✅ Send notification to all admins
+            $this->sendServiceNotification(
+                'Service Status Updated',
+                'Service "' . $service->name . '" status changed from ' . ucfirst($oldStatus) . ' to ' . ucfirst($status),
+                'service_updated',
+                $service,
+                'fa-toggle-on',
+                ['old_status' => $oldStatus, 'new_status' => $status]
+            );
             
             return response()->json([
                 'success' => true,
@@ -306,8 +342,10 @@ class ServiceController extends Controller
             
             $services = Service::whereIn('id', $ids)->get();
             $deletedCount = 0;
+            $deletedNames = [];
             
             foreach ($services as $service) {
+                $deletedNames[] = $service->name;
                 // Delete image if exists
                 if ($service->image && Storage::disk('public')->exists($service->image)) {
                     Storage::disk('public')->delete($service->image);
@@ -317,6 +355,9 @@ class ServiceController extends Controller
             }
             
             Log::info("Bulk deleted {$deletedCount} services");
+            
+            // ✅ Send notification to all admins
+            $this->sendServiceBulkDeleteNotification($deletedNames, $deletedCount);
             
             return response()->json([
                 'success' => true,
@@ -329,6 +370,127 @@ class ServiceController extends Controller
                 'success' => false,
                 'message' => 'Error deleting services: ' . $e->getMessage()
             ], 500);
+        }
+    }
+
+    /**
+     * ✅ Send service notification to all admins
+     */
+    private function sendServiceNotification($title, $message, $type, $service, $icon, $extra = [])
+    {
+        try {
+            $admins = User::where('role', 'admin')->get();
+
+            if ($admins->count() === 0) {
+                Log::warning('No admin users found to send notification');
+                return;
+            }
+
+            $data = array_merge([
+                'icon' => $icon,
+                'service_id' => $service->id,
+                'service_name' => $service->name,
+                'service_price' => $service->price,
+                'service_status' => $service->status,
+                'url' => route('admin.services.edit', $service->id)
+            ], $extra);
+
+            foreach ($admins as $admin) {
+                Notification::create([
+                    'user_id' => $admin->id,
+                    'title' => $title,
+                    'message' => $message,
+                    'type' => $type,
+                    'data' => json_encode($data),
+                    'read_at' => null,
+                    'created_at' => now()
+                ]);
+            }
+
+            Log::info('Service notification sent to ' . $admins->count() . ' admins: ' . $title);
+
+        } catch (\Exception $e) {
+            Log::error('Failed to create service notification: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * ✅ Send service delete notification
+     */
+    private function sendServiceDeleteNotification($serviceName)
+    {
+        try {
+            $admins = User::where('role', 'admin')->get();
+
+            if ($admins->count() === 0) {
+                Log::warning('No admin users found to send notification');
+                return;
+            }
+
+            $data = [
+                'icon' => 'fa-trash',
+                'service_name' => $serviceName
+            ];
+
+            foreach ($admins as $admin) {
+                Notification::create([
+                    'user_id' => $admin->id,
+                    'title' => 'Service Deleted',
+                    'message' => 'Service "' . $serviceName . '" has been removed from the system',
+                    'type' => 'service_deleted',
+                    'data' => json_encode($data),
+                    'read_at' => null,
+                    'created_at' => now()
+                ]);
+            }
+
+            Log::info('Service delete notification sent to ' . $admins->count() . ' admins');
+
+        } catch (\Exception $e) {
+            Log::error('Failed to create service delete notification: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * ✅ Send service bulk delete notification
+     */
+    private function sendServiceBulkDeleteNotification($serviceNames, $count)
+    {
+        try {
+            $admins = User::where('role', 'admin')->get();
+
+            if ($admins->count() === 0) {
+                Log::warning('No admin users found to send notification');
+                return;
+            }
+
+            $namesList = implode(', ', array_slice($serviceNames, 0, 3));
+            if (count($serviceNames) > 3) {
+                $namesList .= ' and ' . (count($serviceNames) - 3) . ' more';
+            }
+
+            $data = [
+                'icon' => 'fa-trash-alt',
+                'service_names' => $serviceNames,
+                'count' => $count
+            ];
+
+            foreach ($admins as $admin) {
+                Notification::create([
+                    'user_id' => $admin->id,
+                    'title' => 'Services Bulk Deleted',
+                    'message' => $count . ' service(s) have been removed from the system: ' . $namesList,
+                    'type' => 'service_deleted',
+                    'data' => json_encode($data),
+                    'read_at' => null,
+                    'created_at' => now()
+                ]);
+            }
+
+            Log::info('Service bulk delete notification sent to ' . $admins->count() . ' admins');
+
+        } catch (\Exception $e) {
+            Log::error('Failed to create service bulk delete notification: ' . $e->getMessage());
         }
     }
 }

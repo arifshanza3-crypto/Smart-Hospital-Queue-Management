@@ -185,16 +185,10 @@ Route::get('/dashboard', function() {
 // ✅ PROFILE ROUTES (For All Users)
 // =============================================
 Route::middleware(['auth'])->group(function () {
-<<<<<<< HEAD
     // Main Profile Routes (accessible by all authenticated users)
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
     Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
     Route::post('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar.update');
-=======
-    Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
-    Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
-    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
->>>>>>> 8776ccaeacb46683c0b04e7973288e14e26bdf2a
 });
