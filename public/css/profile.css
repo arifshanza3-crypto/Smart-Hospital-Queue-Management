@@ -1,5 +1,5 @@
 /* ============================================
-   پروفائل پیج کی سٹائل
+   PROFILE PAGE STYLES - VERTICAL LAYOUT
    ============================================ */
 
 * {
@@ -7,14 +7,9 @@
     box-sizing: border-box;
 }
 
-/* ===== کنٹینر ===== */
-.profile-wrapper {
-    max-width: 900px;
-    margin: 30px auto;
-    padding: 0 20px;
-}
-
-/* ===== الرٹ میسجز ===== */
+/* ============================================
+   ALERT MESSAGES
+   ============================================ */
 .alert {
     padding: 14px 20px;
     border-radius: 12px;
@@ -44,16 +39,34 @@
     padding-left: 20px;
 }
 
-/* ===== پروفائل کارڈ ===== */
+/* ============================================
+   PROFILE WRAPPER
+   ============================================ */
+.profile-wrapper {
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+/* ============================================
+   PROFILE CARD
+   ============================================ */
 .profile-card {
     background: white;
     border-radius: 16px;
     border: 1px solid #e5e7eb;
     overflow: hidden;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    transition: box-shadow 0.3s ease;
 }
 
-/* ===== پروفائل ہیڈر ===== */
+.profile-card:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* ============================================
+   PROFILE HEADER
+   ============================================ */
 .profile-header {
     background: linear-gradient(135deg, #0b2e33 0%, #1a4a50 50%, #0d3b42 100%);
     padding: 30px 35px;
@@ -71,18 +84,27 @@
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, #00d4ff, #00b8d4);
+    background: linear-gradient(90deg, #00d4ff, #00b8d4, #00d4ff);
+    background-size: 200% 100%;
+    animation: shimmer 3s ease-in-out infinite;
 }
 
-/* ===== ایوٹار ===== */
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+/* ============================================
+   AVATAR
+   ============================================ */
 .profile-avatar-wrapper {
     position: relative;
     flex-shrink: 0;
 }
 
 .profile-avatar {
-    width: 80px;
-    height: 80px;
+    width: 85px;
+    height: 85px;
     border-radius: 50%;
     overflow: hidden;
     border: 3px solid rgba(0, 212, 255, 0.3);
@@ -95,6 +117,7 @@
 
 .profile-avatar:hover {
     border-color: #00d4ff;
+    transform: scale(1.02);
 }
 
 .profile-avatar img {
@@ -104,55 +127,67 @@
 }
 
 .profile-avatar .initials {
-    font-size: 30px;
+    font-size: 32px;
     font-weight: 700;
     color: white;
     text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .avatar-upload-btn {
     position: absolute;
-    bottom: -2px;
-    right: -2px;
+    bottom: 0;
+    right: 0;
     background: #00d4ff;
     border-radius: 50%;
-    width: 28px;
-    height: 28px;
+    width: 30px;
+    height: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     border: 2px solid #0b2e33;
     transition: all 0.3s ease;
+    z-index: 5;
 }
 
 .avatar-upload-btn:hover {
-    transform: scale(1.1);
+    transform: scale(1.15);
     background: #00b8d4;
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
 }
 
 .avatar-upload-btn i {
     color: white;
-    font-size: 12px;
+    font-size: 13px;
 }
 
-/* ===== پروفائل معلومات ===== */
+/* ============================================
+   PROFILE INFO
+   ============================================ */
 .profile-info {
     flex: 1;
     min-width: 180px;
 }
 
 .profile-info h2 {
-    font-size: 22px;
+    font-size: 24px;
     font-weight: 700;
     color: white;
     margin: 0 0 2px 0;
+    letter-spacing: -0.5px;
 }
 
 .profile-info .email {
     color: rgba(255, 255, 255, 0.6);
     font-size: 14px;
-    margin: 0 0 8px 0;
+    margin: 0 0 10px 0;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.profile-info .email:hover {
+    color: rgba(255, 255, 255, 0.9);
 }
 
 .profile-meta {
@@ -162,15 +197,17 @@
     flex-wrap: wrap;
 }
 
-/* ===== بیجز ===== */
+/* ============================================
+   BADGES
+   ============================================ */
 .role-badge {
-    padding: 3px 12px;
-    border-radius: 16px;
-    font-size: 11px;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 12px;
     font-weight: 600;
     display: inline-flex;
     align-items: center;
-    gap: 5px;
+    gap: 6px;
 }
 
 .role-badge.badge-admin {
@@ -189,13 +226,13 @@
 }
 
 .status-badge {
-    padding: 3px 12px;
-    border-radius: 16px;
-    font-size: 11px;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 12px;
     font-weight: 600;
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: 5px;
 }
 
 .status-badge.status-active {
@@ -221,7 +258,9 @@
     gap: 5px;
 }
 
-/* ===== ایکشن بٹن ===== */
+/* ============================================
+   ACTION BUTTONS
+   ============================================ */
 .profile-actions {
     margin-left: auto;
 }
@@ -230,7 +269,7 @@
     background: #00d4ff;
     color: #0b2e33;
     border: none;
-    padding: 8px 20px;
+    padding: 9px 22px;
     border-radius: 8px;
     font-weight: 600;
     font-size: 13px;
@@ -238,15 +277,16 @@
     transition: all 0.3s ease;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     text-decoration: none;
     white-space: nowrap;
+    box-shadow: 0 2px 10px rgba(0, 212, 255, 0.2);
 }
 
 .btn-edit:hover {
     background: #00b8d4;
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 212, 255, 0.3);
+    box-shadow: 0 6px 25px rgba(0, 212, 255, 0.35);
     color: #0b2e33;
     text-decoration: none;
 }
@@ -255,14 +295,18 @@
     font-size: 13px;
 }
 
-/* ===== پروفائل باڈی ===== */
+/* ============================================
+   PROFILE BODY
+   ============================================ */
 .profile-body {
-    padding: 30px 35px;
+    padding: 30px 35px 28px;
 }
 
-/* ===== انفو سیکشن ===== */
+/* ============================================
+   INFO SECTIONS
+   ============================================ */
 .info-section {
-    margin-bottom: 28px;
+    margin-bottom: 30px;
 }
 
 .info-section:last-child {
@@ -273,73 +317,108 @@
     font-size: 14px;
     font-weight: 700;
     color: #0b2e33;
-    margin: 0 0 16px 0;
+    margin: 0 0 18px 0;
     padding-bottom: 12px;
-    border-bottom: 2px solid #f0f0f0;
+    border-bottom: 2px solid #f0f4f8;
     display: flex;
     align-items: center;
     gap: 10px;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.8px;
+    position: relative;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 60px;
+    height: 2px;
+    background: #00d4ff;
 }
 
 .section-title i {
     color: #00d4ff;
     font-size: 16px;
-    width: 20px;
+    width: 22px;
+    text-align: center;
 }
 
-/* ===== انفو گرڈ ===== */
+/* ============================================
+   VERTICAL INFO GRID (LABEL ON TOP, VALUE BELOW)
+   ============================================ */
 .info-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
 }
 
 .info-item {
     display: flex;
-    justify-content: space-between;
-    padding: 8px 0;
-    border-bottom: 1px solid #f5f5f5;
-    align-items: center;
+    flex-direction: column;
+    padding: 10px 0;
+    border-bottom: 1px solid #f5f7fa;
+    transition: background 0.2s ease;
+}
+
+.info-item:hover {
+    background: #fafbfc;
+    margin: 0 -8px;
+    padding: 10px 8px;
+    border-radius: 6px;
 }
 
 .info-item:last-child {
     border-bottom: none;
 }
 
+.info-item.full-width {
+    display: flex;
+    flex-direction: column;
+}
+
 .info-label {
-    color: #888;
+    color: #8899aa;
     font-size: 11px;
     font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
     display: flex;
     align-items: center;
     gap: 8px;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
+    margin-bottom: 4px;
 }
 
 .info-label i {
-    color: #ccc;
-    font-size: 12px;
-    width: 16px;
+    color: #ccd6e0;
+    font-size: 13px;
+    width: 18px;
+    text-align: center;
 }
 
 .info-value {
-    color: #0b2e33;
+    color: #1a2a3a;
     font-weight: 500;
     font-size: 14px;
-    text-align: right;
-    max-width: 60%;
+    padding-left: 26px;
     word-break: break-word;
 }
 
 .info-value.text-muted {
-    color: #999;
+    color: #99aabb;
     font-weight: 400;
 }
 
-/* ===== پرمیشنز ===== */
+.info-value.bio-text {
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+/* ============================================
+   PERMISSIONS
+   ============================================ */
 .permissions-grid {
     display: flex;
     flex-wrap: wrap;
@@ -348,22 +427,32 @@
 
 .permission-pill {
     background: #f0f7ff;
-    color: #00d4ff;
-    padding: 4px 14px;
-    border-radius: 16px;
+    color: #00a8cc;
+    padding: 5px 16px;
+    border-radius: 20px;
     font-size: 12px;
     font-weight: 500;
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    border: 1px solid rgba(0, 212, 255, 0.08);
+    border: 1px solid rgba(0, 212, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.permission-pill:hover {
+    background: #e0f0ff;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 212, 255, 0.1);
 }
 
 .permission-pill i {
     font-size: 11px;
+    color: #00d4ff;
 }
 
-/* ===== اینیمیشن ===== */
+/* ============================================
+   ANIMATIONS
+   ============================================ */
 @keyframes slideDown {
     from {
         opacity: 0;
@@ -375,24 +464,9 @@
     }
 }
 
-/* ===== ریسپانسیو ===== */
-@media (max-width: 992px) {
-    .info-grid {
-        grid-template-columns: 1fr;
-        gap: 0;
-    }
-    
-    .profile-actions {
-        margin-left: 0;
-        width: 100%;
-    }
-    
-    .btn-edit {
-        width: 100%;
-        justify-content: center;
-    }
-}
-
+/* ============================================
+   RESPONSIVE
+   ============================================ */
 @media (max-width: 768px) {
     .profile-wrapper {
         padding: 0 12px;
@@ -422,37 +496,31 @@
     }
     
     .info-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 2px;
         padding: 8px 0;
     }
     
-    .info-value {
-        text-align: left;
-        max-width: 100%;
-        font-size: 13px;
+    .info-item:hover {
+        margin: 0;
+        padding: 8px 0;
+        border-radius: 0;
     }
     
-    .section-title {
+    .info-value {
         font-size: 13px;
+        padding-left: 26px;
     }
     
     .profile-avatar {
-        width: 70px;
-        height: 70px;
+        width: 75px;
+        height: 75px;
     }
     
     .profile-avatar .initials {
-        font-size: 26px;
+        font-size: 28px;
     }
     
     .profile-info h2 {
-        font-size: 19px;
-    }
-    
-    .profile-info .email {
-        font-size: 13px;
+        font-size: 20px;
     }
 }
 
@@ -471,16 +539,16 @@
     }
     
     .profile-avatar {
-        width: 60px;
-        height: 60px;
+        width: 65px;
+        height: 65px;
     }
     
     .profile-avatar .initials {
-        font-size: 22px;
+        font-size: 24px;
     }
     
     .profile-info h2 {
-        font-size: 17px;
+        font-size: 18px;
     }
     
     .info-label {
@@ -489,16 +557,28 @@
     
     .info-value {
         font-size: 12px;
+        padding-left: 24px;
     }
     
     .btn-edit {
         font-size: 12px;
-        padding: 6px 16px;
-        height: 36px;
+        padding: 7px 16px;
+        width: 100%;
+        justify-content: center;
     }
     
     .permission-pill {
         font-size: 11px;
+        padding: 4px 12px;
+    }
+    
+    .role-badge,
+    .status-badge {
+        font-size: 10px;
         padding: 3px 10px;
+    }
+    
+    .joined-date {
+        font-size: 10px;
     }
 }

@@ -1,13 +1,13 @@
 /**
- * پروفائل پیج کی JavaScript
- * ایوٹار اپلوڈ اور دیگر انٹریکشنز
+ * Profile Page JavaScript
+ * Handles avatar upload, notifications, and UI interactions
  */
 
 document.addEventListener('DOMContentLoaded', function() {
     'use strict';
 
     // ============================================
-    // ایوٹار اپلوڈ
+    // AVATAR UPLOAD
     // ============================================
     
     window.uploadAvatar = function(input) {
@@ -15,17 +15,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const file = input.files[0];
         
-        // فائل کی قسم چیک کریں
+        // Validate file type
         const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp'];
         if (!allowedTypes.includes(file.type)) {
-            showMessage('براہ کرم درست تصویر اپلوڈ کریں (JPEG, PNG, JPG, GIF, WebP)', 'error');
+            showMessage('Please upload a valid image (JPEG, PNG, JPG, GIF, WebP)', 'error');
             input.value = '';
             return;
         }
 
-        // فائل کا سائز چیک کریں (2MB سے کم)
+        // Validate file size (2MB max)
         if (file.size > 2 * 1024 * 1024) {
-            showMessage('تصویر کا سائز 2MB سے کم ہونا چاہیے', 'error');
+            showMessage('Image size must be less than 2MB', 'error');
             input.value = '';
             return;
         }
@@ -36,9 +36,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const avatarDiv = document.querySelector('.profile-avatar');
         const originalContent = avatarDiv.innerHTML;
         
-        // لوڈنگ اسٹیٹ
+        // Show loading state with spinner
         avatarDiv.style.opacity = '0.6';
-        avatarDiv.innerHTML = '<i class="fas fa-spinner fa-spin" style="font-size:30px; color:white;"></i>';
+        avatarDiv.innerHTML = '<i class="fas fa-spinner fa-spin" style="font-size:32px; color:white;"></i>';
 
         const token = document.querySelector('meta[name="csrf-token"]')?.content || 
                      document.querySelector('input[name="_token"]')?.value;
@@ -52,19 +52,24 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             body: formData
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.success) {
                 updateAvatarDisplay(data.avatar_url);
-                showMessage('ایوٹار کامیابی سے اپڈیٹ ہو گیا!', 'success');
+                showMessage('Avatar updated successfully!', 'success');
             } else {
-                showMessage(data.message || 'ایوٹار اپڈیٹ کرنے میں خرابی', 'error');
+                showMessage(data.message || 'Error updating avatar', 'error');
                 avatarDiv.innerHTML = originalContent;
             }
         })
         .catch(error => {
             console.error('Upload Error:', error);
-            showMessage('ایوٹار اپلوڈ کرنے میں خرابی۔ براہ کرم دوبارہ کوشش کریں۔', 'error');
+            showMessage('Error uploading avatar. Please try again.', 'error');
             avatarDiv.innerHTML = originalContent;
         })
         .finally(() => {
@@ -73,6 +78,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     };
 
+    /**
+     * Update avatar display on the page
+     */
     function updateAvatarDisplay(avatarUrl) {
         const avatarDiv = document.querySelector('.profile-avatar');
         avatarDiv.innerHTML = '';
@@ -85,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ============================================
-    // ڈریگ اینڈ ڈراپ سپورٹ
+    // AVATAR DRAG & DROP
     // ============================================
 
     const avatarWrapper = document.querySelector('.profile-avatar-wrapper');
@@ -127,7 +135,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ============================================
-    // میسج سسٹم
+    // NOTIFICATION SYSTEM
     // ============================================
 
     window.showMessage = function(message, type) {
@@ -141,37 +149,37 @@ document.addEventListener('DOMContentLoaded', function() {
             <span>${message}</span>
         `;
 
-        const wrapper = document.querySelector('.profile-wrapper');
+        const wrapper = document.querySelector('.profile-wrapper') || document.querySelector('.edit-profile-wrapper');
         if (wrapper) {
             wrapper.prepend(alertDiv);
         }
 
         setTimeout(() => {
-            alertDiv.style.transition = 'opacity 0.3s ease';
+            alertDiv.style.transition = 'opacity 0.4s ease';
             alertDiv.style.opacity = '0';
             setTimeout(() => {
                 if (alertDiv.parentNode) {
                     alertDiv.remove();
                 }
-            }, 300);
+            }, 400);
         }, 5000);
     };
 
     // ============================================
-    // ای میل کاپی کریں
+    // COPY EMAIL TO CLIPBOARD
     // ============================================
 
     const emailElement = document.querySelector('.profile-info .email');
     if (emailElement) {
         emailElement.style.cursor = 'pointer';
-        emailElement.title = 'ای میل کاپی کرنے کے لیے کلک کریں';
+        emailElement.title = 'Click to copy email';
         
         emailElement.addEventListener('click', function() {
             const email = this.textContent.trim();
             
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(email).then(() => {
-                    showMessage('ای میل کاپی ہو گئی!', 'success');
+                    showMessage('Email copied to clipboard!', 'success');
                 }).catch(() => {
                     fallbackCopy(email);
                 });
@@ -190,16 +198,16 @@ document.addEventListener('DOMContentLoaded', function() {
             textArea.select();
             try {
                 document.execCommand('copy');
-                showMessage('ای میل کاپی ہو گئی!', 'success');
+                showMessage('Email copied to clipboard!', 'success');
             } catch (err) {
-                showMessage('ای میل کاپی نہیں ہو سکی', 'error');
+                showMessage('Unable to copy email', 'error');
             }
             textArea.remove();
         }
     }
 
     // ============================================
-    // کی بورڈ شارٹ کٹس
+    // KEYBOARD SHORTCUTS
     // ============================================
 
     document.addEventListener('keydown', function(e) {
@@ -215,12 +223,12 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // ============================================
-    // کنسول لاگ
+    // CONSOLE LOG
     // ============================================
 
-    console.log('✅ پروفائل پیج لوڈ ہو گیا');
-    console.log('📋 ٹپس:');
-    console.log('  • پروفائل ایڈٹ کرنے کے لیے "E" پریس کریں');
-    console.log('  • ای میل کاپی کرنے کے لیے کلک کریں');
-    console.log('  • ایوٹار تبدیل کرنے کے لیے تصویر ڈریگ کریں');
+    console.log('✅ Profile page loaded successfully');
+    console.log('📋 Tips:');
+    console.log('  • Press "E" to edit profile');
+    console.log('  • Click email to copy to clipboard');
+    console.log('  • Drag & drop image to change avatar');
 });

@@ -13,9 +13,6 @@ use Carbon\Carbon;
 
 class ProfileController extends Controller
 {
-    /**
-     * ✅ Show Profile Page (For All Roles - Admin, Staff, User)
-     */
     public function index()
     {
         if (!Auth::check()) {
@@ -25,7 +22,6 @@ class ProfileController extends Controller
         $user = Auth::user();
         $profile = $user->profile;
         
-        // Create profile if it doesn't exist
         if (!$profile) {
             $profile = Profile::create([
                 'user_id' => $user->id,
@@ -37,16 +33,12 @@ class ProfileController extends Controller
         }
 
         $roleData = $this->getRoleSpecificData($user);
-        
-        // Get user statistics
         $stats = $this->getUserStats($user);
 
+        // ✅ FIXED: Put 'stats' in quotes, not $stats
         return view('Pages.profile', compact('user', 'profile', 'roleData', 'stats'));
     }
 
-    /**
-     * ✅ Show Edit Profile Form
-     */
     public function edit()
     {
         if (!Auth::check()) {
@@ -60,9 +52,6 @@ class ProfileController extends Controller
         return view('Pages.profile-edit', compact('user', 'profile', 'roleData'));
     }
 
-    /**
-     * ✅ Update Profile
-     */
     public function update(Request $request)
     {
         $user = Auth::user();
@@ -94,9 +83,7 @@ class ProfileController extends Controller
         }
 
         try {
-            // Handle avatar upload
             if ($request->hasFile('avatar')) {
-                // Delete old avatar
                 if ($profile->avatar && Storage::disk('public')->exists($profile->avatar)) {
                     Storage::disk('public')->delete($profile->avatar);
                 }
@@ -105,7 +92,6 @@ class ProfileController extends Controller
                 $profile->avatar = $avatarPath;
             }
 
-            // Update profile fields
             $profile->full_name = $request->full_name;
             $profile->phone = $request->phone;
             $profile->address = $request->address;
@@ -115,7 +101,6 @@ class ProfileController extends Controller
             $profile->location = $request->location;
             $profile->bio = $request->bio;
             
-            // Staff/Admin specific fields
             if ($user->isStaff() || $user->isAdmin()) {
                 $profile->employee_id = $request->employee_id;
                 $profile->department = $request->department;
@@ -124,7 +109,6 @@ class ProfileController extends Controller
             
             $profile->save();
 
-            // Update user name if changed
             if ($user->name !== $request->full_name) {
                 $user->name = $request->full_name;
                 $user->save();
@@ -139,9 +123,6 @@ class ProfileController extends Controller
         }
     }
 
-    /**
-     * ✅ Update Password
-     */
     public function updatePassword(Request $request)
     {
         $user = Auth::user();
@@ -167,9 +148,6 @@ class ProfileController extends Controller
         return redirect()->back()->with('success', 'Password updated successfully!');
     }
 
-    /**
-     * ✅ Update Avatar
-     */
     public function updateAvatar(Request $request)
     {
         try {
@@ -194,7 +172,6 @@ class ProfileController extends Controller
                 ], 422);
             }
 
-            // Delete old avatar
             if ($profile->avatar && Storage::disk('public')->exists($profile->avatar)) {
                 Storage::disk('public')->delete($profile->avatar);
             }
@@ -217,9 +194,6 @@ class ProfileController extends Controller
         }
     }
 
-    /**
-     * ✅ Get User Statistics
-     */
     private function getUserStats($user)
     {
         $stats = [
@@ -233,7 +207,6 @@ class ProfileController extends Controller
 
         try {
             if ($user->isAdmin()) {
-                // Admin stats - overall system stats
                 if (class_exists('App\Models\Appointment')) {
                     $stats['appointments'] = \App\Models\Appointment::count() ?? 0;
                 }
@@ -246,7 +219,6 @@ class ProfileController extends Controller
                 $stats['staff'] = User::where('role', User::ROLE_STAFF)->count() ?? 0;
                 
             } elseif ($user->isStaff()) {
-                // Staff stats - department specific
                 if (class_exists('App\Models\Appointment')) {
                     $stats['appointments'] = \App\Models\Appointment::where('staff_id', $user->id)->count() ?? 0;
                 }
@@ -257,7 +229,6 @@ class ProfileController extends Controller
                 }
                 
             } elseif ($user->isUser()) {
-                // User stats - personal stats
                 if (class_exists('App\Models\Appointment')) {
                     $stats['appointments'] = \App\Models\Appointment::where('user_id', $user->id)->count() ?? 0;
                 }
@@ -268,16 +239,12 @@ class ProfileController extends Controller
                 }
             }
         } catch (\Exception $e) {
-            // If any error occurs, return default stats
             \Log::warning('Error fetching user stats: ' . $e->getMessage());
         }
 
         return $stats;
     }
 
-    /**
-     * ✅ Get Role Specific Data
-     */
     private function getRoleSpecificData($user)
     {
         $data = [

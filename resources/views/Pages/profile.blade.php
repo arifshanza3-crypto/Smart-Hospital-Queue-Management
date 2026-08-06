@@ -51,8 +51,8 @@
             </div>
 
             <div class="profile-info">
-                <h2>{{ $profile->full_name}}</h2>
-                <p class="email">{{ $user->email}}</p>
+                <h2>{{ $profile->full_name }}</h2>
+                <p class="email">{{ $user->email }}</p>
                 <div class="profile-meta">
                     <span class="role-badge {{ $roleData['badgeClass'] }}">
                         <i class="fas {{ $roleData['icon'] }}"></i> {{ $roleData['badge'] }}
@@ -73,22 +73,26 @@
             </div>
         </div>
 
-        <!-- Profile Body -->
+        <!-- Profile Body - Vertical Layout -->
         <div class="profile-body">
+            
             <!-- Personal Information -->
             <div class="info-section">
                 <h3 class="section-title">
                     <i class="fas fa-user-circle"></i> Personal Information
                 </h3>
                 <div class="info-grid">
+                    <!-- Full Name -->
                     <div class="info-item">
                         <span class="info-label"><i class="fas fa-user"></i> FULL NAME</span>
                         <span class="info-value">{{ $profile->full_name }}</span>
                     </div>
+                    <!-- Email -->
                     <div class="info-item">
                         <span class="info-label"><i class="fas fa-envelope"></i> EMAIL</span>
                         <span class="info-value">{{ $user->email }}</span>
                     </div>
+                    <!-- Role -->
                     <div class="info-item">
                         <span class="info-label"><i class="fas fa-tag"></i> ROLE</span>
                         <span class="info-value">
@@ -97,16 +101,24 @@
                             </span>
                         </span>
                     </div>
+                    <!-- Phone -->
                     <div class="info-item">
                         <span class="info-label"><i class="fas fa-phone"></i> PHONE</span>
                         <span class="info-value {{ !$profile->phone ? 'text-muted' : '' }}">
                             {{ $profile->phone ?? 'Not provided' }}
                         </span>
                     </div>
+                    <!-- Joined -->
                     <div class="info-item">
                         <span class="info-label"><i class="fas fa-calendar"></i> JOINED</span>
                         <span class="info-value">{{ $profile->join_date ? Carbon\Carbon::parse($profile->join_date)->format('M d, Y') : 'N/A' }}</span>
                     </div>
+                    @if($profile->bio)
+                    <div class="info-item full-width">
+                        <span class="info-label"><i class="fas fa-align-left"></i> BIO</span>
+                        <span class="info-value bio-text">{{ $profile->bio }}</span>
+                    </div>
+                    @endif
                 </div>
             </div>
 
@@ -116,6 +128,7 @@
                     <i class="fas fa-shield-alt"></i> Account Information
                 </h3>
                 <div class="info-grid">
+                    <!-- Account Status -->
                     <div class="info-item">
                         <span class="info-label"><i class="fas fa-circle"></i> ACCOUNT STATUS</span>
                         <span class="info-value">
@@ -124,6 +137,7 @@
                             </span>
                         </span>
                     </div>
+                    <!-- Last Login -->
                     <div class="info-item">
                         <span class="info-label"><i class="fas fa-clock"></i> LAST LOGIN</span>
                         <span class="info-value">{{ $profile->last_login ? Carbon\Carbon::parse($profile->last_login)->diffForHumans() : 'First login' }}</span>
@@ -163,6 +177,24 @@
                         <span class="info-label"><i class="fas fa-map-marker-alt"></i> LOCATION</span>
                         <span class="info-value {{ !$profile->location ? 'text-muted' : '' }}">
                             {{ $profile->location ?? 'Not provided' }}
+                        </span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label"><i class="fas fa-city"></i> CITY</span>
+                        <span class="info-value {{ !$profile->city ? 'text-muted' : '' }}">
+                            {{ $profile->city ?? 'Not provided' }}
+                        </span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label"><i class="fas fa-flag"></i> COUNTRY</span>
+                        <span class="info-value {{ !$profile->country ? 'text-muted' : '' }}">
+                            {{ $profile->country ?? 'Not provided' }}
+                        </span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label"><i class="fas fa-home"></i> ADDRESS</span>
+                        <span class="info-value {{ !$profile->address ? 'text-muted' : '' }}">
+                            {{ $profile->address ?? 'Not provided' }}
                         </span>
                     </div>
                     @endif
