@@ -22,12 +22,7 @@
                     </span>
                 @endauth
             </div>
-            <div class="header-right">
-                <button class="btn-mark-all" id="markAllBtn" onclick="markAllRead()">
-                    <i class="fas fa-check-double"></i> Mark all as read
-                </button>
-                {{-- ✅ REFRESH BUTTON REMOVED --}}
-            </div>
+            {{-- ✅ MARK ALL AS READ BUTTON REMOVED --}}
         </div>
 
         {{-- FILTERS --}}
@@ -138,11 +133,6 @@
         to { opacity: 1; transform: translateY(0); }
     }
     
-    .btn-mark-all:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-    }
-
     .debug-info {
         margin-top: 20px;
         padding: 12px 20px;
