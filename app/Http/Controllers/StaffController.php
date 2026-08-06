@@ -15,25 +15,20 @@ class StaffController extends Controller
 {
     use NotificationTrait;
 
-    // ✅ Staff Dashboard - Allow both Admin and Staff
+    // ✅ Staff Dashboard
     public function dashboard()
     {
-        // Check if user is logged in
         if (!Auth::check()) {
             return redirect('/login')->with('error', 'Please login first.');
         }
         
         $user = Auth::user();
         
-        // ✅ Allow admin and staff to access staff dashboard
         if (!in_array($user->role, ['admin', 'staff'])) {
-            return redirect('/login')->with('error', 'Access denied. Only Admin and Staff can access this page.');
+            return redirect('/login')->with('error', 'Access denied.');
         }
         
-        // Get patients
         $patients = QueueReport::orderBy('created_at', 'desc')->get();
-        
-        // Statistics
         $totalQueue = QueueReport::whereIn('status', ['waiting', 'in_progress'])->count();
         $nowServing = QueueReport::where('status', 'in_progress')->count();
         $nowServingToken = QueueReport::where('status', 'in_progress')->first()->token_number ?? 'N/A';
@@ -51,8 +46,6 @@ class StaffController extends Controller
     {
         try {
             $department = $request->query('dept');
-            
-            Log::info('Department queue requested: ' . $department);
             
             if (!$department || $department === 'all') {
                 return $this->getQueue();
@@ -104,11 +97,9 @@ class StaffController extends Controller
         }
     }
 
-    // ✅ Calculate average wait time
     private function calculateAverageWait($tokens)
     {
         if ($tokens->isEmpty()) return 0;
-        
         $totalWait = 0;
         foreach ($tokens as $token) {
             $totalWait += $token->estimated_time ?? 15;
@@ -116,14 +107,23 @@ class StaffController extends Controller
         return round($totalWait / $tokens->count());
     }
 
-    // ✅ Calculate department-wise wait time
     private function calculateDepartmentWait($tokens, $department)
     {
         if ($tokens->isEmpty()) return 0;
-        
         $timePerPatient = $this->getDepartmentTime($department);
         $waiting = $tokens->where('status', 'waiting')->count();
         return $waiting * $timePerPatient;
+    }
+
+    private function getDepartmentTime($department)
+    {
+        $times = [
+            'OPD' => 15, 'Pharmacy' => 15, 'Radiology' => 15,
+            'General' => 15, 'Cardiology' => 20, 'Neurology' => 25,
+            'Pediatrics' => 15, 'Orthopedics' => 20, 'Dermatology' => 15,
+            'Ophthalmology' => 15
+        ];
+        return $times[$department] ?? 15;
     }
 
     // ✅ Add Physical Patient
@@ -137,9 +137,7 @@ class StaffController extends Controller
                 'department' => 'nullable|string|max:50'
             ]);
 
-            // Generate token number
             $lastToken = Token::orderBy('id', 'desc')->first();
-            
             if ($lastToken && $lastToken->token_number) {
                 $lastNumber = intval(substr($lastToken->token_number, 4));
                 $newNumber = $lastNumber + 1;
@@ -148,16 +146,12 @@ class StaffController extends Controller
                 $tokenNumber = 'TKN-001';
             }
 
-            // Department-wise position calculate
             $department = $request->department ?? 'OPD';
             $position = Token::where('department', $department)
                              ->whereIn('status', ['waiting', 'calling'])
                              ->count() + 1;
-            
-            // Department-wise estimated time
             $estimatedTime = $position * $this->getDepartmentTime($department);
 
-            // Save token
             $token = Token::create([
                 'token_number' => $tokenNumber,
                 'patient_id' => null,
@@ -170,15 +164,14 @@ class StaffController extends Controller
                 'created_at' => now()
             ]);
 
-            // Recalculate all positions for this department
             $this->recalculatePositions($department);
 
-            Log::info('Token created: ' . $token->id . ' - ' . $tokenNumber . ' - Position: ' . $position);
+            Log::info('Token created: ' . $token->id . ' - ' . $tokenNumber);
 
-            // ✅ Send notification to all staff and admins
+            // ✅ BELL NOTIFICATION - Send to all staff and admins
             $this->notifyAllStaffAndAdmins(
-                'New Physical Patient Added',
-                'Patient "' . $request->name . '" has been added to ' . $department . ' queue (Token: ' . $tokenNumber . ')',
+                'New Patient Added',
+                'Patient "' . $request->name . '" added to ' . $department . ' queue (Token: ' . $tokenNumber . ')',
                 'physical_patient_added',
                 [
                     'token_number' => $tokenNumber,
@@ -195,12 +188,6 @@ class StaffController extends Controller
                 'token' => $token
             ]);
 
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            Log::error('Validation error: ' . json_encode($e->errors()));
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation error: ' . json_encode($e->errors())
-            ], 422);
         } catch (\Exception $e) {
             Log::error('Add patient error: ' . $e->getMessage());
             return response()->json([
@@ -208,24 +195,6 @@ class StaffController extends Controller
                 'message' => 'Error adding patient: ' . $e->getMessage()
             ], 500);
         }
-    }
-
-    // ✅ Department-wise time per patient
-    private function getDepartmentTime($department)
-    {
-        $times = [
-            'OPD' => 15,
-            'Pharmacy' => 15,
-            'Radiology' => 15,
-            'General' => 15,
-            'Cardiology' => 20,
-            'Neurology' => 25,
-            'Pediatrics' => 15,
-            'Orthopedics' => 20,
-            'Dermatology' => 15,
-            'Ophthalmology' => 15
-        ];
-        return $times[$department] ?? 15;
     }
 
     // ✅ Start Serving (Call Patient)
@@ -237,22 +206,7 @@ class StaffController extends Controller
             $token->called_at = now();
             $token->save();
 
-            // ✅ Send notification to user
-            if ($token->patient_id) {
-                $this->notifyUser(
-                    $token->patient_id,
-                    'Token Called',
-                    'Your token ' . $token->token_number . ' has been called. Please proceed to the counter.',
-                    'token_called',
-                    [
-                        'token_number' => $token->token_number,
-                        'department' => $token->department,
-                        'url' => route('status.page', ['token' => $token->token_number])
-                    ]
-                );
-            }
-
-            // ✅ Send notification to all staff and admins
+            // ✅ BELL NOTIFICATION
             $this->notifyAllStaffAndAdmins(
                 'Token Called',
                 'Token ' . $token->token_number . ' (' . $token->patient_name . ') has been called',
@@ -264,6 +218,20 @@ class StaffController extends Controller
                     'url' => route('staff.dashboard')
                 ]
             );
+
+            if ($token->patient_id) {
+                $this->notifyUser(
+                    $token->patient_id,
+                    'Token Called',
+                    'Your token ' . $token->token_number . ' has been called.',
+                    'token_called',
+                    [
+                        'token_number' => $token->token_number,
+                        'department' => $token->department,
+                        'url' => route('status.page', ['token' => $token->token_number])
+                    ]
+                );
+            }
 
             return response()->json(['success' => true]);
         } catch (\Exception $e) {
@@ -284,25 +252,10 @@ class StaffController extends Controller
             $token->started_at = now();
             $token->save();
 
-            // ✅ Send notification to user
-            if ($token->patient_id) {
-                $this->notifyUser(
-                    $token->patient_id,
-                    'Patient Arrived',
-                    'You have arrived for token ' . $token->token_number . '. Please wait for your turn.',
-                    'token_arrived',
-                    [
-                        'token_number' => $token->token_number,
-                        'department' => $token->department,
-                        'url' => route('status.page', ['token' => $token->token_number])
-                    ]
-                );
-            }
-
-            // ✅ Send notification to all staff and admins
+            // ✅ BELL NOTIFICATION
             $this->notifyAllStaffAndAdmins(
                 'Patient Arrived',
-                'Patient ' . $token->patient_name . ' (Token: ' . $token->token_number . ') has arrived and is being served',
+                'Patient ' . $token->patient_name . ' (Token: ' . $token->token_number . ') has arrived',
                 'token_arrived',
                 [
                     'token_number' => $token->token_number,
@@ -311,6 +264,20 @@ class StaffController extends Controller
                     'url' => route('staff.dashboard')
                 ]
             );
+
+            if ($token->patient_id) {
+                $this->notifyUser(
+                    $token->patient_id,
+                    'Patient Arrived',
+                    'You have arrived for token ' . $token->token_number,
+                    'token_arrived',
+                    [
+                        'token_number' => $token->token_number,
+                        'department' => $token->department,
+                        'url' => route('status.page', ['token' => $token->token_number])
+                    ]
+                );
+            }
 
             return response()->json(['success' => true]);
         } catch (\Exception $e) {
@@ -332,29 +299,13 @@ class StaffController extends Controller
             $token->completed_at = now();
             $token->save();
 
-            // Recalculate positions for this department
             $this->recalculatePositions($department);
             $this->callNext();
 
-            // ✅ Send notification to user
-            if ($token->patient_id) {
-                $this->notifyUser(
-                    $token->patient_id,
-                    'Service Completed',
-                    'Your service for token ' . $token->token_number . ' has been completed. Thank you!',
-                    'token_completed',
-                    [
-                        'token_number' => $token->token_number,
-                        'department' => $token->department,
-                        'url' => route('status.page', ['token' => $token->token_number])
-                    ]
-                );
-            }
-
-            // ✅ Send notification to all staff and admins
+            // ✅ BELL NOTIFICATION
             $this->notifyAllStaffAndAdmins(
                 'Service Completed',
-                'Service for ' . $token->patient_name . ' (Token: ' . $token->token_number . ') has been completed',
+                'Service for ' . $token->patient_name . ' (Token: ' . $token->token_number . ') completed',
                 'token_completed',
                 [
                     'token_number' => $token->token_number,
@@ -363,6 +314,20 @@ class StaffController extends Controller
                     'url' => route('staff.dashboard')
                 ]
             );
+
+            if ($token->patient_id) {
+                $this->notifyUser(
+                    $token->patient_id,
+                    'Service Completed',
+                    'Your service for token ' . $token->token_number . ' is complete.',
+                    'token_completed',
+                    [
+                        'token_number' => $token->token_number,
+                        'department' => $token->department,
+                        'url' => route('status.page', ['token' => $token->token_number])
+                    ]
+                );
+            }
 
             return response()->json(['success' => true]);
         } catch (\Exception $e) {
@@ -388,7 +353,19 @@ class StaffController extends Controller
             $this->recalculatePositions($department);
             $this->callNext();
 
-            // ✅ Send notification to user
+            // ✅ BELL NOTIFICATION
+            $this->notifyAllStaffAndAdmins(
+                'Token Cancelled',
+                'Token ' . $tokenNumber . ' (' . $tokenName . ') has been cancelled',
+                'token_cancelled',
+                [
+                    'token_number' => $tokenNumber,
+                    'patient_name' => $tokenName,
+                    'department' => $department,
+                    'url' => route('staff.dashboard')
+                ]
+            );
+
             if ($token->patient_id) {
                 $this->notifyUser(
                     $token->patient_id,
@@ -403,19 +380,6 @@ class StaffController extends Controller
                 );
             }
 
-            // ✅ Send notification to all staff and admins
-            $this->notifyAllStaffAndAdmins(
-                'Token Cancelled',
-                'Token ' . $tokenNumber . ' (' . $tokenName . ') has been cancelled',
-                'token_cancelled',
-                [
-                    'token_number' => $tokenNumber,
-                    'patient_name' => $tokenName,
-                    'department' => $department,
-                    'url' => route('staff.dashboard')
-                ]
-            );
-
             return response()->json(['success' => true]);
         } catch (\Exception $e) {
             Log::error('Cancel token error: ' . $e->getMessage());
@@ -426,45 +390,70 @@ class StaffController extends Controller
         }
     }
 
-    // ✅ Recalculate positions for a department
-    private function recalculatePositions($department)
+    // ✅ Cancel Patient (Missed)
+    public function cancelPatient(Request $request)
     {
-        Log::info('Recalculating positions for department: ' . $department);
-        
-        $timePerPatient = $this->getDepartmentTime($department);
-        
-        $tokens = Token::where('department', $department)
-                       ->whereIn('status', ['waiting', 'calling'])
-                       ->orderBy('created_at', 'asc')
-                       ->get();
-
-        $position = 1;
-        foreach ($tokens as $token) {
-            $token->position = $position;
-            $token->estimated_time = $position * $timePerPatient;
+        try {
+            $token = Token::findOrFail($request->token_id);
+            $department = $token->department;
+            $tokenName = $token->patient_name;
+            $tokenNumber = $token->token_number;
+            $token->status = 'missed';
             $token->save();
-            $position++;
+
+            $this->recalculatePositions($department);
+            $this->callNext();
+
+            // ✅ BELL NOTIFICATION
+            $this->notifyAllStaffAndAdmins(
+                'Patient Missed',
+                'Patient ' . $tokenName . ' (Token: ' . $tokenNumber . ') missed appointment',
+                'token_cancelled',
+                [
+                    'token_number' => $tokenNumber,
+                    'patient_name' => $tokenName,
+                    'department' => $department,
+                    'url' => route('staff.dashboard')
+                ]
+            );
+
+            if ($token->patient_id) {
+                $this->notifyUser(
+                    $token->patient_id,
+                    'Token Missed',
+                    'Your token ' . $tokenNumber . ' has been marked as missed.',
+                    'token_cancelled',
+                    [
+                        'token_number' => $tokenNumber,
+                        'department' => $department,
+                        'url' => route('status.page', ['token' => $tokenNumber])
+                    ]
+                );
+            }
+
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            Log::error('Cancel patient error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
         }
-        
-        Log::info('Recalculated ' . $tokens->count() . ' tokens for department: ' . $department);
     }
 
     // ✅ Call Next Patient
     public function callNext()
     {
         try {
-            // Complete any serving patient
             $serving = Token::where('status', 'serving')->first();
             if ($serving) {
                 $department = $serving->department;
                 $serving->status = 'completed';
                 $serving->completed_at = now();
                 $serving->save();
-                
                 $this->recalculatePositions($department);
             }
 
-            // Call next waiting patient
             $next = Token::where('status', 'waiting')
                          ->orderBy('position', 'asc')
                          ->first();
@@ -474,25 +463,10 @@ class StaffController extends Controller
                 $next->called_at = now();
                 $next->save();
 
-                // ✅ Send notification to user
-                if ($next->patient_id) {
-                    $this->notifyUser(
-                        $next->patient_id,
-                        'Next Token Called',
-                        'Your token ' . $next->token_number . ' is next in queue. Please be ready.',
-                        'token_called',
-                        [
-                            'token_number' => $next->token_number,
-                            'department' => $next->department,
-                            'url' => route('status.page', ['token' => $next->token_number])
-                        ]
-                    );
-                }
-
-                // ✅ Send notification to all staff and admins
+                // ✅ BELL NOTIFICATION
                 $this->notifyAllStaffAndAdmins(
                     'Next Token Called',
-                    'Token ' . $next->token_number . ' (' . $next->patient_name . ') is next in queue',
+                    'Token ' . $next->token_number . ' (' . $next->patient_name . ') is next',
                     'token_called',
                     [
                         'token_number' => $next->token_number,
@@ -501,6 +475,20 @@ class StaffController extends Controller
                         'url' => route('staff.dashboard')
                     ]
                 );
+
+                if ($next->patient_id) {
+                    $this->notifyUser(
+                        $next->patient_id,
+                        'Next Token Called',
+                        'Your token ' . $next->token_number . ' is next in queue.',
+                        'token_called',
+                        [
+                            'token_number' => $next->token_number,
+                            'department' => $next->department,
+                            'url' => route('status.page', ['token' => $next->token_number])
+                        ]
+                    );
+                }
 
                 return response()->json(['success' => true, 'patient' => $next]);
             }
@@ -515,55 +503,21 @@ class StaffController extends Controller
         }
     }
 
-    // ✅ Cancel Missed Patient (Timer Timeout)
-    public function cancelPatient(Request $request)
+    // ✅ Recalculate positions
+    private function recalculatePositions($department)
     {
-        try {
-            $token = Token::findOrFail($request->token_id);
-            $department = $token->department;
-            $tokenName = $token->patient_name;
-            $tokenNumber = $token->token_number;
-            $token->status = 'missed';
+        $timePerPatient = $this->getDepartmentTime($department);
+        $tokens = Token::where('department', $department)
+                       ->whereIn('status', ['waiting', 'calling'])
+                       ->orderBy('created_at', 'asc')
+                       ->get();
+
+        $position = 1;
+        foreach ($tokens as $token) {
+            $token->position = $position;
+            $token->estimated_time = $position * $timePerPatient;
             $token->save();
-
-            $this->recalculatePositions($department);
-            $this->callNext();
-
-            // ✅ Send notification to user
-            if ($token->patient_id) {
-                $this->notifyUser(
-                    $token->patient_id,
-                    'Patient Missed',
-                    'Your token ' . $tokenNumber . ' has been marked as missed.',
-                    'token_cancelled',
-                    [
-                        'token_number' => $tokenNumber,
-                        'department' => $department,
-                        'url' => route('status.page', ['token' => $tokenNumber])
-                    ]
-                );
-            }
-
-            // ✅ Send notification to all staff and admins
-            $this->notifyAllStaffAndAdmins(
-                'Patient Missed',
-                'Patient ' . $tokenName . ' (Token: ' . $tokenNumber . ') has missed their appointment',
-                'token_cancelled',
-                [
-                    'token_number' => $tokenNumber,
-                    'patient_name' => $tokenName,
-                    'department' => $department,
-                    'url' => route('staff.dashboard')
-                ]
-            );
-
-            return response()->json(['success' => true]);
-        } catch (\Exception $e) {
-            Log::error('Cancel patient error: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage()
-            ], 500);
+            $position++;
         }
     }
 
@@ -574,10 +528,10 @@ class StaffController extends Controller
             $minutes = $request->minutes;
             Token::where('status', 'waiting')->update(['estimated_time' => $minutes]);
 
-            // ✅ Send notification to all staff and admins
+            // ✅ BELL NOTIFICATION
             $this->notifyAllStaffAndAdmins(
                 'Global Time Updated',
-                'Global estimated time has been set to ' . $minutes . ' minutes',
+                'Global estimated time set to ' . $minutes . ' minutes',
                 'queue_update',
                 [
                     'time' => $minutes,
@@ -603,18 +557,10 @@ class StaffController extends Controller
             $stats = [];
 
             foreach ($departments as $dept) {
-                $waiting = Token::where('department', $dept)
-                                ->where('status', 'waiting')
-                                ->count();
-                $calling = Token::where('department', $dept)
-                                ->where('status', 'calling')
-                                ->count();
-                $serving = Token::where('department', $dept)
-                                ->where('status', 'serving')
-                                ->first();
-                $total = Token::where('department', $dept)
-                              ->whereIn('status', ['waiting', 'calling', 'serving'])
-                              ->count();
+                $waiting = Token::where('department', $dept)->where('status', 'waiting')->count();
+                $calling = Token::where('department', $dept)->where('status', 'calling')->count();
+                $serving = Token::where('department', $dept)->where('status', 'serving')->first();
+                $total = Token::where('department', $dept)->whereIn('status', ['waiting', 'calling', 'serving'])->count();
 
                 $stats[$dept] = [
                     'waiting' => $waiting,
