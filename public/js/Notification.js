@@ -126,6 +126,48 @@ function markAsRead(id) {
     .catch(error => console.error('Error:', error));
 }
 
+function markAllRead() {
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+    const btn = document.getElementById('markAllBtn');
+    
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Please wait...';
+    }
+    
+    fetch('/notifications/read-all', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken,
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-check-double"></i> Mark all as read';
+        }
+        if (data.success) {
+            allNotifications.forEach(n => n.is_read = true);
+            document.getElementById('countUnread').textContent = 0;
+            document.getElementById('countRead').textContent = allNotifications.length;
+            filterNotifications(currentFilter);
+            updateBadge(0);
+            showToast('✅ All notifications marked as read!', 'success');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-check-double"></i> Mark all as read';
+        }
+        showToast('❌ Error marking all as read', 'error');
+    });
+}
+
 function updateBadge(unreadCount) {
     const badge = document.getElementById('notificationBadge');
     if (badge) {
@@ -225,5 +267,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 window.filterNotifications = filterNotifications;
 window.markAsRead = markAsRead;
+window.markAllRead = markAllRead;
 window.loadNotifications = loadNotifications;
 window.checkUnreadCount = checkUnreadCount;
