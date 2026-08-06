@@ -60,7 +60,6 @@ class NotificationController extends Controller
         } catch (\Exception $e) {
             Log::error('Notification page error: ' . $e->getMessage());
             
-            // ✅ Fallback: Show empty notifications
             return view('Notification', [
                 'notifications' => collect([]),
                 'unreadCount' => 0

@@ -3,7 +3,8 @@
 namespace App\Traits;
 
 use App\Models\Notification;
-use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use Illuminate\Support\Facades\Log;
 
 trait NotificationTrait
 {
@@ -12,17 +13,27 @@ trait NotificationTrait
      */
     public function createNotification($userId, $title, $message, $type, $data = [])
     {
-        return Notification::create([
-            'user_id' => $userId,
-            'title' => $title,
-            'message' => $message,
-            'type' => $type,
-            'data' => array_merge($data, [
-                'icon' => $this->getNotificationIcon($type),
-                'url' => $data['url'] ?? '#'
-            ]),
-            'created_at' => now()
-        ]);
+        try {
+            $notification = Notification::create([
+                'user_id' => $userId,
+                'title' => $title,
+                'message' => $message,
+                'type' => $type,
+                'data' => json_encode(array_merge($data, [
+                    'icon' => $this->getNotificationIcon($type),
+                    'url' => $data['url'] ?? '#'
+                ])),
+                'read_at' => null,
+                'created_at' => now()
+            ]);
+
+            Log::info('Notification created: ' . $title . ' for user: ' . $userId);
+            return $notification;
+
+        } catch (\Exception $e) {
+            Log::error('Failed to create notification: ' . $e->getMessage());
+            return null;
+        }
     }
 
     /**
@@ -30,7 +41,7 @@ trait NotificationTrait
      */
     public function notifyAdmin($title, $message, $type, $data = [])
     {
-        $admins = \App\Models\User::where('role', 'admin')->get();
+        $admins = User::where('role', 'admin')->get();
         
         foreach ($admins as $admin) {
             $this->createNotification($admin->id, $title, $message, $type, $data);
@@ -50,11 +61,20 @@ trait NotificationTrait
      */
     public function notifyStaff($title, $message, $type, $data = [])
     {
-        $staff = \App\Models\User::where('role', 'staff')->get();
+        $staff = User::where('role', 'staff')->get();
         
         foreach ($staff as $user) {
             $this->createNotification($user->id, $title, $message, $type, $data);
         }
+    }
+
+    /**
+     * Send notification to all staff and admins
+     */
+    public function notifyAllStaffAndAdmins($title, $message, $type, $data = [])
+    {
+        $this->notifyAdmin($title, $message, $type, $data);
+        $this->notifyStaff($title, $message, $type, $data);
     }
 
     /**
@@ -63,23 +83,35 @@ trait NotificationTrait
     private function getNotificationIcon($type)
     {
         $icons = [
+            // Doctor related
             'doctor_added' => 'fa-user-md',
             'doctor_updated' => 'fa-user-edit',
             'doctor_deleted' => 'fa-user-times',
-            'staff_approved' => 'fa-user-check',
-            'staff_rejected' => 'fa-user-times',
-            'staff_registered' => 'fa-user-plus',
-            'token_generated' => 'fa-ticket-alt',
-            'token_called' => 'fa-phone',
-            'token_completed' => 'fa-check-double',
+            
+            // Service related
             'service_added' => 'fa-concierge-bell',
             'service_updated' => 'fa-edit',
             'service_deleted' => 'fa-trash',
+            
+            // Staff related
+            'staff_approved' => 'fa-user-check',
+            'staff_rejected' => 'fa-user-times',
+            'staff_registered' => 'fa-user-plus',
+            
+            // Token/Patient related
+            'token_generated' => 'fa-ticket-alt',
+            'token_called' => 'fa-phone',
+            'token_arrived' => 'fa-check-circle',
+            'token_completed' => 'fa-check-double',
+            'token_cancelled' => 'fa-times-circle',
+            'physical_patient_added' => 'fa-user-plus',
+            'queue_update' => 'fa-clock',
+            
+            // System
             'system_alert' => 'fa-exclamation-triangle',
             'user_registered' => 'fa-user-plus',
             'profile_updated' => 'fa-user-edit',
             'password_changed' => 'fa-key',
-            'queue_update' => 'fa-clock',
             'report_generated' => 'fa-file-alt',
             'settings_updated' => 'fa-cog',
             'appointment_booked' => 'fa-calendar-check',

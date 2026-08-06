@@ -24,7 +24,7 @@ function loadNotifications() {
             document.getElementById('countRead').textContent = allNotifications.length - unread;
             
             renderNotifications(allNotifications);
-            updateBadge();
+            updateBadge(unread);
         }
     })
     .catch(error => {
@@ -120,7 +120,7 @@ function markAsRead(id) {
             document.getElementById('countUnread').textContent = unread;
             document.getElementById('countRead').textContent = allNotifications.length - unread;
             filterNotifications(currentFilter);
-            updateBadge();
+            updateBadge(unread);
         }
     })
     .catch(error => console.error('Error:', error));
@@ -154,7 +154,7 @@ function markAllRead() {
             document.getElementById('countUnread').textContent = 0;
             document.getElementById('countRead').textContent = allNotifications.length;
             filterNotifications(currentFilter);
-            updateBadge();
+            updateBadge(0);
             showToast('✅ All notifications marked as read!', 'success');
         }
     })
@@ -168,8 +168,7 @@ function markAllRead() {
     });
 }
 
-function updateBadge() {
-    const unreadCount = allNotifications.filter(n => !n.is_read).length;
+function updateBadge(unreadCount) {
     const badge = document.getElementById('notificationBadge');
     if (badge) {
         if (unreadCount > 0) {
@@ -177,6 +176,16 @@ function updateBadge() {
             badge.style.display = 'block';
         } else {
             badge.style.display = 'none';
+        }
+    }
+    // ✅ Update navbar badge too (in admin_nav)
+    const navBadge = document.getElementById('notificationBadge');
+    if (navBadge) {
+        if (unreadCount > 0) {
+            navBadge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+            navBadge.classList.add('show');
+        } else {
+            navBadge.classList.remove('show');
         }
     }
 }
@@ -199,13 +208,79 @@ function showToast(message, type = 'success') {
 }
 
 // ============================================ //
-// INIT                                        //
+// ✅ CHECK FOR NEW NOTIFICATIONS (EVERY 10 SECONDS)
+// ============================================ //
+
+let previousCount = 0;
+
+function checkUnreadCount() {
+    fetch('/notifications/unread-count')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const count = data.count;
+                updateBadge(count);
+                
+                if (count > previousCount && count > 0) {
+                    playNotificationSound();
+                }
+                previousCount = count;
+            }
+        })
+        .catch(error => console.error('Error checking unread count:', error));
+}
+
+// ============================================ //
+// SOUND
+// ============================================ //
+
+let notificationAudio = null;
+
+function initAudio() {
+    try {
+        notificationAudio = new Audio('/Notification%20Sound/notification.wav');
+        notificationAudio.volume = 0.8;
+        notificationAudio.preload = 'auto';
+        notificationAudio.onerror = function() {
+            console.warn('⚠️ Sound file not found');
+            notificationAudio = null;
+        };
+    } catch (error) {
+        console.warn('Audio init failed:', error);
+        notificationAudio = null;
+    }
+}
+
+function playNotificationSound() {
+    if (notificationAudio) {
+        try {
+            notificationAudio.currentTime = 0;
+            notificationAudio.play()
+                .then(() => console.log('🔊 Notification sound played!'))
+                .catch(() => console.log('🔇 Sound play blocked'));
+        } catch (error) {
+            console.log('🔇 Sound error:', error);
+        }
+    }
+}
+
+// ============================================ //
+// INIT
 // ============================================ //
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log('✅ Notification system initialized');
+    
     loadNotifications();
+    checkUnreadCount();
+    
+    // Auto refresh every 10 seconds (badge)
+    setInterval(checkUnreadCount, 10000);
+    
+    // Auto refresh notifications every 30 seconds
     setInterval(loadNotifications, 30000);
+    
+    initAudio();
 });
 
 // EXPOSE TO GLOBAL SCOPE
@@ -213,3 +288,4 @@ window.filterNotifications = filterNotifications;
 window.markAsRead = markAsRead;
 window.markAllRead = markAllRead;
 window.loadNotifications = loadNotifications;
+window.checkUnreadCount = checkUnreadCount;

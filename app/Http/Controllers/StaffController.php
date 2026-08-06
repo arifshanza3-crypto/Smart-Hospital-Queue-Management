@@ -5,11 +5,16 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Token;
 use App\Models\QueueReport;
+use App\Models\User;
+use App\Models\Notification;
+use App\Traits\NotificationTrait;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class StaffController extends Controller
 {
+    use NotificationTrait;
+
     // ✅ Staff Dashboard - Allow both Admin and Staff
     public function dashboard()
     {
@@ -170,6 +175,19 @@ class StaffController extends Controller
 
             Log::info('Token created: ' . $token->id . ' - ' . $tokenNumber . ' - Position: ' . $position);
 
+            // ✅ Send notification to all staff and admins
+            $this->notifyAllStaffAndAdmins(
+                'New Physical Patient Added',
+                'Patient "' . $request->name . '" has been added to ' . $department . ' queue (Token: ' . $tokenNumber . ')',
+                'physical_patient_added',
+                [
+                    'token_number' => $tokenNumber,
+                    'patient_name' => $request->name,
+                    'department' => $department,
+                    'url' => route('staff.dashboard')
+                ]
+            );
+
             return response()->json([
                 'success' => true,
                 'message' => 'Patient added to queue!',
@@ -219,6 +237,19 @@ class StaffController extends Controller
             $token->called_at = now();
             $token->save();
 
+            // ✅ Send notification to all staff and admins
+            $this->notifyAllStaffAndAdmins(
+                'Token Called',
+                'Token ' . $token->token_number . ' (' . $token->patient_name . ') has been called',
+                'token_called',
+                [
+                    'token_number' => $token->token_number,
+                    'patient_name' => $token->patient_name,
+                    'department' => $token->department,
+                    'url' => route('staff.dashboard')
+                ]
+            );
+
             return response()->json(['success' => true]);
         } catch (\Exception $e) {
             Log::error('Start serving error: ' . $e->getMessage());
@@ -237,6 +268,19 @@ class StaffController extends Controller
             $token->status = 'serving';
             $token->started_at = now();
             $token->save();
+
+            // ✅ Send notification to all staff and admins
+            $this->notifyAllStaffAndAdmins(
+                'Patient Arrived',
+                'Patient ' . $token->patient_name . ' (Token: ' . $token->token_number . ') has arrived and is being served',
+                'token_arrived',
+                [
+                    'token_number' => $token->token_number,
+                    'patient_name' => $token->patient_name,
+                    'department' => $token->department,
+                    'url' => route('staff.dashboard')
+                ]
+            );
 
             return response()->json(['success' => true]);
         } catch (\Exception $e) {
@@ -262,6 +306,19 @@ class StaffController extends Controller
             $this->recalculatePositions($department);
             $this->callNext();
 
+            // ✅ Send notification to all staff and admins
+            $this->notifyAllStaffAndAdmins(
+                'Service Completed',
+                'Service for ' . $token->patient_name . ' (Token: ' . $token->token_number . ') has been completed',
+                'token_completed',
+                [
+                    'token_number' => $token->token_number,
+                    'patient_name' => $token->patient_name,
+                    'department' => $token->department,
+                    'url' => route('staff.dashboard')
+                ]
+            );
+
             return response()->json(['success' => true]);
         } catch (\Exception $e) {
             Log::error('Complete service error: ' . $e->getMessage());
@@ -278,11 +335,26 @@ class StaffController extends Controller
         try {
             $token = Token::findOrFail($request->token_id);
             $department = $token->department;
+            $tokenName = $token->patient_name;
+            $tokenNumber = $token->token_number;
             $token->status = 'cancelled';
             $token->save();
 
             $this->recalculatePositions($department);
             $this->callNext();
+
+            // ✅ Send notification to all staff and admins
+            $this->notifyAllStaffAndAdmins(
+                'Token Cancelled',
+                'Token ' . $tokenNumber . ' (' . $tokenName . ') has been cancelled',
+                'token_cancelled',
+                [
+                    'token_number' => $tokenNumber,
+                    'patient_name' => $tokenName,
+                    'department' => $department,
+                    'url' => route('staff.dashboard')
+                ]
+            );
 
             return response()->json(['success' => true]);
         } catch (\Exception $e) {
@@ -342,6 +414,19 @@ class StaffController extends Controller
                 $next->called_at = now();
                 $next->save();
 
+                // ✅ Send notification to all staff and admins
+                $this->notifyAllStaffAndAdmins(
+                    'Next Token Called',
+                    'Token ' . $next->token_number . ' (' . $next->patient_name . ') is next in queue',
+                    'token_called',
+                    [
+                        'token_number' => $next->token_number,
+                        'patient_name' => $next->patient_name,
+                        'department' => $next->department,
+                        'url' => route('staff.dashboard')
+                    ]
+                );
+
                 return response()->json(['success' => true, 'patient' => $next]);
             }
 
@@ -361,11 +446,26 @@ class StaffController extends Controller
         try {
             $token = Token::findOrFail($request->token_id);
             $department = $token->department;
+            $tokenName = $token->patient_name;
+            $tokenNumber = $token->token_number;
             $token->status = 'missed';
             $token->save();
 
             $this->recalculatePositions($department);
             $this->callNext();
+
+            // ✅ Send notification to all staff and admins
+            $this->notifyAllStaffAndAdmins(
+                'Patient Missed',
+                'Patient ' . $tokenName . ' (Token: ' . $tokenNumber . ') has missed their appointment',
+                'token_cancelled',
+                [
+                    'token_number' => $tokenNumber,
+                    'patient_name' => $tokenName,
+                    'department' => $department,
+                    'url' => route('staff.dashboard')
+                ]
+            );
 
             return response()->json(['success' => true]);
         } catch (\Exception $e) {
@@ -383,6 +483,17 @@ class StaffController extends Controller
         try {
             $minutes = $request->minutes;
             Token::where('status', 'waiting')->update(['estimated_time' => $minutes]);
+
+            // ✅ Send notification to all staff and admins
+            $this->notifyAllStaffAndAdmins(
+                'Global Time Updated',
+                'Global estimated time has been set to ' . $minutes . ' minutes',
+                'queue_update',
+                [
+                    'time' => $minutes,
+                    'url' => route('staff.dashboard')
+                ]
+            );
 
             return response()->json(['success' => true]);
         } catch (\Exception $e) {
@@ -433,6 +544,31 @@ class StaffController extends Controller
                 'success' => false,
                 'message' => $e->getMessage()
             ], 500);
+        }
+    }
+
+    /**
+     * ✅ Send notification to all staff and admins
+     */
+    private function notifyAllStaffAndAdmins($title, $message, $type, $data = [])
+    {
+        try {
+            // Notify all admins
+            $admins = User::where('role', 'admin')->get();
+            foreach ($admins as $admin) {
+                $this->createNotification($admin->id, $title, $message, $type, $data);
+            }
+
+            // Notify all staff
+            $staff = User::where('role', 'staff')->get();
+            foreach ($staff as $staffMember) {
+                $this->createNotification($staffMember->id, $title, $message, $type, $data);
+            }
+
+            Log::info('Notification sent to ' . ($admins->count() + $staff->count()) . ' users');
+
+        } catch (\Exception $e) {
+            Log::error('Failed to send notification: ' . $e->getMessage());
         }
     }
 }
