@@ -121,9 +121,55 @@ function markAsRead(id) {
             document.getElementById('countRead').textContent = allNotifications.length - unread;
             filterNotifications(currentFilter);
             updateBadge(unread);
+            showToast('✅ Notification marked as read!', 'success');
         }
     })
     .catch(error => console.error('Error:', error));
+}
+
+// ✅ MARK ALL AS READ
+function markAllRead() {
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+    const btn = document.getElementById('markAllBtn');
+    
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Please wait...';
+    }
+    
+    fetch('/notifications/read-all', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken,
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-check-double"></i> Mark all as read';
+        }
+        if (data.success) {
+            allNotifications.forEach(n => n.is_read = true);
+            document.getElementById('countUnread').textContent = 0;
+            document.getElementById('countRead').textContent = allNotifications.length;
+            filterNotifications(currentFilter);
+            updateBadge(0);
+            showToast('✅ All notifications marked as read!', 'success');
+        } else {
+            showToast('❌ Failed to mark all as read', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-check-double"></i> Mark all as read';
+        }
+        showToast('❌ Error marking all as read', 'error');
+    });
 }
 
 function updateBadge(unreadCount) {
@@ -134,15 +180,6 @@ function updateBadge(unreadCount) {
             badge.style.display = 'block';
         } else {
             badge.style.display = 'none';
-        }
-    }
-    const navBadge = document.getElementById('notificationBadge');
-    if (navBadge) {
-        if (unreadCount > 0) {
-            navBadge.textContent = unreadCount > 99 ? '99+' : unreadCount;
-            navBadge.classList.add('show');
-        } else {
-            navBadge.classList.remove('show');
         }
     }
 }
@@ -164,6 +201,10 @@ function showToast(message, type = 'success') {
     }, 3500);
 }
 
+// ============================================ //
+// CHECK UNREAD COUNT                         //
+// ============================================ //
+
 let previousCount = 0;
 
 function checkUnreadCount() {
@@ -182,6 +223,10 @@ function checkUnreadCount() {
         })
         .catch(error => console.error('Error checking unread count:', error));
 }
+
+// ============================================ //
+// SOUND                                       //
+// ============================================ //
 
 let notificationAudio = null;
 
@@ -213,6 +258,10 @@ function playNotificationSound() {
     }
 }
 
+// ============================================ //
+// INIT                                       //
+// ============================================ //
+
 document.addEventListener('DOMContentLoaded', function() {
     console.log('✅ Notification system initialized');
     
@@ -223,7 +272,9 @@ document.addEventListener('DOMContentLoaded', function() {
     initAudio();
 });
 
+// EXPOSE TO GLOBAL SCOPE
 window.filterNotifications = filterNotifications;
 window.markAsRead = markAsRead;
+window.markAllRead = markAllRead;
 window.loadNotifications = loadNotifications;
 window.checkUnreadCount = checkUnreadCount;

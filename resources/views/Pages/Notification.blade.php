@@ -22,7 +22,12 @@
                     </span>
                 @endauth
             </div>
-            {{-- ✅ MARK ALL AS READ BUTTON REMOVED --}}
+            <div class="header-right">
+                {{-- ✅ MARK ALL AS READ BUTTON --}}
+                <button class="btn-mark-all" id="markAllBtn" onclick="markAllRead()">
+                    <i class="fas fa-check-double"></i> Mark all as read
+                </button>
+            </div>
         </div>
 
         {{-- FILTERS --}}
@@ -92,11 +97,6 @@
             </a>
         </div>
 
-        {{-- DEBUG --}}
-        <div class="debug-info">
-            <strong>Debug:</strong> User ID: {{ auth()->id() }} | Role: {{ auth()->user()->role ?? 'N/A' }} | Notifications: {{ $notifications->count() }} | Unread: {{ $unreadCount }}
-        </div>
-
     </div>
 </div>
 
@@ -133,19 +133,9 @@
         to { opacity: 1; transform: translateY(0); }
     }
     
-    .debug-info {
-        margin-top: 20px;
-        padding: 12px 20px;
-        background: rgba(255, 255, 255, 0.03);
-        border-radius: 10px;
-        font-size: 12px;
-        color: rgba(255, 255, 255, 0.2);
-        text-align: center;
-        border: 1px solid rgba(255, 255, 255, 0.03);
-    }
-
-    .debug-info strong {
-        color: rgba(255, 255, 255, 0.3);
+    .btn-mark-all:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
     }
 
     .new-tag {
@@ -158,6 +148,32 @@
         text-transform: uppercase;
         letter-spacing: 0.5px;
         margin-left: 8px;
+    }
+
+    /* Button styling */
+    .btn-mark-all {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 22px;
+        background: linear-gradient(135deg, #00d4ff, #0ea5e9);
+        color: #071a1c;
+        border: none;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 16px rgba(0, 212, 255, 0.25);
+    }
+
+    .btn-mark-all:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 24px rgba(0, 212, 255, 0.35);
+    }
+
+    .btn-mark-all i {
+        font-size: 15px;
     }
 </style>
 
