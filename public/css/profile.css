@@ -1,11 +1,22 @@
 /* ============================================
-   PROFILE PAGE STYLES - VERTICAL LAYOUT
+   PROFILE PAGE STYLES - TWO TABLES
    ============================================ */
 
 * {
     font-family: 'Inter', 'Segoe UI', sans-serif;
     box-sizing: border-box;
 }
+
+.profile-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        cursor: pointer;
+        padding: 4px 12px 4px 4px;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        border: 1px solid transparent;
+    }
 
 /* ============================================
    ALERT MESSAGES
@@ -37,15 +48,6 @@
 .alert ul {
     margin: 0;
     padding-left: 20px;
-}
-
-/* ============================================
-   PROFILE WRAPPER
-   ============================================ */
-.profile-wrapper {
-    max-width: 900px;
-    margin: 30px auto;
-    padding: 0 20px;
 }
 
 /* ============================================
@@ -303,14 +305,106 @@
 }
 
 /* ============================================
-   INFO SECTIONS
+   TWO TABLES - SIDE BY SIDE
    ============================================ */
-.info-section {
+.tables-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
     margin-bottom: 30px;
 }
 
-.info-section:last-child {
-    margin-bottom: 0;
+.table-wrapper {
+    background: #fafbfc;
+    border-radius: 12px;
+    padding: 20px 24px;
+    border: 1px solid #eef0f2;
+}
+
+.table-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #0b2e33;
+    margin: 0 0 16px 0;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e5e9ed;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.table-title i {
+    color: #00d4ff;
+    font-size: 16px;
+    width: 20px;
+    text-align: center;
+}
+
+/* ============================================
+   TABLE STYLES
+   ============================================ */
+.info-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.info-table tr {
+    border-bottom: 1px solid #eef0f2;
+}
+
+.info-table tr:last-child {
+    border-bottom: none;
+}
+
+.info-table td {
+    padding: 8px 0;
+    vertical-align: middle;
+}
+
+.info-table .info-label {
+    color: #8899aa;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    width: 45%;
+    padding-right: 10px;
+}
+
+.info-table .info-label i {
+    color: #ccd6e0;
+    font-size: 12px;
+    width: 16px;
+    margin-right: 6px;
+    text-align: center;
+}
+
+.info-table .info-value {
+    color: #1a2a3a;
+    font-weight: 500;
+    font-size: 13px;
+    padding-left: 10px;
+    word-break: break-word;
+}
+
+.info-table .info-value.text-muted {
+    color: #99aabb;
+    font-weight: 400;
+}
+
+.info-table .info-value.bio-text {
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+/* ============================================
+   PERMISSIONS SECTION
+   ============================================ */
+.permissions-section {
+    margin-top: 10px;
 }
 
 .section-title {
@@ -345,80 +439,6 @@
     text-align: center;
 }
 
-/* ============================================
-   VERTICAL INFO GRID (LABEL ON TOP, VALUE BELOW)
-   ============================================ */
-.info-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-}
-
-.info-item {
-    display: flex;
-    flex-direction: column;
-    padding: 10px 0;
-    border-bottom: 1px solid #f5f7fa;
-    transition: background 0.2s ease;
-}
-
-.info-item:hover {
-    background: #fafbfc;
-    margin: 0 -8px;
-    padding: 10px 8px;
-    border-radius: 6px;
-}
-
-.info-item:last-child {
-    border-bottom: none;
-}
-
-.info-item.full-width {
-    display: flex;
-    flex-direction: column;
-}
-
-.info-label {
-    color: #8899aa;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 4px;
-}
-
-.info-label i {
-    color: #ccd6e0;
-    font-size: 13px;
-    width: 18px;
-    text-align: center;
-}
-
-.info-value {
-    color: #1a2a3a;
-    font-weight: 500;
-    font-size: 14px;
-    padding-left: 26px;
-    word-break: break-word;
-}
-
-.info-value.text-muted {
-    color: #99aabb;
-    font-weight: 400;
-}
-
-.info-value.bio-text {
-    font-weight: 400;
-    font-size: 13px;
-    line-height: 1.5;
-}
-
-/* ============================================
-   PERMISSIONS
-   ============================================ */
 .permissions-grid {
     display: flex;
     flex-wrap: wrap;
@@ -468,9 +488,13 @@
    RESPONSIVE
    ============================================ */
 @media (max-width: 768px) {
+    .tables-container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
     .profile-wrapper {
-        padding: 0 12px;
-        margin: 20px auto;
+        padding: 100px 12px 20px 12px;
     }
     
     .profile-header {
@@ -495,19 +519,8 @@
         padding: 20px;
     }
     
-    .info-item {
-        padding: 8px 0;
-    }
-    
-    .info-item:hover {
-        margin: 0;
-        padding: 8px 0;
-        border-radius: 0;
-    }
-    
-    .info-value {
-        font-size: 13px;
-        padding-left: 26px;
+    .table-wrapper {
+        padding: 16px 18px;
     }
     
     .profile-avatar {
@@ -526,8 +539,7 @@
 
 @media (max-width: 576px) {
     .profile-wrapper {
-        padding: 0 10px;
-        margin: 15px auto;
+        padding: 90px 10px 15px 10px;
     }
     
     .profile-header {
@@ -551,13 +563,17 @@
         font-size: 18px;
     }
     
-    .info-label {
-        font-size: 10px;
+    .table-wrapper {
+        padding: 14px 14px;
     }
     
-    .info-value {
+    .info-table .info-label {
+        font-size: 9px;
+        width: 40%;
+    }
+    
+    .info-table .info-value {
         font-size: 12px;
-        padding-left: 24px;
     }
     
     .btn-edit {

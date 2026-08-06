@@ -15,7 +15,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const file = input.files[0];
         
-        // Validate file type
         const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp'];
         if (!allowedTypes.includes(file.type)) {
             showMessage('Please upload a valid image (JPEG, PNG, JPG, GIF, WebP)', 'error');
@@ -23,7 +22,6 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // Validate file size (2MB max)
         if (file.size > 2 * 1024 * 1024) {
             showMessage('Image size must be less than 2MB', 'error');
             input.value = '';
@@ -36,7 +34,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const avatarDiv = document.querySelector('.profile-avatar');
         const originalContent = avatarDiv.innerHTML;
         
-        // Show loading state with spinner
         avatarDiv.style.opacity = '0.6';
         avatarDiv.innerHTML = '<i class="fas fa-spinner fa-spin" style="font-size:32px; color:white;"></i>';
 
@@ -78,9 +75,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     };
 
-    /**
-     * Update avatar display on the page
-     */
     function updateAvatarDisplay(avatarUrl) {
         const avatarDiv = document.querySelector('.profile-avatar');
         avatarDiv.innerHTML = '';
@@ -149,7 +143,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <span>${message}</span>
         `;
 
-        const wrapper = document.querySelector('.profile-wrapper') || document.querySelector('.edit-profile-wrapper');
+        const wrapper = document.querySelector('.profile-wrapper');
         if (wrapper) {
             wrapper.prepend(alertDiv);
         }
@@ -221,10 +215,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
-
-    // ============================================
-    // CONSOLE LOG
-    // ============================================
 
     console.log('✅ Profile page loaded successfully');
     console.log('📋 Tips:');

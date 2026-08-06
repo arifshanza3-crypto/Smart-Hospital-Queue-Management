@@ -564,6 +564,16 @@
                 right: -20px;
             }
         }
+        .profile-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        cursor: pointer;
+        padding: 4px 12px 4px 4px;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        border: 1px solid transparent;
+    }
     </style>
 </head>
 <body>
