@@ -178,7 +178,6 @@ function updateBadge(unreadCount) {
             badge.style.display = 'none';
         }
     }
-    // ✅ Update navbar badge too (in admin_nav)
     const navBadge = document.getElementById('notificationBadge');
     if (navBadge) {
         if (unreadCount > 0) {
@@ -207,10 +206,6 @@ function showToast(message, type = 'success') {
     }, 3500);
 }
 
-// ============================================ //
-// ✅ CHECK FOR NEW NOTIFICATIONS (EVERY 10 SECONDS)
-// ============================================ //
-
 let previousCount = 0;
 
 function checkUnreadCount() {
@@ -229,10 +224,6 @@ function checkUnreadCount() {
         })
         .catch(error => console.error('Error checking unread count:', error));
 }
-
-// ============================================ //
-// SOUND
-// ============================================ //
 
 let notificationAudio = null;
 
@@ -264,26 +255,16 @@ function playNotificationSound() {
     }
 }
 
-// ============================================ //
-// INIT
-// ============================================ //
-
 document.addEventListener('DOMContentLoaded', function() {
     console.log('✅ Notification system initialized');
     
     loadNotifications();
     checkUnreadCount();
-    
-    // Auto refresh every 10 seconds (badge)
     setInterval(checkUnreadCount, 10000);
-    
-    // Auto refresh notifications every 30 seconds
     setInterval(loadNotifications, 30000);
-    
     initAudio();
 });
 
-// EXPOSE TO GLOBAL SCOPE
 window.filterNotifications = filterNotifications;
 window.markAsRead = markAsRead;
 window.markAllRead = markAllRead;

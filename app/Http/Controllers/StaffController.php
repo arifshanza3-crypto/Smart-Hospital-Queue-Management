@@ -237,6 +237,21 @@ class StaffController extends Controller
             $token->called_at = now();
             $token->save();
 
+            // ✅ Send notification to user
+            if ($token->patient_id) {
+                $this->notifyUser(
+                    $token->patient_id,
+                    'Token Called',
+                    'Your token ' . $token->token_number . ' has been called. Please proceed to the counter.',
+                    'token_called',
+                    [
+                        'token_number' => $token->token_number,
+                        'department' => $token->department,
+                        'url' => route('status.page', ['token' => $token->token_number])
+                    ]
+                );
+            }
+
             // ✅ Send notification to all staff and admins
             $this->notifyAllStaffAndAdmins(
                 'Token Called',
@@ -268,6 +283,21 @@ class StaffController extends Controller
             $token->status = 'serving';
             $token->started_at = now();
             $token->save();
+
+            // ✅ Send notification to user
+            if ($token->patient_id) {
+                $this->notifyUser(
+                    $token->patient_id,
+                    'Patient Arrived',
+                    'You have arrived for token ' . $token->token_number . '. Please wait for your turn.',
+                    'token_arrived',
+                    [
+                        'token_number' => $token->token_number,
+                        'department' => $token->department,
+                        'url' => route('status.page', ['token' => $token->token_number])
+                    ]
+                );
+            }
 
             // ✅ Send notification to all staff and admins
             $this->notifyAllStaffAndAdmins(
@@ -306,6 +336,21 @@ class StaffController extends Controller
             $this->recalculatePositions($department);
             $this->callNext();
 
+            // ✅ Send notification to user
+            if ($token->patient_id) {
+                $this->notifyUser(
+                    $token->patient_id,
+                    'Service Completed',
+                    'Your service for token ' . $token->token_number . ' has been completed. Thank you!',
+                    'token_completed',
+                    [
+                        'token_number' => $token->token_number,
+                        'department' => $token->department,
+                        'url' => route('status.page', ['token' => $token->token_number])
+                    ]
+                );
+            }
+
             // ✅ Send notification to all staff and admins
             $this->notifyAllStaffAndAdmins(
                 'Service Completed',
@@ -342,6 +387,21 @@ class StaffController extends Controller
 
             $this->recalculatePositions($department);
             $this->callNext();
+
+            // ✅ Send notification to user
+            if ($token->patient_id) {
+                $this->notifyUser(
+                    $token->patient_id,
+                    'Token Cancelled',
+                    'Your token ' . $tokenNumber . ' has been cancelled.',
+                    'token_cancelled',
+                    [
+                        'token_number' => $tokenNumber,
+                        'department' => $department,
+                        'url' => route('status.page', ['token' => $tokenNumber])
+                    ]
+                );
+            }
 
             // ✅ Send notification to all staff and admins
             $this->notifyAllStaffAndAdmins(
@@ -414,6 +474,21 @@ class StaffController extends Controller
                 $next->called_at = now();
                 $next->save();
 
+                // ✅ Send notification to user
+                if ($next->patient_id) {
+                    $this->notifyUser(
+                        $next->patient_id,
+                        'Next Token Called',
+                        'Your token ' . $next->token_number . ' is next in queue. Please be ready.',
+                        'token_called',
+                        [
+                            'token_number' => $next->token_number,
+                            'department' => $next->department,
+                            'url' => route('status.page', ['token' => $next->token_number])
+                        ]
+                    );
+                }
+
                 // ✅ Send notification to all staff and admins
                 $this->notifyAllStaffAndAdmins(
                     'Next Token Called',
@@ -453,6 +528,21 @@ class StaffController extends Controller
 
             $this->recalculatePositions($department);
             $this->callNext();
+
+            // ✅ Send notification to user
+            if ($token->patient_id) {
+                $this->notifyUser(
+                    $token->patient_id,
+                    'Patient Missed',
+                    'Your token ' . $tokenNumber . ' has been marked as missed.',
+                    'token_cancelled',
+                    [
+                        'token_number' => $tokenNumber,
+                        'department' => $department,
+                        'url' => route('status.page', ['token' => $tokenNumber])
+                    ]
+                );
+            }
 
             // ✅ Send notification to all staff and admins
             $this->notifyAllStaffAndAdmins(
@@ -544,31 +634,6 @@ class StaffController extends Controller
                 'success' => false,
                 'message' => $e->getMessage()
             ], 500);
-        }
-    }
-
-    /**
-     * ✅ Send notification to all staff and admins
-     */
-    private function notifyAllStaffAndAdmins($title, $message, $type, $data = [])
-    {
-        try {
-            // Notify all admins
-            $admins = User::where('role', 'admin')->get();
-            foreach ($admins as $admin) {
-                $this->createNotification($admin->id, $title, $message, $type, $data);
-            }
-
-            // Notify all staff
-            $staff = User::where('role', 'staff')->get();
-            foreach ($staff as $staffMember) {
-                $this->createNotification($staffMember->id, $title, $message, $type, $data);
-            }
-
-            Log::info('Notification sent to ' . ($admins->count() + $staff->count()) . ' users');
-
-        } catch (\Exception $e) {
-            Log::error('Failed to send notification: ' . $e->getMessage());
         }
     }
 }

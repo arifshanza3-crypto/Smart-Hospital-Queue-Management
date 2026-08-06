@@ -12,7 +12,7 @@
         <div class="notifications-header">
             <div class="header-left">
                 <h1>🔔 Notifications</h1>
-                <span class="notification-count" id="totalCount">0</span>
+                <span class="notification-count" id="totalCount">{{ $notifications->count() }}</span>
                 @auth
                     <span class="user-role-badge">
                         <span class="role-tag {{ auth()->user()->role }}">
@@ -26,37 +26,68 @@
                 <button class="btn-mark-all" id="markAllBtn" onclick="markAllRead()">
                     <i class="fas fa-check-double"></i> Mark all as read
                 </button>
-                <button class="btn-refresh" onclick="loadNotifications()">
-                    <i class="fas fa-sync"></i> Refresh
-                </button>
+                {{-- ✅ REFRESH BUTTON REMOVED --}}
             </div>
         </div>
 
         {{-- FILTERS --}}
         <div class="notifications-filter">
             <button class="filter-btn active" data-filter="all" onclick="filterNotifications('all')">
-                All <span class="count" id="countAll">0</span>
+                All <span class="count" id="countAll">{{ $notifications->count() }}</span>
             </button>
             <button class="filter-btn" data-filter="unread" onclick="filterNotifications('unread')">
-                Unread <span class="count" id="countUnread">0</span>
+                Unread <span class="count" id="countUnread">{{ $unreadCount }}</span>
             </button>
             <button class="filter-btn" data-filter="read" onclick="filterNotifications('read')">
-                Read <span class="count" id="countRead">0</span>
+                Read <span class="count" id="countRead">{{ $notifications->count() - $unreadCount }}</span>
             </button>
         </div>
 
         {{-- NOTIFICATIONS LIST --}}
         <div class="notifications-list" id="notificationsList">
-            <div class="empty-state">
-                <div class="empty-icon">🔕</div>
-                <h3>No Notifications</h3>
-                <p>You don't have any notifications yet.</p>
-            </div>
+            @if($notifications->count() > 0)
+                @foreach($notifications as $notification)
+                    @php
+                        $data = is_string($notification->data) ? json_decode($notification->data, true) : $notification->data;
+                        $icon = $data['icon'] ?? 'fa-bell';
+                        $isRead = $notification->read_at ? true : false;
+                        $readClass = $isRead ? 'read' : 'unread';
+                    @endphp
+                    <div class="notification-item {{ $readClass }}" data-id="{{ $notification->id }}" onclick="markAsRead({{ $notification->id }})">
+                        <div class="notification-icon">
+                            <i class="fas {{ $icon }}"></i>
+                        </div>
+                        <div class="notification-content">
+                            <div class="notification-title">
+                                {{ $notification->title }}
+                                @if(!$isRead)
+                                    <span class="new-tag">New</span>
+                                @endif
+                            </div>
+                            <div class="notification-message">{{ $notification->message }}</div>
+                            <div class="notification-time">{{ $notification->created_at->diffForHumans() }}</div>
+                        </div>
+                        <div class="notification-status">
+                            @if(!$isRead)
+                                <span class="unread-dot">●</span>
+                            @else
+                                <span class="read-check">✓</span>
+                            @endif
+                        </div>
+                    </div>
+                @endforeach
+            @else
+                <div class="empty-state">
+                    <div class="empty-icon">🔕</div>
+                    <h3>No Notifications</h3>
+                    <p>You don't have any notifications yet.</p>
+                </div>
+            @endif
         </div>
 
         {{-- FOOTER --}}
         <div class="notifications-footer">
-            Showing <span id="shownCount">0</span> notifications
+            Showing <span id="shownCount">{{ $notifications->count() }}</span> notifications
         </div>
 
         {{-- BACK BUTTON --}}
@@ -68,7 +99,7 @@
 
         {{-- DEBUG --}}
         <div class="debug-info">
-            <strong>Debug:</strong> User ID: {{ auth()->id() }} | Role: {{ auth()->user()->role ?? 'N/A' }} | Notifications: <span id="debugCount">0</span> | Unread: <span id="debugUnread">0</span>
+            <strong>Debug:</strong> User ID: {{ auth()->id() }} | Role: {{ auth()->user()->role ?? 'N/A' }} | Notifications: {{ $notifications->count() }} | Unread: {{ $unreadCount }}
         </div>
 
     </div>

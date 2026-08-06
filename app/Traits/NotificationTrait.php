@@ -53,7 +53,9 @@ trait NotificationTrait
      */
     public function notifyUser($userId, $title, $message, $type, $data = [])
     {
-        $this->createNotification($userId, $title, $message, $type, $data);
+        if ($userId) {
+            $this->createNotification($userId, $title, $message, $type, $data);
+        }
     }
 
     /**
@@ -75,6 +77,18 @@ trait NotificationTrait
     {
         $this->notifyAdmin($title, $message, $type, $data);
         $this->notifyStaff($title, $message, $type, $data);
+    }
+
+    /**
+     * Send notification to a specific role
+     */
+    public function notifyRole($role, $title, $message, $type, $data = [])
+    {
+        $users = User::where('role', $role)->get();
+        
+        foreach ($users as $user) {
+            $this->createNotification($user->id, $title, $message, $type, $data);
+        }
     }
 
     /**
