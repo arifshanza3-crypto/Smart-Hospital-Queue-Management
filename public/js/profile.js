@@ -1,5 +1,5 @@
 /**
- * Profile Page JavaScript
+ * Profile Page JavaScript - Professional
  * Handles avatar upload, notifications, and UI interactions
  */
 
@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const file = input.files[0];
         
+        // Validate file type
         const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp'];
         if (!allowedTypes.includes(file.type)) {
             showMessage('Please upload a valid image (JPEG, PNG, JPG, GIF, WebP)', 'error');
@@ -22,6 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
+        // Validate file size (2MB max)
         if (file.size > 2 * 1024 * 1024) {
             showMessage('Image size must be less than 2MB', 'error');
             input.value = '';
@@ -31,12 +33,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const formData = new FormData();
         formData.append('avatar', file);
 
-        const avatarDiv = document.querySelector('.profile-avatar');
+        const avatarDiv = document.getElementById('profileAvatarContainer');
         const originalContent = avatarDiv.innerHTML;
+        const initials = avatarDiv.querySelector('.initials');
         
+        // Show loading state with spinner
         avatarDiv.style.opacity = '0.6';
-        avatarDiv.innerHTML = '<i class="fas fa-spinner fa-spin" style="font-size:32px; color:white;"></i>';
+        avatarDiv.innerHTML = '<i class="fas fa-spinner fa-spin" style="font-size:36px; color:white;"></i>';
 
+        // Get CSRF token
         const token = document.querySelector('meta[name="csrf-token"]')?.content || 
                      document.querySelector('input[name="_token"]')?.value;
 
@@ -75,8 +80,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     };
 
+    /**
+     * Update avatar display on the page
+     * @param {string} avatarUrl - The new avatar URL
+     */
     function updateAvatarDisplay(avatarUrl) {
-        const avatarDiv = document.querySelector('.profile-avatar');
+        const avatarDiv = document.getElementById('profileAvatarContainer');
         avatarDiv.innerHTML = '';
         
         const img = document.createElement('img');
@@ -105,12 +114,14 @@ document.addEventListener('DOMContentLoaded', function() {
         ['dragenter', 'dragover'].forEach(eventName => {
             avatarWrapper.addEventListener(eventName, () => {
                 avatarWrapper.style.opacity = '0.7';
+                avatarWrapper.querySelector('.profile-avatar')?.style?.setProperty('border-color', '#00d4ff');
             }, false);
         });
 
         ['dragleave', 'drop'].forEach(eventName => {
             avatarWrapper.addEventListener(eventName, () => {
                 avatarWrapper.style.opacity = '1';
+                avatarWrapper.querySelector('.profile-avatar')?.style?.setProperty('border-color', 'rgba(0, 212, 255, 0.3)');
             }, false);
         });
 
@@ -133,9 +144,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // ============================================
 
     window.showMessage = function(message, type) {
+        // Remove existing alerts
         const existingAlerts = document.querySelectorAll('.alert');
         existingAlerts.forEach(el => el.remove());
 
+        // Create new alert
         const alertDiv = document.createElement('div');
         alertDiv.className = `alert alert-${type}`;
         alertDiv.innerHTML = `
@@ -143,11 +156,13 @@ document.addEventListener('DOMContentLoaded', function() {
             <span>${message}</span>
         `;
 
+        // Insert at top of wrapper
         const wrapper = document.querySelector('.profile-wrapper');
         if (wrapper) {
             wrapper.prepend(alertDiv);
         }
 
+        // Auto dismiss after 5 seconds
         setTimeout(() => {
             alertDiv.style.transition = 'opacity 0.4s ease';
             alertDiv.style.opacity = '0';
@@ -168,15 +183,19 @@ document.addEventListener('DOMContentLoaded', function() {
         emailElement.style.cursor = 'pointer';
         emailElement.title = 'Click to copy email';
         
-        emailElement.addEventListener('click', function() {
+        emailElement.addEventListener('click', function(e) {
+            e.preventDefault();
             const email = this.textContent.trim();
             
+            // Modern clipboard API
             if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(email).then(() => {
-                    showMessage('Email copied to clipboard!', 'success');
-                }).catch(() => {
-                    fallbackCopy(email);
-                });
+                navigator.clipboard.writeText(email)
+                    .then(() => {
+                        showMessage('Email copied to clipboard!', 'success');
+                    })
+                    .catch(() => {
+                        fallbackCopy(email);
+                    });
             } else {
                 fallbackCopy(email);
             }
@@ -205,6 +224,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // ============================================
 
     document.addEventListener('keydown', function(e) {
+        // Press 'E' to edit profile
         if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
             if (e.key === 'e' || e.key === 'E') {
                 const editBtn = document.querySelector('.btn-edit');
@@ -215,6 +235,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
+
+    // ============================================
+    // CONSOLE LOG
+    // ============================================
 
     console.log('✅ Profile page loaded successfully');
     console.log('📋 Tips:');
