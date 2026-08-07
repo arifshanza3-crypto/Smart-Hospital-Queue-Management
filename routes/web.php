@@ -99,7 +99,7 @@ Route::prefix('notifications')->name('notifications.')->middleware('auth')->grou
 });
 
 Route::get('/notifications-page', function() {
-    return view('Pages.Notifications.index');
+    return view('Pages.Notification');
 })->name('notifications.page')->middleware('auth');
 
 // =============================================

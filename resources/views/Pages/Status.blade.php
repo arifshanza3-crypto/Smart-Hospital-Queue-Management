@@ -1,4 +1,4 @@
-@extends('Layout.staff_app')
+@extends('Layout.app')
 @section('title', 'Staff Portal - Smart Queue Management')
 @section('content')
     {{-- CSS for Patient Status --}}

@@ -49,20 +49,20 @@ class NotificationController extends Controller
                 ]);
             }
 
-            // ✅ Try both view paths
-            $viewPath = 'Notification';
-            if (!view()->exists($viewPath)) {
-                $viewPath = 'Pages.Notification';
-            }
-            
-            return view($viewPath, compact('notifications', 'unreadCount'));
+            // ✅ Use Notification view (root folder)
+            return view('Notification', [
+                'notifications' => $notifications,
+                'unreadCount' => $unreadCount,
+                'userRole' => $user->role ?? 'user'
+            ]);
             
         } catch (\Exception $e) {
             Log::error('Notification page error: ' . $e->getMessage());
             
             return view('Notification', [
                 'notifications' => collect([]),
-                'unreadCount' => 0
+                'unreadCount' => 0,
+                'userRole' => 'user'
             ]);
         }
     }
@@ -72,6 +72,13 @@ class NotificationController extends Controller
         try {
             $user = Auth::user();
             
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User not authenticated'
+                ], 401);
+            }
+
             $notification = Notification::where('id', $id)
                 ->where('user_id', $user->id)
                 ->firstOrFail();
@@ -97,11 +104,18 @@ class NotificationController extends Controller
         try {
             $user = Auth::user();
             
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User not authenticated'
+                ], 401);
+            }
+
             $updated = Notification::where('user_id', $user->id)
                 ->whereNull('read_at')
                 ->update(['read_at' => now()]);
 
-            Log::info('Marked all notifications as read for user: ' . $user->id);
+            Log::info('Marked all notifications as read for user: ' . $user->id . ', Count: ' . $updated);
 
             return response()->json([
                 'success' => true,
@@ -123,6 +137,13 @@ class NotificationController extends Controller
         try {
             $user = Auth::user();
             
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'count' => 0
+                ], 401);
+            }
+
             $count = Notification::where('user_id', $user->id)
                 ->whereNull('read_at')
                 ->count();
@@ -146,6 +167,13 @@ class NotificationController extends Controller
         try {
             $user = Auth::user();
             
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User not authenticated'
+                ], 401);
+            }
+
             $notification = Notification::where('id', $id)
                 ->where('user_id', $user->id)
                 ->firstOrFail();

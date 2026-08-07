@@ -127,7 +127,6 @@ function markAsRead(id) {
     .catch(error => console.error('Error:', error));
 }
 
-// ✅ MARK ALL AS READ
 function markAllRead() {
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
     const btn = document.getElementById('markAllBtn');

@@ -12,7 +12,12 @@
         <div class="notifications-header">
             <div class="header-left">
                 <h1>🔔 Notifications</h1>
-                <span class="notification-count" id="totalCount">{{ $notifications->count() }}</span>
+                @php
+                    $totalCount = isset($notifications) ? $notifications->count() : 0;
+                    $unreadCount = $unreadCount ?? 0;
+                    $readCount = max(0, $totalCount - $unreadCount);
+                @endphp
+                <span class="notification-count" id="totalCount">{{ $totalCount }}</span>
                 @auth
                     <span class="user-role-badge">
                         <span class="role-tag {{ auth()->user()->role }}">
@@ -23,7 +28,6 @@
                 @endauth
             </div>
             <div class="header-right">
-                {{-- ✅ MARK ALL AS READ BUTTON --}}
                 <button class="btn-mark-all" id="markAllBtn" onclick="markAllRead()">
                     <i class="fas fa-check-double"></i> Mark all as read
                 </button>
@@ -33,24 +37,24 @@
         {{-- FILTERS --}}
         <div class="notifications-filter">
             <button class="filter-btn active" data-filter="all" onclick="filterNotifications('all')">
-                All <span class="count" id="countAll">{{ $notifications->count() }}</span>
+                All <span class="count" id="countAll">{{ $totalCount }}</span>
             </button>
             <button class="filter-btn" data-filter="unread" onclick="filterNotifications('unread')">
                 Unread <span class="count" id="countUnread">{{ $unreadCount }}</span>
             </button>
             <button class="filter-btn" data-filter="read" onclick="filterNotifications('read')">
-                Read <span class="count" id="countRead">{{ $notifications->count() - $unreadCount }}</span>
+                Read <span class="count" id="countRead">{{ $readCount }}</span>
             </button>
         </div>
 
         {{-- NOTIFICATIONS LIST --}}
         <div class="notifications-list" id="notificationsList">
-            @if($notifications->count() > 0)
+            @if($totalCount > 0)
                 @foreach($notifications as $notification)
                     @php
                         $data = is_string($notification->data) ? json_decode($notification->data, true) : $notification->data;
                         $icon = $data['icon'] ?? 'fa-bell';
-                        $isRead = $notification->read_at ? true : false;
+                        $isRead = !is_null($notification->read_at);
                         $readClass = $isRead ? 'read' : 'unread';
                     @endphp
                     <div class="notification-item {{ $readClass }}" data-id="{{ $notification->id }}" onclick="markAsRead({{ $notification->id }})">
@@ -87,12 +91,20 @@
 
         {{-- FOOTER --}}
         <div class="notifications-footer">
-            Showing <span id="shownCount">{{ $notifications->count() }}</span> notifications
+            Showing <span id="shownCount">{{ $totalCount }}</span> notifications
         </div>
 
         {{-- BACK BUTTON --}}
         <div class="text-center mt-3">
-            <a href="{{ auth()->user()->role === 'admin' ? '/admin/dashboard' : (auth()->user()->role === 'staff' ? '/staff/dashboard' : '/') }}" class="back-link">
+            @php
+                $role = auth()->check() ? auth()->user()->role : null;
+                $dashboardUrl = match($role) {
+                    'admin' => '/admin/dashboard',
+                    'staff' => '/staff/dashboard',
+                    default => '/'
+                };
+            @endphp
+            <a href="{{ $dashboardUrl }}" class="back-link">
                 <i class="fas fa-arrow-left"></i> Back to Dashboard
             </a>
         </div>
@@ -150,7 +162,6 @@
         margin-left: 8px;
     }
 
-    /* Button styling */
     .btn-mark-all {
         display: inline-flex;
         align-items: center;
@@ -176,5 +187,4 @@
         font-size: 15px;
     }
 </style>
-
 @endsection
