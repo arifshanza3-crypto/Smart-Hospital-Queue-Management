@@ -1,189 +1,231 @@
 /**
- * Notification System with Sound
+ * Notification System
  */
 
-// ============================================ //
-// TOGGLE NOTIFICATIONS DROPDOWN                //
-// ============================================ //
+let allNotifications = [];
+let currentFilter = 'all';
 
-window.toggleNotifications = function(event) {
-    if (event) {
-        event.preventDefault();
-        event.stopPropagation();
-    }
-    
-    const dropdown = document.getElementById('notificationDropdown');
-    if (dropdown) {
-        dropdown.classList.toggle('active');
-        if (dropdown.classList.contains('active')) {
-            fetchNotifications();
+function loadNotifications() {
+    const list = document.getElementById('notificationsList');
+    if (!list) return;
+
+    fetch('/notifications', {
+        headers: { 'Accept': 'application/json' }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            allNotifications = data.notifications || [];
+            document.getElementById('totalCount').textContent = allNotifications.length;
+            document.getElementById('countAll').textContent = allNotifications.length;
+            
+            const unread = allNotifications.filter(n => !n.is_read).length;
+            document.getElementById('countUnread').textContent = unread;
+            document.getElementById('countRead').textContent = allNotifications.length - unread;
+            
+            renderNotifications(allNotifications);
+            updateBadge(unread);
         }
-    }
-};
-
-// ============================================ //
-// FETCH NOTIFICATIONS                          //
-// ============================================ //
-
-function fetchNotifications() {
-    fetch('/notifications')
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                renderNotifications(data.notifications);
-                updateBadge(data.unread_count);
-            }
-        })
-        .catch(error => console.error('Error fetching notifications:', error));
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
 }
 
-// ============================================ //
-// RENDER NOTIFICATIONS                         //
-// ============================================ //
-
 function renderNotifications(notifications) {
-    const list = document.getElementById('notificationList');
+    const list = document.getElementById('notificationsList');
+    const shownCount = document.getElementById('shownCount');
+
     if (!list) return;
 
     if (!notifications || notifications.length === 0) {
         list.innerHTML = `
-            <div class="notification-empty">
-                <div class="icon">🔕</div>
-                <p>No notifications</p>
+            <div class="empty-state">
+                <div class="empty-icon">🔕</div>
+                <h3>No Notifications</h3>
+                <p>You don't have any notifications yet.</p>
             </div>
         `;
+        if (shownCount) shownCount.textContent = '0';
         return;
     }
 
     let html = '';
-    const latest = notifications.slice(0, 5);
-    
-    latest.forEach(notification => {
-        const unreadClass = notification.is_read ? '' : 'unread';
-        const time = new Date(notification.created_at).toLocaleTimeString();
-        let icon = getNotificationIcon(notification.type);
-        
+    notifications.forEach(notification => {
+        const isRead = notification.is_read;
+        const readClass = isRead ? 'read' : 'unread';
+        const icon = notification.data?.icon || 'fa-bell';
+        const newTag = !isRead ? `<span class="new-tag">New</span>` : '';
+
         html += `
-            <div class="notification-item ${unreadClass}" onclick="markAsRead(${notification.id})">
-                <div class="notification-icon">${icon}</div>
-                <div class="notification-content">
-                    <div class="notification-title">${notification.title}</div>
-                    <div class="notification-message">${notification.message}</div>
-                    <div class="notification-time">${time}</div>
+            <div class="notification-item ${readClass}" data-id="${notification.id}" onclick="markAsRead(${notification.id})">
+                <div class="notification-icon">
+                    <i class="fas ${icon}"></i>
                 </div>
-                ${!notification.is_read ? '<div class="unread-dot">●</div>' : ''}
+                <div class="notification-content">
+                    <div class="notification-title">${notification.title} ${newTag}</div>
+                    <div class="notification-message">${notification.message}</div>
+                    <div class="notification-time">${new Date(notification.created_at).toLocaleString()}</div>
+                </div>
+                <div class="notification-status">
+                    ${!isRead ? '<span class="unread-dot">●</span>' : '<span class="read-check">✓</span>'}
+                </div>
             </div>
         `;
     });
 
     list.innerHTML = html;
+    if (shownCount) shownCount.textContent = notifications.length;
 }
 
-// ============================================ //
-// GET NOTIFICATION ICON                       //
-// ============================================ //
-
-function getNotificationIcon(type) {
-    const icons = {
-        'token_generated': '🎫',
-        'token_called': '📞',
-        'token_arrived': '✅',
-        'token_completed': '✔️',
-        'token_cancelled': '❌',
-        'physical_patient_added': '👤',
-        'staff_registered': '📝',
-        'staff_approved': '✅',
-        'staff_rejected': '❌',
-        'account_approved': '✅',
-        'system_alert': '⚠️'
-    };
-    return icons[type] || '📢';
-}
-
-// ============================================ //
-// UPDATE BADGE                                //
-// ============================================ //
-
-window.updateBadge = function(count) {
-    const badge = document.getElementById('notificationBadge');
-    if (!badge) return;
+function filterNotifications(filter) {
+    currentFilter = filter;
     
-    if (count && count > 0) {
-        badge.textContent = count > 99 ? '99+' : count;
-        badge.classList.add('show');
-    } else {
-        badge.classList.remove('show');
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.filter === filter) {
+            btn.classList.add('active');
+        }
+    });
+
+    let filtered = allNotifications;
+    if (filter === 'unread') {
+        filtered = allNotifications.filter(n => !n.is_read);
+    } else if (filter === 'read') {
+        filtered = allNotifications.filter(n => n.is_read);
     }
-};
 
-// ============================================ //
-// MARK AS READ                                //
-// ============================================ //
+    renderNotifications(filtered);
+}
 
-window.markAsRead = function(id) {
+function markAsRead(id) {
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+    
     fetch(`/notifications/${id}/read`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            'X-CSRF-TOKEN': csrfToken,
+            'Accept': 'application/json'
         }
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            fetchNotifications();
-            getUnreadCount();
+            const notification = allNotifications.find(n => n.id === id);
+            if (notification) {
+                notification.is_read = true;
+            }
+            const unread = allNotifications.filter(n => !n.is_read).length;
+            document.getElementById('countUnread').textContent = unread;
+            document.getElementById('countRead').textContent = allNotifications.length - unread;
+            filterNotifications(currentFilter);
+            updateBadge(unread);
+            showToast('✅ Notification marked as read!', 'success');
         }
     })
     .catch(error => console.error('Error:', error));
-};
+}
 
-// ============================================ //
-// MARK ALL AS READ                            //
-// ============================================ //
-
-window.markAllRead = function() {
+// ✅ MARK ALL AS READ
+function markAllRead() {
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+    const btn = document.getElementById('markAllBtn');
+    
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Please wait...';
+    }
+    
     fetch('/notifications/read-all', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            'X-CSRF-TOKEN': csrfToken,
+            'Accept': 'application/json'
         }
     })
     .then(response => response.json())
     .then(data => {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-check-double"></i> Mark all as read';
+        }
         if (data.success) {
-            fetchNotifications();
-            getUnreadCount();
+            allNotifications.forEach(n => n.is_read = true);
+            document.getElementById('countUnread').textContent = 0;
+            document.getElementById('countRead').textContent = allNotifications.length;
+            filterNotifications(currentFilter);
+            updateBadge(0);
+            showToast('✅ All notifications marked as read!', 'success');
+        } else {
+            showToast('❌ Failed to mark all as read', 'error');
         }
     })
-    .catch(error => console.error('Error:', error));
-};
+    .catch(error => {
+        console.error('Error:', error);
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-check-double"></i> Mark all as read';
+        }
+        showToast('❌ Error marking all as read', 'error');
+    });
+}
+
+function updateBadge(unreadCount) {
+    const badge = document.getElementById('notificationBadge');
+    if (badge) {
+        if (unreadCount > 0) {
+            badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+            badge.style.display = 'block';
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+}
+
+function showToast(message, type = 'success') {
+    const existing = document.querySelector('.toast-message');
+    if (existing) existing.remove();
+    
+    const toast = document.createElement('div');
+    toast.className = `toast-message toast-${type}`;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(20px)';
+        toast.style.transition = 'all 0.3s ease';
+        setTimeout(() => toast.remove(), 400);
+    }, 3500);
+}
 
 // ============================================ //
-// GET UNREAD COUNT & PLAY SOUND               //
+// CHECK UNREAD COUNT                         //
 // ============================================ //
 
 let previousCount = 0;
 
-function getUnreadCount() {
+function checkUnreadCount() {
     fetch('/notifications/unread-count')
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // ✅ Play sound if new notification arrived
-                if (data.count > previousCount && data.count > 0) {
+                const count = data.count;
+                updateBadge(count);
+                
+                if (count > previousCount && count > 0) {
                     playNotificationSound();
                 }
-                previousCount = data.count;
-                updateBadge(data.count);
+                previousCount = count;
             }
         })
-        .catch(error => console.error('Error:', error));
+        .catch(error => console.error('Error checking unread count:', error));
 }
 
 // ============================================ //
-// NOTIFICATION SOUND                          //
+// SOUND                                       //
 // ============================================ //
 
 let notificationAudio = null;
@@ -193,14 +235,9 @@ function initAudio() {
         notificationAudio = new Audio('/Notification%20Sound/notification.wav');
         notificationAudio.volume = 0.8;
         notificationAudio.preload = 'auto';
-        
         notificationAudio.onerror = function() {
             console.warn('⚠️ Sound file not found');
             notificationAudio = null;
-        };
-        
-        notificationAudio.oncanplaythrough = function() {
-            console.log('✅ Notification sound loaded!');
         };
     } catch (error) {
         console.warn('Audio init failed:', error);
@@ -214,61 +251,30 @@ function playNotificationSound() {
             notificationAudio.currentTime = 0;
             notificationAudio.play()
                 .then(() => console.log('🔊 Notification sound played!'))
-                .catch(() => playFallbackSound());
+                .catch(() => console.log('🔇 Sound play blocked'));
         } catch (error) {
-            playFallbackSound();
+            console.log('🔇 Sound error:', error);
         }
-    } else {
-        playFallbackSound();
-    }
-}
-
-function playFallbackSound() {
-    try {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.frequency.value = 880;
-        osc.type = 'sine';
-        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
-        osc.start(audioCtx.currentTime);
-        osc.stop(audioCtx.currentTime + 0.3);
-        console.log('🔊 Fallback sound played!');
-    } catch (error) {
-        console.warn('Fallback sound failed:', error);
     }
 }
 
 // ============================================ //
-// CLOSE DROPDOWN ON OUTSIDE CLICK             //
-// ============================================ //
-
-document.addEventListener('click', function(event) {
-    const wrapper = document.querySelector('.notification-wrapper');
-    if (wrapper && !wrapper.contains(event.target)) {
-        const dropdown = document.getElementById('notificationDropdown');
-        if (dropdown) {
-            dropdown.classList.remove('active');
-        }
-    }
-});
-
-// ============================================ //
-// INIT                                        //
+// INIT                                       //
 // ============================================ //
 
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('✅ Notification system initialized');
+    
+    loadNotifications();
+    checkUnreadCount();
+    setInterval(checkUnreadCount, 10000);
+    setInterval(loadNotifications, 30000);
     initAudio();
-    getUnreadCount();
-    setInterval(getUnreadCount, 10000);
 });
 
-// ============================================ //
-// EXPOSE FUNCTIONS TO GLOBAL SCOPE            //
-// ============================================ //
-
-window.fetchNotifications = fetchNotifications;
-window.getUnreadCount = getUnreadCount;
+// EXPOSE TO GLOBAL SCOPE
+window.filterNotifications = filterNotifications;
+window.markAsRead = markAsRead;
+window.markAllRead = markAllRead;
+window.loadNotifications = loadNotifications;
+window.checkUnreadCount = checkUnreadCount;

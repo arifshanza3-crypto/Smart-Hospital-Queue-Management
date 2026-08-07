@@ -38,9 +38,10 @@
 
                         {{-- Token Details --}}
                         <div class="token-details-grid">
-                            <div class="detail-item">
+                            {{-- ✅ PATIENT NAME - FIXED --}}
+                            <div class="detail-item full-width" style="grid-column: span 2;">
                                 <span class="label">👤 Patient</span>
-                                <span class="value" id="patientName">--</span>
+                                <span class="value" id="patientName" style="font-size: 18px; font-weight: 700; color: #fff;">--</span>
                             </div>
                             <div class="detail-item">
                                 <span class="label">🏥 Department</span>
@@ -68,16 +69,11 @@
                             </div>
                         </div>
 
-                        {{-- ❌ Progress Bar Removed --}}
-
                         {{-- Buttons --}}
                         <div class="token-actions">
-                            {{-- ✅ onclick="refreshStatus()" use karein --}}
                             <button class="btn-refresh" onclick="refreshStatus()">⟳ Refresh</button>
                             <a href="/" class="btn-home">⌂ Home</a>
                         </div>
-
-                        {{-- ❌ Last Updated Removed --}}
                     </div>
                 </div>
             </div>

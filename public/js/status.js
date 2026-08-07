@@ -47,9 +47,18 @@
      * Update UI with token data
      */
     function updatePatientUI(data) {
-        // Update basic info
+        console.log('📦 Token Data:', data);
+
+        // ✅ Update basic info
         setElementText('patientTokenNumber', data.token_number || '--');
-        setElementText('patientName', data.patient_name || '--');
+        
+        // ✅ PATIENT NAME - FIXED
+        const patientNameElement = document.getElementById('patientName');
+        if (patientNameElement) {
+            patientNameElement.textContent = data.patient_name || '--';
+            console.log('✅ Patient Name set to:', data.patient_name || '--');
+        }
+        
         setElementText('patientDepartment', data.department || '--');
         setElementText('patientPosition', '#' + (data.position || '--'));
         
@@ -60,17 +69,8 @@
         
         setElementText('patientServing', data.serving || '--');
 
-        // ❌ Generated time ko update nahi karein (fix rakhna hai)
-
-        // Update status badge
+        // ✅ Update status badge
         updateStatusBadge(data.status || 'waiting');
-
-        // Update progress
-        const progress = data.progress || 0;
-        const progressFill = document.getElementById('patientProgress');
-        const progressText = document.getElementById('progressText');
-        if (progressFill) progressFill.style.width = progress + '%';
-        if (progressText) progressText.textContent = progress + '%';
     }
 
     /**
@@ -196,7 +196,7 @@
         fetchTokenStatus();
     }
 
-    // Auto-refresh every 10 seconds (generated time update nahi hoga)
+    // Auto-refresh every 10 seconds
     setInterval(fetchTokenStatus, 10000);
 
 })();
