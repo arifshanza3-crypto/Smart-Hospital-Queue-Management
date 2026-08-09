@@ -12,7 +12,7 @@ class PageController extends Controller
     {
         // ✅ Get serving tokens
         $servingTokens = Token::where('status', 'serving')
-                               ->orderBy('department', 'asc')
+                               ->orderBy('created_at', 'asc')
                                ->get();
         
         // ✅ Get user's own token
@@ -40,9 +40,6 @@ class PageController extends Controller
         
         // ✅ Get all doctors from database
         $doctors = Doctor::all();
-        
-        // ✅ Debug - Check if doctors exist
-        \Log::info('Home page doctors count: ' . $doctors->count());
         
         // ✅ Return view with all data
         return view('Pages.home', compact('servingTokens', 'userToken', 'allDepartments', 'doctors'));
@@ -84,9 +81,28 @@ class PageController extends Controller
         return view('Pages.Doctors', compact('doctors'));
     }
     
-    public function Status()
+    public function Status(Request $request)
     {
-        return view('Pages.Status');
+        // ✅ Get token from session or request
+        $tokenNumber = session('current_token') ?? $request->query('token');
+        
+        $token = null;
+        $nowServing = 'N/A';
+        
+        if ($tokenNumber) {
+            $token = Token::where('token_number', $tokenNumber)->first();
+            
+            // ✅ Get currently serving token
+            $servingToken = Token::where('status', 'serving')
+                ->orderBy('created_at', 'desc')
+                ->first();
+            
+            if ($servingToken) {
+                $nowServing = $servingToken->token_number;
+            }
+        }
+        
+        return view('Pages.Status', compact('token', 'nowServing'));
     }
     
     public function Token_form()

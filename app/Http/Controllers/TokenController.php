@@ -35,9 +35,6 @@ class TokenController extends Controller
                 $userId = Auth::id();
             }
 
-            // ✅ Default department
-            $department = $request->department ?? 'General';
-
             // ✅ Generate token number
             $lastToken = Token::orderBy('id', 'desc')->first();
             if ($lastToken && $lastToken->token_number) {
@@ -56,7 +53,7 @@ class TokenController extends Controller
                 'token_number' => $tokenNumber,
                 'patient_name' => $request->patient_name,
                 'patient_id' => $userId,
-                'department' => 'General',  // ✅ Always General
+                'department' => 'General',
                 'phone' => $request->mobile_number,
                 'email' => $request->email,
                 'status' => 'waiting',
@@ -130,7 +127,7 @@ class TokenController extends Controller
                 ], 404);
             }
 
-            // ✅ Calculate waiting time (without department filter)
+            // ✅ Calculate waiting time
             $waitingTime = 0;
             if ($token->status === 'waiting') {
                 $waitingTokens = Token::where('status', 'waiting')
@@ -138,6 +135,12 @@ class TokenController extends Controller
                     ->count();
                 $waitingTime = $waitingTokens * 15;
             }
+
+            // ✅ Get currently serving token
+            $servingToken = Token::where('status', 'serving')
+                ->orderBy('created_at', 'desc')
+                ->first();
+            $nowServing = $servingToken ? $servingToken->token_number : 'N/A';
 
             return response()->json([
                 'success' => true,
@@ -148,8 +151,8 @@ class TokenController extends Controller
                     'position' => $token->position,
                     'estimated_time' => $token->estimated_time,
                     'waiting_time' => $waitingTime,
-                    'created_at' => $token->created_at
-                    // ❌ department removed
+                    'now_serving' => $nowServing,
+                    'created_at' => $token->created_at ? $token->created_at->format('h:i A') : 'N/A'
                 ]
             ]);
 

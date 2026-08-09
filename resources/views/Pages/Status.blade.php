@@ -1,183 +1,294 @@
-@extends('Layout.app')
-@section('title', 'Staff Portal - Smart Queue Management')
+@extends('layout.app')
+
+@section('title', 'Token Status - SMART QUEUE')
+
 @section('content')
-    {{-- CSS for Patient Status --}}
-    <link rel="stylesheet" href="{{ asset('css/status.css') }}">
+<style>
+/* Status Page Styles */
+.status-container {
+    min-height: 80vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+    background: #0a1113;
+}
 
-    @php
-        $isPatientView = request()->has('token');
-        $patientToken = request()->query('token');
-    @endphp
+.status-card {
+    background: rgba(11, 46, 51, 0.85);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
+    padding: 40px;
+    max-width: 600px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
 
-    @if($isPatientView)
-        {{-- ============================================ --}}
-        {{-- ✅ PATIENT VIEW - Modern Blue/Teal Theme --}}
-        {{-- ============================================ --}}
-        <section class="hero-header" style="background: linear-gradient(135deg, #0b2e33 0%, #1a5a63 50%, #2aaab5 100%);">
-            <div class="container">
-                <div class="hero-content">
-                    <div class="hero-text">
-                        <span class="badge-top" style="background: rgba(0,212,255,0.15); color: #00d4ff;">✦ Patient Portal</span>
-                        <h1 style="color: white; text-shadow: 0 2px 20px rgba(0,212,255,0.1);">Your Token Status</h1>
-                        <p style="color: rgba(255,255,255,0.7);">Real-time update of your queue position</p>
-                    </div>
+.status-card h2 {
+    color: #00d4ff;
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+.status-card h3 {
+    color: #fff;
+    font-size: 1.8rem;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+.status-card .subtitle {
+    color: rgba(255, 255, 255, 0.5);
+    text-align: center;
+    font-size: 0.9rem;
+    margin-bottom: 30px;
+}
+
+.token-number {
+    text-align: center;
+    padding: 20px;
+    background: rgba(0, 212, 255, 0.05);
+    border-radius: 16px;
+    margin-bottom: 25px;
+    border: 1px solid rgba(0, 212, 255, 0.1);
+}
+
+.token-number .label {
+    display: block;
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.token-number .value {
+    display: block;
+    color: #fff;
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin: 5px 0;
+}
+
+.token-number .badge {
+    display: inline-block;
+    padding: 4px 16px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.badge.status-waiting {
+    background: rgba(245, 124, 0, 0.2);
+    color: #f57c00;
+}
+
+.badge.status-calling {
+    background: rgba(13, 71, 161, 0.2);
+    color: #0d47a1;
+}
+
+.badge.status-serving {
+    background: rgba(27, 94, 32, 0.2);
+    color: #1b5e20;
+}
+
+.badge.status-completed {
+    background: rgba(40, 167, 69, 0.2);
+    color: #28a745;
+}
+
+.status-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+.status-item {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.status-item .label {
+    display: block;
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.status-item .value {
+    display: block;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-top: 2px;
+}
+
+.status-item .value.status-waiting {
+    color: #f57c00;
+}
+
+.status-item .value.status-calling {
+    color: #0d47a1;
+}
+
+.status-item .value.status-serving {
+    color: #1b5e20;
+}
+
+.status-item .value.status-completed {
+    color: #28a745;
+}
+
+.now-serving-value {
+    color: #00d4ff !important;
+    font-weight: 700 !important;
+}
+
+.status-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.status-actions .btn-refresh,
+.status-actions .btn-home {
+    padding: 10px 30px;
+    border-radius: 12px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.status-actions .btn-refresh {
+    background: linear-gradient(135deg, #00d4ff, #0088b3);
+    color: #fff;
+}
+
+.status-actions .btn-refresh:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 212, 255, 0.3);
+}
+
+.status-actions .btn-home {
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.status-actions .btn-home:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+@media (max-width: 576px) {
+    .status-card {
+        padding: 24px 16px;
+    }
+    
+    .status-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .token-number .value {
+        font-size: 2rem;
+    }
+    
+    .status-actions {
+        flex-direction: column;
+    }
+    
+    .status-actions .btn-refresh,
+    .status-actions .btn-home {
+        justify-content: center;
+    }
+}
+</style>
+
+<div class="status-container">
+    <div class="status-card">
+        <h2>Patient Portal</h2>
+        <h3>Your Token Status</h3>
+        <p class="subtitle">Real-time update of your queue position</p>
+
+        <div class="token-status-display">
+            <div class="token-number">
+                <span class="label">YOUR TOKEN</span>
+                <span class="value">{{ $token->token_number ?? 'N/A' }}</span>
+                <span class="badge status-{{ $token->status ?? 'waiting' }}">{{ ucfirst($token->status ?? 'Waiting') }}</span>
+            </div>
+
+            <div class="status-grid">
+                {{-- ✅ PATIENT NAME --}}
+                <div class="status-item">
+                    <span class="label">PATIENT</span>
+                    <span class="value">{{ $token->patient_name ?? 'N/A' }}</span>
+                </div>
+
+                {{-- ✅ STATUS --}}
+                <div class="status-item">
+                    <span class="label">STATUS</span>
+                    <span class="value status-{{ $token->status ?? 'waiting' }}">{{ ucfirst($token->status ?? 'Waiting') }}</span>
+                </div>
+
+                {{-- ✅ POSITION NUMBER --}}
+                <div class="status-item">
+                    <span class="label">POSITION</span>
+                    <span class="value">#{{ $token->position ?? 'N/A' }}</span>
+                </div>
+
+                {{-- ✅ ESTIMATED WAITING TIME --}}
+                <div class="status-item">
+                    <span class="label">EST. WAIT</span>
+                    <span class="value">{{ $token->estimated_time ?? 'N/A' }} min</span>
+                </div>
+
+                {{-- ✅ NOW SERVING --}}
+                <div class="status-item">
+                    <span class="label">NOW SERVING</span>
+                    <span class="value now-serving-value">{{ $nowServing ?? 'N/A' }}</span>
+                </div>
+
+                {{-- ✅ GENERATED TIME --}}
+                <div class="status-item">
+                    <span class="label">GENERATED</span>
+                    <span class="value">{{ $token->created_at ? $token->created_at->format('h:i A') : 'N/A' }}</span>
                 </div>
             </div>
-        </section>
 
-        <main class="container">
-            <div class="data-card" style="background: transparent; box-shadow: none; padding: 0; max-width: 420px; margin: 0 auto;">
-                <div id="patient-token-display">
-                    <div class="patient-token-card">
-                        {{-- Token Header --}}
-                        <div class="token-header">
-                            <span class="token-label">✦ YOUR TOKEN</span>
-                            <span class="token-number" id="patientTokenNumber">{{ $patientToken ?? '--' }}</span>
-                            <span class="token-badge" id="tokenBadge">● Waiting</span>
-                        </div>
-
-                        {{-- Token Details --}}
-                        <div class="token-details-grid">
-                            {{-- ✅ PATIENT NAME - FIXED --}}
-                            <div class="detail-item full-width" style="grid-column: span 2;">
-                                <span class="label">👤 Patient</span>
-                                <span class="value" id="patientName" style="font-size: 18px; font-weight: 700; color: #fff;">--</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="label">🏥 Department</span>
-                                <span class="value" id="patientDepartment">--</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="label">📊 Status</span>
-                                <span class="value status-badge" id="patientStatus">Waiting</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="label">📍 Position</span>
-                                <span class="value" id="patientPosition">--</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="label">⏱ Est. Wait</span>
-                                <span class="value" id="patientWaitTime">--</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="label">🔄 Serving</span>
-                                <span class="value" id="patientServing">--</span>
-                            </div>
-                            <div class="detail-item full-width">
-                                <span class="label">📅 Generated</span>
-                                <span class="value" id="patientTime">--</span>
-                            </div>
-                        </div>
-
-                        {{-- Buttons --}}
-                        <div class="token-actions">
-                            <button class="btn-refresh" onclick="refreshStatus()">⟳ Refresh</button>
-                            <a href="/" class="btn-home">⌂ Home</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
-
-        {{-- ✅ Patient JavaScript --}}
-        <script src="{{ asset('js/status.js') }}"></script>
-
-    @else
-        {{-- ============================================ --}}
-        {{-- ✅ STAFF VIEW - Full Table --}}
-        {{-- ============================================ --}}
-        <section class="hero-header" style="background: linear-gradient(135deg, #0b2e33 0%, #1a5a63 50%, #2aaab5 100%);">
-            <div class="container">
-                <div class="hero-content">
-                    <div class="hero-text">
-                        <span class="badge-top" style="background: rgba(0,212,255,0.15); color: #00d4ff;">Staff Portal</span>
-                        <h1 style="color: white;">Smart Queue Management</h1>
-                        <p style="color: rgba(255,255,255,0.7);">Real-time oversight of physical walk-ins and digital bookings.</p>
-                    </div>
-                    <div class="hero-actions">
-                        <button class="btn btn-primary" onclick="openModal('patientModal')" style="background: linear-gradient(135deg, #00d4ff, #0099cc); color: #0b2e33; border: none; font-weight: 700;">+ Add Physical Patient</button>
-                        <button class="btn btn-secondary" onclick="openModal('timeModal')" style="background: rgba(255,255,255,0.08); color: white; border: 1px solid rgba(0,212,255,0.3);">⏱ Set Global Time</button>
-                    </div>
-                </div>
-
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <span class="stat-label">Total in Queue</span>
-                        <h2 id="stat-total">0</h2>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Now Serving</span>
-                        <h2 id="stat-serving">--</h2>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Total Pending Wait</span>
-                        <h2 id="stat-avg-time">0m</h2>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <main class="container">
-            <div class="data-card">
-                <table class="queue-table">
-                    <thead>
-                        <tr>
-                            <th>Token #</th>
-                            <th>Patient Info</th>
-                            <th>Type</th>
-                            <th>Est. Time</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="queue-body"></tbody>
-                </table>
-            </div>
-        </main>
-
-        {{-- Modals --}}
-        <div id="patientModal" class="modal">
-            <div class="modal-content">
-                <h3>Add New Patient</h3>
-                <div class="form-group">
-                    <label>Full Name</label>
-                    <input type="text" id="p_name" placeholder="Enter name...">
-                </div>
-                <div class="form-group">
-                    <label>Age</label>
-                    <input type="number" id="p_age" placeholder="Enter age...">
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-text" onclick="closeModal('patientModal')">Cancel</button>
-                    <button class="btn btn-primary" onclick="submitPatient()" style="background: linear-gradient(135deg, #00d4ff, #0099cc); color: #0b2e33; border: none; font-weight: 700;">Add to Queue</button>
-                </div>
+            <div class="status-actions">
+                <button onclick="refreshStatus()" class="btn-refresh">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+                <a href="/" class="btn-home">Home</a>
             </div>
         </div>
+    </div>
+</div>
 
-        <div id="timeModal" class="modal">
-            <div class="modal-content">
-                <h3>Set Global Est. Time</h3>
-                <div class="form-group">
-                    <label>Minutes per patient</label>
-                    <input type="number" id="global_min" value="15">
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-text" onclick="closeModal('timeModal')">Cancel</button>
-                    <button class="btn btn-primary" onclick="submitGlobalTime()" style="background: linear-gradient(135deg, #00d4ff, #0099cc); color: #0b2e33; border: none; font-weight: 700;">Update All</button>
-                </div>
-            </div>
-        </div>
+<script>
+function refreshStatus() {
+    location.reload();
+}
 
-        <div id="detailModal" class="modal">
-            <div class="modal-content">
-                <h3>Queue Positioning</h3>
-                <div id="detail-content" style="margin-top:20px; line-height: 1.8;"></div>
-                <div class="modal-footer">
-                    <button class="btn btn-primary" onclick="closeModal('detailModal')" style="background: linear-gradient(135deg, #00d4ff, #0099cc); color: #0b2e33; border: none; font-weight: 700;">Got it</button>
-                </div>
-            </div>
-        </div>
+// Auto refresh every 30 seconds
+setInterval(function() {
+    location.reload();
+}, 30000);
+</script>
 
-        <script src="{{ asset('js/Staff.js') }}"></script>
-    @endif
 @endsection

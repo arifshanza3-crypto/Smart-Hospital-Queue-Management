@@ -43,7 +43,11 @@ Route::get('/booking', [PageController::class, 'booking'])->name('booking');
 Route::get('/Doctors', [PageController::class, 'Doctors'])->name('doctors');
 Route::get('/Token_form', [TokenController::class, 'showForm'])->name('token.form');
 Route::post('/token/generate', [TokenController::class, 'generateToken'])->name('token.generate');
+
+// ✅ Status Routes - Both with and without token parameter
 Route::get('/Status', [PageController::class, 'Status'])->name('status.page');
+Route::get('/status/{token}', [PageController::class, 'Status'])->name('status.page.token');
+
 Route::get('/patient/token-status', [TokenController::class, 'getTokenStatus'])->name('patient.token-status');
 
 // =============================================
