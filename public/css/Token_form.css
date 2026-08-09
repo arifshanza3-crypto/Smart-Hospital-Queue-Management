@@ -52,7 +52,7 @@
 
 /* --- Inputs --- */
 .input-container { text-align: left; margin-bottom: 25px; }
-.input-label { color: rgba(255,255,255,0.5); font-weight: 700; font-size: 12px; text-transform: uppercase; margin-bottom: 10px; display: block; }
+.input-label { color: rgba(255,255,255,0.5); font-weight: 700; font-size: 12px; text-transform: uppercase; margin-bottom: 10px; display: block; letter-spacing: 0.5px; }
 
 .token-input {
     background: rgba(255, 255, 255, 0.08) !important;
@@ -61,9 +61,15 @@
     border-radius: 15px !important;
     padding: 15px 20px !important;
     width: 100%;
+    transition: all 0.3s ease;
 }
 
-/* ✅ BRIGHT PLACEHOLDERS - Easy to see */
+.token-input:focus {
+    border-color: #00d4ff !important;
+    outline: none !important;
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.1) !important;
+}
+
 .token-input::placeholder {
     color: #c0c0e0 !important;
     opacity: 1 !important;
@@ -71,7 +77,30 @@
     font-size: 15px;
 }
 
-/* ✅ DROPDOWN SAME AS INPUTS */
+/* ✅ Mobile Number Field Specific */
+.token-input[type="tel"] {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #fff !important;
+    border-radius: 15px !important;
+    padding: 15px 20px !important;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+.token-input[type="tel"]:focus {
+    border-color: #00d4ff !important;
+    outline: none !important;
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.1) !important;
+}
+
+.token-input[type="tel"]::placeholder {
+    color: #c0c0e0 !important;
+    opacity: 1 !important;
+    font-weight: 400;
+    font-size: 15px;
+}
+
 select.token-input {
     background: rgba(255, 255, 255, 0.08) !important;
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
@@ -104,7 +133,17 @@ select.token-input option:checked {
     color: #000000 !important;
 }
 
-.validation-error { color: #ff4b2b; font-size: 12px; margin-top: 8px; font-weight: 600; }
+.validation-error {
+    color: #ff4b2b;
+    font-size: 12px;
+    margin-top: 8px;
+    font-weight: 600;
+    text-align: left;
+}
+
+.validation-error.d-none {
+    display: none !important;
+}
 
 /* --- Generate Button --- */
 .btn-token-generate {
@@ -120,23 +159,171 @@ select.token-input option:checked {
     margin-top: 10px;
     box-shadow: 0 10px 25px rgba(0, 212, 255, 0.3);
     transition: 0.3s;
+    cursor: pointer;
 }
 
-.btn-token-generate:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(0, 212, 255, 0.5); }
+.btn-token-generate:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 30px rgba(0, 212, 255, 0.5);
+}
+
+.btn-token-generate:active {
+    transform: scale(0.98);
+}
+
+/* --- Alert Messages --- */
+.alert {
+    border-radius: 12px;
+    padding: 12px 18px;
+    margin-bottom: 20px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.alert-success {
+    background: rgba(40, 167, 69, 0.15);
+    border: 1px solid rgba(40, 167, 69, 0.3);
+    color: #28a745;
+}
+
+.alert-danger {
+    background: rgba(255, 75, 43, 0.15);
+    border: 1px solid rgba(255, 75, 43, 0.3);
+    color: #ff4b2b;
+}
 
 /* --- Modal Styles --- */
 .custom-modal-overlay {
-    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.85); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(10px);
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(10px);
+}
+
+.custom-modal-overlay.active {
+    display: flex;
 }
 
 .custom-modal-card {
-    background: #0b2e33; padding: 40px; border-radius: 30px; text-align: center;
-    border: 1px solid #00d4ff; max-width: 380px; color: #fff; position: relative;
+    background: #0b2e33;
+    padding: 40px;
+    border-radius: 30px;
+    text-align: center;
+    border: 1px solid #00d4ff;
+    max-width: 380px;
+    color: #fff;
+    position: relative;
+    animation: modalSlideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.modal-icon-circle { width: 50px; height: 50px; border: 2px solid #00d4ff; border-radius: 50%; color: #00d4ff; font-size: 24px; line-height: 46px; margin: 0 auto 15px; font-weight: bold; }
-.modal-close-icon { position: absolute; top: 15px; right: 20px; font-size: 28px; cursor: pointer; color: rgba(255,255,255,0.5); }
-.btn-modal-primary { background: #00d4ff; color: #0b2e33; border: none; padding: 12px 30px; border-radius: 12px; font-weight: 800; width: 100%; margin-top: 20px; }
-.loading-spinner { width: 50px; height: 50px; border: 4px solid rgba(0,212,255,0.1); border-top: 4px solid #00d4ff; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto; }
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.modal-icon-circle {
+    width: 50px;
+    height: 50px;
+    border: 2px solid #00d4ff;
+    border-radius: 50%;
+    color: #00d4ff;
+    font-size: 24px;
+    line-height: 46px;
+    margin: 0 auto 15px;
+    font-weight: bold;
+}
+
+.modal-close-icon {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 28px;
+    cursor: pointer;
+    color: rgba(255,255,255,0.5);
+    transition: all 0.3s ease;
+}
+
+.modal-close-icon:hover {
+    color: #fff;
+    transform: rotate(90deg);
+}
+
+.btn-modal-primary {
+    background: #00d4ff;
+    color: #0b2e33;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 12px;
+    font-weight: 800;
+    width: 100%;
+    margin-top: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-modal-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 212, 255, 0.3);
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(0,212,255,0.1);
+    border-top: 4px solid #00d4ff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* --- Responsive --- */
+@media (max-width: 576px) {
+    .token-card {
+        padding: 30px 20px;
+        border-radius: 25px;
+    }
+    
+    .token-logo {
+        height: 70px;
+    }
+    
+    .token-title {
+        font-size: 1.5rem;
+    }
+    
+    .token-subtitle {
+        font-size: 0.9rem;
+    }
+    
+    .token-input {
+        padding: 12px 16px !important;
+        font-size: 14px;
+    }
+    
+    .btn-token-generate {
+        height: 50px;
+        font-size: 0.9rem;
+    }
+    
+    .custom-modal-card {
+        padding: 30px 20px;
+        margin: 0 15px;
+    }
+}

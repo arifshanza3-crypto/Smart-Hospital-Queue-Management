@@ -22,11 +22,11 @@ class TokenController extends Controller
     public function generateToken(Request $request)
     {
         try {
-            // ✅ Validation without department
+            // ✅ Validation with mobile_number
             $validated = $request->validate([
                 'patient_name' => 'required|string|max:255',
-                'phone' => 'nullable|string|max:20',
-                'email' => 'nullable|email|max:255'
+                'email' => 'nullable|email|max:255',
+                'mobile_number' => 'required|string|max:11|regex:/^03\d{9}$/',  // ✅ Added mobile validation
             ]);
 
             // ✅ Check if user is logged in
@@ -48,19 +48,22 @@ class TokenController extends Controller
                 $tokenNumber = 'TKN-001';
             }
 
-            // ✅ Create token
+            // ✅ Get last position for department
+            $lastPosition = Token::where('department', $department)
+                ->whereIn('status', ['waiting', 'calling'])
+                ->count();
+
+            // ✅ Create token with mobile_number as phone
             $token = Token::create([
                 'token_number' => $tokenNumber,
                 'patient_name' => $request->patient_name,
                 'patient_id' => $userId,
                 'department' => $department,
-                'phone' => $request->phone,
+                'phone' => $request->mobile_number,  // ✅ mobile_number saved as phone
                 'email' => $request->email,
                 'status' => 'waiting',
                 'type' => 'online',
-                'position' => Token::where('department', $department)
-                    ->whereIn('status', ['waiting', 'calling'])
-                    ->count() + 1,
+                'position' => $lastPosition + 1,
                 'estimated_time' => 15,
                 'created_at' => now()
             ]);

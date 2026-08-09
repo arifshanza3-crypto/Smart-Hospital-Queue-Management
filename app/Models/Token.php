@@ -22,7 +22,12 @@ class Token extends Model
         'position',
         'called_at',
         'completed_at'
-        // ❌ 'age' remove kar diya
+    ];
+
+    protected $casts = [
+        'patient_id' => 'string',  // ✅ Auto convert to string
+        'position' => 'integer',
+        'estimated_time' => 'integer',
     ];
     
     public function patient()
