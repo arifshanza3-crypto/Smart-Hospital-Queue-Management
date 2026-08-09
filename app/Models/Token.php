@@ -15,17 +15,17 @@ class Token extends Model
         'patient_name',
         'phone',
         'email',
-        'department',
         'type',
         'status',
         'estimated_time',
         'position',
         'called_at',
         'completed_at'
+        // ❌ department removed from fillable
     ];
 
     protected $casts = [
-        'patient_id' => 'string',  // ✅ Auto convert to string
+        'patient_id' => 'string',
         'position' => 'integer',
         'estimated_time' => 'integer',
     ];

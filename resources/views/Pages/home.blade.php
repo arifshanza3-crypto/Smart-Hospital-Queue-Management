@@ -67,7 +67,7 @@
                         <div class="serving-token-card">
                             <div class="serving-token-number">{{ $token->token_number }}</div>
                             <div class="serving-token-details">
-                                <span class="serving-dept">{{ $token->department }}</span>
+                                {{-- ❌ Department Removed --}}
                                 <span class="serving-patient">{{ $token->patient_name ?? 'N/A' }}</span>
                             </div>
                             <div class="serving-status-badge">SERVING</div>
@@ -91,10 +91,7 @@
                                 <span class="label">Status</span>
                                 <span class="value status-{{ $userToken->status }}">{{ strtoupper($userToken->status) }}</span>
                             </div>
-                            <div class="token-detail-item">
-                                <span class="label">Department</span>
-                                <span class="value">{{ $userToken->department }}</span>
-                            </div>
+                            {{-- ❌ Department Removed --}}
                             <div class="token-detail-item">
                                 <span class="label">Position</span>
                                 <span class="value">#{{ $userToken->position }}</span>

@@ -26,7 +26,7 @@ class TokenController extends Controller
             $validated = $request->validate([
                 'patient_name' => 'required|string|max:255',
                 'email' => 'nullable|email|max:255',
-                'mobile_number' => 'required|string|max:11|regex:/^03\d{9}$/',  // ✅ Added mobile validation
+                'mobile_number' => 'required|string|max:11|regex:/^03\d{9}$/',
             ]);
 
             // ✅ Check if user is logged in
@@ -48,18 +48,16 @@ class TokenController extends Controller
                 $tokenNumber = 'TKN-001';
             }
 
-            // ✅ Get last position for department
-            $lastPosition = Token::where('department', $department)
-                ->whereIn('status', ['waiting', 'calling'])
-                ->count();
+            // ✅ Get last position
+            $lastPosition = Token::whereIn('status', ['waiting', 'calling'])->count();
 
             // ✅ Create token with mobile_number as phone
             $token = Token::create([
                 'token_number' => $tokenNumber,
                 'patient_name' => $request->patient_name,
                 'patient_id' => $userId,
-                'department' => $department,
-                'phone' => $request->mobile_number,  // ✅ mobile_number saved as phone
+                'department' => 'General',  // ✅ Always General
+                'phone' => $request->mobile_number,
                 'email' => $request->email,
                 'status' => 'waiting',
                 'type' => 'online',
@@ -82,7 +80,6 @@ class TokenController extends Controller
                     'token_generated',
                     [
                         'token_number' => $tokenNumber,
-                        'department' => $department,
                         'patient_name' => $request->patient_name,
                         'url' => route('status.page', ['token' => $tokenNumber])
                     ]
@@ -97,7 +94,6 @@ class TokenController extends Controller
                 [
                     'token_number' => $tokenNumber,
                     'patient_name' => $request->patient_name,
-                    'department' => $department,
                     'url' => route('staff.dashboard')
                 ]
             );
@@ -134,11 +130,10 @@ class TokenController extends Controller
                 ], 404);
             }
 
-            // ✅ Calculate waiting time
+            // ✅ Calculate waiting time (without department filter)
             $waitingTime = 0;
             if ($token->status === 'waiting') {
-                $waitingTokens = Token::where('department', $token->department)
-                    ->where('status', 'waiting')
+                $waitingTokens = Token::where('status', 'waiting')
                     ->where('position', '<', $token->position)
                     ->count();
                 $waitingTime = $waitingTokens * 15;
@@ -149,12 +144,12 @@ class TokenController extends Controller
                 'token' => [
                     'token_number' => $token->token_number,
                     'patient_name' => $token->patient_name,
-                    'department' => $token->department,
                     'status' => $token->status,
                     'position' => $token->position,
                     'estimated_time' => $token->estimated_time,
                     'waiting_time' => $waitingTime,
                     'created_at' => $token->created_at
+                    // ❌ department removed
                 ]
             ]);
 
