@@ -15,13 +15,13 @@ class Token extends Model
         'patient_name',
         'phone',
         'email',
+        'department',  // ✅ department added back
         'type',
         'status',
         'estimated_time',
         'position',
         'called_at',
         'completed_at'
-        // ❌ department removed from fillable
     ];
 
     protected $casts = [

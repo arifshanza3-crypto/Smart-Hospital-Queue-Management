@@ -126,15 +126,16 @@ class StaffController extends Controller
         return $times[$department] ?? 15;
     }
 
-    // ✅ Add Physical Patient
+    // ✅ Add Physical Patient - Updated with Mobile Number
     public function addPatient(Request $request)
     {
         Log::info('Add patient called', $request->all());
 
         try {
+            // ✅ Validation with mobile_number
             $request->validate([
                 'name' => 'required|string|max:255',
-                'department' => 'nullable|string|max:50'
+                'mobile_number' => 'required|string|max:11|regex:/^03\d{9}$/',
             ]);
 
             $lastToken = Token::orderBy('id', 'desc')->first();
@@ -156,6 +157,8 @@ class StaffController extends Controller
                 'token_number' => $tokenNumber,
                 'patient_id' => null,
                 'patient_name' => $request->name,
+                'phone' => $request->mobile_number,  // ✅ Mobile number saved here
+                'email' => null,
                 'department' => $department,
                 'status' => 'waiting',
                 'type' => 'physical',
