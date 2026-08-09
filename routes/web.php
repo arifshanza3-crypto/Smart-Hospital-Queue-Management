@@ -119,6 +119,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
     Route::get('/user-management', [UserController::class, 'index'])->name('user-management');
     Route::get('/services-management', [ServiceController::class, 'index'])->name('services-management');
 
+    // ✅ Doctor Routes with Status Update
     Route::prefix('doctors')->name('doctors.')->group(function () {
         Route::get('/', [DoctorController::class, 'index'])->name('index');
         Route::get('/create', [DoctorController::class, 'create'])->name('create');
@@ -126,6 +127,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
         Route::get('/{id}/edit', [DoctorController::class, 'edit'])->name('edit');
         Route::put('/{id}', [DoctorController::class, 'update'])->name('update');
         Route::delete('/{id}', [DoctorController::class, 'destroy'])->name('destroy');
+        // ✅ Status Update Route (Only Active/Inactive)
+        Route::patch('/{id}/status/{status}', [DoctorController::class, 'updateStatus'])->name('update-status');
     });
     
     Route::prefix('services')->name('services.')->group(function () {

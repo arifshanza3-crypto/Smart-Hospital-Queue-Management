@@ -25,13 +25,14 @@ class DoctorController extends Controller
 
     public function store(Request $request)
     {
+        // ✅ Only active/inactive allowed
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'specialization' => 'required|string|max:255',
             'qualification' => 'nullable|string|max:255',
             'email' => 'required|email|unique:doctors,email',
             'phone' => 'required|string|max:20',
-            'status' => 'required|in:active,inactive,on_duty'
+            'status' => 'nullable|in:active,inactive'
         ]);
 
         try {
@@ -41,7 +42,7 @@ class DoctorController extends Controller
                 'qualification' => $request->qualification,
                 'email' => $request->email,
                 'phone' => $request->phone,
-                'status' => $request->status,
+                'status' => $request->status ?? 'active',
                 'slug' => Str::slug($request->name)
             ]);
 
@@ -85,13 +86,14 @@ class DoctorController extends Controller
 
     public function update(Request $request, $id)
     {
+        // ✅ Only active/inactive allowed
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'specialization' => 'required|string|max:255',
             'qualification' => 'nullable|string|max:255',
             'email' => 'required|email|unique:doctors,email,' . $id,
             'phone' => 'required|string|max:20',
-            'status' => 'required|in:active,inactive,on_duty'
+            'status' => 'nullable|in:active,inactive'
         ]);
 
         try {
@@ -105,7 +107,7 @@ class DoctorController extends Controller
             $doctor->qualification = $request->qualification;
             $doctor->email = $request->email;
             $doctor->phone = $request->phone;
-            $doctor->status = $request->status;
+            $doctor->status = $request->status ?? $doctor->status;
             $doctor->slug = Str::slug($request->name);
             $doctor->save();
 
@@ -140,6 +142,61 @@ class DoctorController extends Controller
         } catch (\Exception $e) {
             Log::error('Error updating doctor: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Error: ' . $e->getMessage())->withInput();
+        }
+    }
+
+    // ✅ Update Status - Only Active/Inactive
+    public function updateStatus($id, $status)
+    {
+        try {
+            // ✅ Only allow active/inactive
+            if (!in_array($status, ['active', 'inactive'])) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid status. Only active/inactive allowed.'
+                ], 400);
+            }
+
+            $doctor = Doctor::findOrFail($id);
+            $oldStatus = $doctor->status;
+            $doctor->status = $status;
+            $doctor->save();
+
+            // ✅ Send notification to all admins
+            $admins = User::where('role', 'admin')->get();
+            
+            foreach ($admins as $admin) {
+                Notification::create([
+                    'user_id' => $admin->id,
+                    'title' => 'Doctor Status Updated',
+                    'message' => 'Dr. ' . $doctor->name . ' status changed from ' . $oldStatus . ' to ' . $status,
+                    'type' => 'doctor_status_updated',
+                    'data' => json_encode([
+                        'icon' => 'fa-exchange-alt',
+                        'doctor_id' => $doctor->id,
+                        'doctor_name' => $doctor->name,
+                        'old_status' => $oldStatus,
+                        'new_status' => $status,
+                        'url' => route('admin.doctors.edit', $doctor->id)
+                    ]),
+                    'read_at' => null,
+                    'created_at' => now()
+                ]);
+            }
+
+            Log::info('Doctor status updated: ' . $doctor->name . ' from ' . $oldStatus . ' to ' . $status . ' by admin');
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Status updated successfully!'
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error updating status: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating status: ' . $e->getMessage()
+            ], 500);
         }
     }
 
