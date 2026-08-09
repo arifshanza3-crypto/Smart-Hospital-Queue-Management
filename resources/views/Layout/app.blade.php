@@ -20,7 +20,7 @@
             --primary-dark: #0b2e33;
             --primary-mid: #1a4a50;
             --primary-light: #0d3b42;
-            --nav-bg: rgba(11, 46, 51, 0.96);
+            --nav-bg: rgba(7, 26, 28, 0.96);  /* CHANGED: #071a1c */
             --glass-border: rgba(255, 255, 255, 0.08);
             --shadow-color: rgba(0, 0, 0, 0.3);
             --card-bg: rgba(11, 46, 51, 0.85);
@@ -88,7 +88,7 @@
         }
 
         .navbar {
-            background: rgba(11, 46, 51, 0.7) !important;
+            background: rgba(7, 26, 28, 0.7) !important;  /* CHANGED: #071a1c */
             backdrop-filter: blur(16px) !important;
             -webkit-backdrop-filter: blur(16px) !important;
             border-radius: 16px !important;
@@ -328,7 +328,7 @@
             text-align: center !important;
             display: none !important;
             animation: pulse-badge 2s ease-in-out infinite !important;
-            border: 2px solid rgba(11, 46, 51, 0.9) !important;
+            border: 2px solid rgba(7, 26, 28, 0.9) !important;  /* CHANGED: #071a1c */
             box-shadow: 0 2px 12px rgba(239, 68, 68, 0.3) !important;
         }
 
@@ -426,7 +426,7 @@
             top: 40px !important;
             right: 0 !important;
             width: 230px !important;
-            background: rgba(11, 46, 51, 0.97) !important;
+            background: rgba(7, 26, 28, 0.97) !important;  /* CHANGED: #071a1c */
             backdrop-filter: blur(24px) !important;
             -webkit-backdrop-filter: blur(24px) !important;
             border: 1px solid rgba(255, 255, 255, 0.06) !important;
@@ -513,7 +513,7 @@
             right: 0 !important;
             width: 380px !important;
             max-height: 460px !important;
-            background: rgba(11, 46, 51, 0.97) !important;
+            background: rgba(7, 26, 28, 0.97) !important;  /* CHANGED: #071a1c */
             backdrop-filter: blur(24px) !important;
             -webkit-backdrop-filter: blur(24px) !important;
             border: 1px solid rgba(255, 255, 255, 0.06) !important;
@@ -861,7 +861,7 @@
                 gap: 0 !important;
             }
             .navbar-collapse {
-                background: rgba(11, 46, 51, 0.98) !important;
+                background: rgba(7, 26, 28, 0.98) !important;  /* CHANGED: #071a1c */
                 backdrop-filter: blur(20px) !important;
                 border-radius: 12px !important;
                 padding: 8px 12px !important;
