@@ -22,10 +22,10 @@ class TokenController extends Controller
     public function generateToken(Request $request)
     {
         try {
-            // ✅ Validation with mobile_number
+            // ✅ Validation - Email is nullable (optional)
             $validated = $request->validate([
                 'patient_name' => 'required|string|max:255',
-                'email' => 'nullable|email|max:255',
+                'email' => 'nullable|email|max:255',  // ✅ Email Optional
                 'mobile_number' => 'required|string|max:11|regex:/^03\d{9}$/',
             ]);
 
@@ -55,7 +55,7 @@ class TokenController extends Controller
                 'patient_id' => $userId,
                 'department' => 'General',
                 'phone' => $request->mobile_number,
-                'email' => $request->email,
+                'email' => $request->email,  // ✅ Can be null
                 'status' => 'waiting',
                 'type' => 'online',
                 'position' => $lastPosition + 1,

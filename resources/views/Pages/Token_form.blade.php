@@ -33,8 +33,9 @@
                     <input type="text" name="patient_name" class="form-control token-input" placeholder="Enter your full name" required>
                 </div>
 
+                {{-- ✅ Email Field - Optional (no required) --}}
                 <div class="input-container">
-                    <label class="input-label">Email</label>
+                    <label class="input-label">Email <span style="color: rgba(255,255,255,0.3); font-weight: 400;">(Optional)</span></label>
                     <input type="email" name="email" class="form-control token-input" placeholder="Enter your email">
                 </div>
 
@@ -81,9 +82,8 @@ document.addEventListener('DOMContentLoaded', function() {
             this.value = this.value.slice(0, 11);
         }
 
-        // Format display: 03XX-XXXXXXX
+        // Validate in real-time
         if (this.value.length > 0) {
-            // Validate in real-time
             const isValid = /^(03)\d{9}$/.test(this.value);
             if (this.value.length > 0 && !isValid) {
                 mobileError.classList.remove('d-none');
@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // ✅ Close Modal functions
     function closeModalFn() {
         patientModal.style.display = 'none';
-        form.submit(); // Submit the form after modal
+        form.submit();
     }
 
     closeModal.addEventListener('click', closeModalFn);
