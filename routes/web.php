@@ -200,3 +200,25 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
     Route::post('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar.update');
 });
+
+
+// ==================== FORGOT PASSWORD ROUTES ====================
+Route::get('/forgot-password', [AuthController::class, 'showForgotForm'])
+    ->middleware('guest')
+    ->name('password.request');
+
+Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])
+    ->middleware('guest')
+    ->name('password.email');
+
+Route::get('/reset-password/{token}', [AuthController::class, 'showResetForm'])
+    ->middleware('guest')
+    ->name('password.reset');
+
+Route::post('/reset-password', [AuthController::class, 'resetPassword'])
+    ->middleware('guest')
+    ->name('password.update');
+
+// ==================== API ROUTES (AJAX) ====================
+Route::post('/api/validate-token', [AuthController::class, 'validateResetToken']);
+Route::post('/api/resend-link', [AuthController::class, 'resendResetLink']);
