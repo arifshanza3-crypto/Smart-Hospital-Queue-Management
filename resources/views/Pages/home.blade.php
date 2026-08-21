@@ -13,7 +13,7 @@
                     <h1 class="hero-title">Smart Queue <br> Management System</h1>
                     <p class="hero-description">Experience smarter healthcare with our real-time queue management system – reducing wait times, improving patient care, and optimizing hospital workflow.</p>
                     <div class="hero-btn-group">
-                        <a href="#" class="btn-secondary-hero">Our Services</a>
+                        <a href="{{ route('services') }}" class="btn-secondary-hero">Our Services</a>
                     </div>
                 </div>
                 <div class="hero-right">
@@ -29,7 +29,7 @@
                     <h1 class="hero-title">Expert Doctors <br> & Expert Care</h1>
                     <p class="hero-description">Experience the next generation of patient care with real-time updates and seamless queue management.</p>
                     <div class="hero-btn-group">
-                        <a href="#" class="btn-secondary-hero">Learn More</a>
+                        <a href="{{ route('about') }}" class="btn-secondary-hero">Learn More</a>
                     </div>
                 </div>
                 <div class="hero-right">
