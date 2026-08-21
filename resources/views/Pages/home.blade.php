@@ -10,7 +10,7 @@
             <div class="hero-content-container">
                 <div class="hero-left">
                     <span class="hero-tag">Smart Solutions</span>
-                    <h1 class="hero-title">Smart Queue <br> Management System</h1>
+                    <h1 class="hero-title">Smart Queue <br>Management System</h1>
                     <p class="hero-description">Experience smarter healthcare with our real-time queue management system – reducing wait times, improving patient care, and optimizing hospital workflow.</p>
                     <div class="hero-btn-group">
                         <a href="{{ route('services') }}" class="btn-secondary-hero">Our Services</a>
@@ -26,7 +26,7 @@
             <div class="hero-content-container">
                 <div class="hero-left">
                     <span class="hero-tag">Advanced Technology</span>
-                    <h1 class="hero-title">Expert Doctors <br> & Expert Care</h1>
+                    <h1 class="hero-title">Expert Doctors <br>& Expert Care</h1>
                     <p class="hero-description">Experience the next generation of patient care with real-time updates and seamless queue management.</p>
                     <div class="hero-btn-group">
                         <a href="{{ route('about') }}" class="btn-secondary-hero">Learn More</a>
@@ -39,15 +39,24 @@
         </div>
     </div>
 
+    {{-- ✅ TICKER BAR - Smart Queue Benefits --}}
     <div class="hero-bottom-bar">
         <div class="ticker-wrapper">
             <div class="ticker-content">
-                <span>WELLNESS</span> <span>•</span> <span>THERAPIST</span> <span>•</span> <span>NURSING</span> <span>•</span> 
-                <span>PATIENT CARE</span> <span>•</span> <span>HEALTH CENTER</span> <span>•</span> <span>EMERGENCY</span> <span>•</span> 
-                <span>MEDICAL SERVICES</span> <span>•</span>
-                <span>WELLNESS</span> <span>•</span> <span>THERAPIST</span> <span>•</span> <span>NURSING</span> <span>•</span> 
-                <span>PATIENT CARE</span> <span>•</span> <span>HEALTH CENTER</span> <span>•</span> <span>EMERGENCY</span> <span>•</span> 
-                <span>MEDICAL SERVICES</span> <span>•</span>
+                <span>⚡ Real-Time Queue Updates</span> <span>•</span> 
+                <span>⏱️ Reduce Wait Times</span> <span>•</span> 
+                <span>📱 Instant Notifications</span> <span>•</span> 
+                <span>🎯 Smart Patient Flow</span> <span>•</span> 
+                <span>🔄 Seamless Experience</span> <span>•</span> 
+                <span>📊 Live Analytics</span> <span>•</span> 
+                <span>🏥 Efficient Care</span> <span>•</span>
+                <span>⚡ Real-Time Queue Updates</span> <span>•</span> 
+                <span>⏱️ Reduce Wait Times</span> <span>•</span> 
+                <span>📱 Instant Notifications</span> <span>•</span> 
+                <span>🎯 Smart Patient Flow</span> <span>•</span> 
+                <span>🔄 Seamless Experience</span> <span>•</span> 
+                <span>📊 Live Analytics</span> <span>•</span> 
+                <span>🏥 Efficient Care</span> <span>•</span>
             </div>
         </div>
     </div>
