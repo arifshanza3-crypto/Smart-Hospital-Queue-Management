@@ -3,7 +3,7 @@
 /* ============================================ */
 .hero-slider-section {
     position: relative;
-    height: 95vh;
+    height: 85vh;  /* CHANGED: 95vh se 85vh */
     width: 100%;
     background: #071a1c;
     overflow: hidden;
@@ -32,7 +32,7 @@
 /* Left Side (Text) */
 .hero-left {
     flex: 1;
-    padding: 0 8% 100px 8%;
+    padding: 0 8% 80px 8%;  /* CHANGED: 100px se 80px */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -50,45 +50,46 @@
 .hero-tag {
     display: inline-block;
     color: #00d4ff;
-    font-size: 0.85rem;
+    font-size: 0.8rem;  /* CHANGED: 0.85rem se 0.8rem */
     font-weight: 700;
     letter-spacing: 3px;
     text-transform: uppercase;
-    margin-bottom: 15px;
+    margin-bottom: 12px;  /* CHANGED: 15px se 12px */
     border-left: 3px solid #00d4ff;
     padding-left: 15px;
 }
 
 .hero-title {
     color: white;
-    font-size: 4.5rem;
+    font-size: 4rem;  /* CHANGED: 4.5rem se 4rem */
     font-weight: 800;
     line-height: 1.1;
-    margin-bottom: 25px;
+    margin-bottom: 18px;  /* CHANGED: 25px se 18px */
 }
 
 .hero-description {
     color: rgba(255, 255, 255, 0.7);
-    font-size: 1.1rem;
+    font-size: 1rem;  /* CHANGED: 1.1rem se 1rem */
     max-width: 550px;
-    margin-bottom: 30px;
+    margin-bottom: 25px;  /* CHANGED: 30px se 25px */
     line-height: 1.8;
 }
 
 .hero-btn-group {
-    margin-top: 10px;
-    margin-bottom: 20px;
+    margin-top: 8px;  /* CHANGED: 10px se 8px */
+    margin-bottom: 15px;  /* CHANGED: 20px se 15px */
 }
 
 .btn-secondary-hero {
     display: inline-block;
-    padding: 16px 35px;
+    padding: 14px 30px;  /* CHANGED: 16px 35px se 14px 30px */
     border: 2px solid #00d4ff;
     border-radius: 50px;
     color: #00d4ff;
     text-decoration: none;
     font-weight: 700;
     text-transform: uppercase;
+    font-size: 0.85rem;
     letter-spacing: 1px;
     transition: 0.4s;
     background: transparent;
@@ -103,7 +104,7 @@
 
 /* Right Side (Image) */
 .hero-right {
-    flex: 1.2;
+    flex: 1.1;  /* CHANGED: 1.2 se 1.1 */
     transform: translateX(100px);
     transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 1s;
     opacity: 0;
@@ -118,7 +119,8 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    clip-path: polygon(15% 0%, 100% 0%, 100% 100%, 0% 100%);
+    border-radius: 12px 0 0 12px;  /* ADDED: rounded corners */
+    clip-path: polygon(10% 0%, 100% 0%, 100% 100%, 0% 100%);
 }
 
 /* Ticker Bar */
@@ -228,7 +230,7 @@
 /* TOKEN STATUS SECTION                        */
 /* ============================================ */
 .token-status-section {
-    padding: 50px 0;
+    padding: 40px 0;  /* CHANGED: 50px se 40px */
     background: #0b2e33;
 }
 
@@ -242,35 +244,36 @@
 .user-token-card {
     background: #ffffff;
     border-radius: 16px;
-    padding: 30px;
+    padding: 25px;  /* CHANGED: 30px se 25px */
     box-shadow: 0 4px 25px rgba(0, 0, 0, 0.15);
     border: 1px solid rgba(0, 212, 255, 0.1);
     max-width: 500px;
-    margin: 0 auto 30px;
+    margin: 0 auto 25px;  /* CHANGED: 30px se 25px */
 }
 
 .token-card-header {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-bottom: 15px;
+    margin-bottom: 12px;  /* CHANGED: 15px se 12px */
 }
 
 .token-card-header h3 {
     margin: 0;
     color: #0b2e33;
+    font-size: 1.1rem;
 }
 
 .token-icon {
-    font-size: 20px;
+    font-size: 18px;  /* CHANGED: 20px se 18px */
 }
 
 .token-number-large {
-    font-size: 48px;
+    font-size: 40px;  /* CHANGED: 48px se 40px */
     font-weight: 800;
     color: #0b2e33;
     text-align: center;
-    padding: 10px 0;
+    padding: 8px 0;  /* CHANGED: 10px se 8px */
     background: linear-gradient(135deg, #0b2e33, #1a7a82);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -280,8 +283,8 @@
 .token-details {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 10px 20px;
-    margin: 15px 0;
+    gap: 8px 16px;  /* CHANGED: 10px 20px se 8px 16px */
+    margin: 10px 0;  /* CHANGED: 15px se 10px */
 }
 
 .token-detail-item {
@@ -290,14 +293,14 @@
 }
 
 .token-detail-item .label {
-    font-size: 11px;
+    font-size: 10px;  /* CHANGED: 11px se 10px */
     color: #7a8a8e;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 .token-detail-item .value {
-    font-size: 16px;
+    font-size: 14px;  /* CHANGED: 16px se 14px */
     font-weight: 600;
     color: #1a2e33;
 }
@@ -308,17 +311,18 @@
 
 .token-card-footer {
     text-align: center;
-    margin-top: 15px;
+    margin-top: 12px;  /* CHANGED: 15px se 12px */
 }
 
 .btn-view-status {
     display: inline-block;
-    padding: 10px 25px;
+    padding: 8px 22px;  /* CHANGED: 10px 25px se 8px 22px */
     background: linear-gradient(135deg, #0b2e33, #1a7a82);
     color: white;
     border-radius: 8px;
     text-decoration: none;
     font-weight: 600;
+    font-size: 0.9rem;
     transition: all 0.3s ease;
 }
 
@@ -332,17 +336,17 @@
 /* ============================================ */
 @media (max-width: 992px) {
     .hero-title {
-        font-size: 3.5rem;
+        font-size: 3rem;  /* CHANGED: 3.5rem se 3rem */
     }
     
     .hero-left {
-        padding: 0 5% 80px 5%;
+        padding: 0 5% 60px 5%;  /* CHANGED: 80px se 60px */
     }
 }
 
 @media (max-width: 768px) {
     .hero-slider-section {
-        height: 100vh;
+        height: 90vh;  /* CHANGED: 100vh se 90vh */
     }
     
     .hero-content-container {
@@ -350,21 +354,22 @@
     }
     
     .hero-left {
-        padding: 20px 5% 60px 5%;
+        padding: 15px 5% 40px 5%;  /* CHANGED: 20px 5% 60px se 15px 5% 40px */
         flex: 1;
     }
     
     .hero-title {
-        font-size: 2.8rem;
+        font-size: 2.4rem;  /* CHANGED: 2.8rem se 2.4rem */
     }
     
     .hero-right {
-        flex: 0.8;
-        min-height: 200px;
+        flex: 0.7;  /* CHANGED: 0.8 se 0.7 */
+        min-height: 150px;  /* CHANGED: 200px se 150px */
     }
     
     .hero-right img {
         clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+        border-radius: 0;
     }
     
     .hero-bottom-bar {
@@ -387,16 +392,16 @@
 
 @media (max-width: 480px) {
     .hero-title {
-        font-size: 2rem;
+        font-size: 1.8rem;  /* CHANGED: 2rem se 1.8rem */
     }
     
     .hero-description {
-        font-size: 0.9rem;
+        font-size: 0.8rem;  /* CHANGED: 0.9rem se 0.8rem */
     }
     
     .btn-secondary-hero {
-        padding: 12px 25px;
-        font-size: 0.8rem;
+        padding: 10px 20px;  /* CHANGED: 12px 25px se 10px 20px */
+        font-size: 0.7rem;  /* CHANGED: 0.8rem se 0.7rem */
     }
     
     .hero-bottom-bar {
@@ -409,7 +414,7 @@
     }
     
     .token-number-large {
-        font-size: 32px;
+        font-size: 28px;  /* CHANGED: 32px se 28px */
     }
     
     .serving-tokens-grid {
@@ -417,7 +422,19 @@
     }
     
     .user-token-card {
-        padding: 20px;
-        margin: 0 10px 20px;
+        padding: 16px;  /* CHANGED: 20px se 16px */
+        margin: 0 10px 15px;  /* CHANGED: 20px se 15px */
+    }
+    
+    .serving-token-card {
+        padding: 14px;  /* CHANGED: 16px se 14px */
+    }
+    
+    .serving-token-number {
+        font-size: 18px;  /* CHANGED: 20px se 18px */
+    }
+    
+    .section-title {
+        font-size: 14px;  /* CHANGED: 16px se 14px */
     }
 }

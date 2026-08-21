@@ -17,7 +17,7 @@
                     </div>
                 </div>
                 <div class="hero-right">
-                    <img src="https://images.unsplash.com/photo-1551076805-e1869033e561?auto=format&fit=crop&q=80&w=1000" alt="Healthcare Professional">
+                    <img src="https://images.unsplash.com/photo-1587351021759-3e566b6af7cc?auto=format&fit=crop&q=80&w=1000" alt="Smart Queue Management">
                 </div>
             </div>
         </div>
@@ -33,7 +33,7 @@
                     </div>
                 </div>
                 <div class="hero-right">
-                    <img src="https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&q=80&w=1000" alt="Medical Technology">
+                    <img src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=1000" alt="Medical Technology">
                 </div>
             </div>
         </div>
