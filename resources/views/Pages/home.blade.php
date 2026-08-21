@@ -10,8 +10,8 @@
             <div class="hero-content-container">
                 <div class="hero-left">
                     <span class="hero-tag">Smart Solutions</span>
-                    <h1 class="hero-title">Medical Hospital <br> & Healthcare</h1>
-                    <p class="hero-description">Efficiently managing your time with our advanced digital queuing system designed for modern healthcare facilities.</p>
+                    <h1 class="hero-title">Smart Queue <br> Management System</h1>
+                    <p class="hero-description">Experience smarter healthcare with our real-time queue management system – reducing wait times, improving patient care, and optimizing hospital workflow.</p>
                     <div class="hero-btn-group">
                         <a href="#" class="btn-secondary-hero">Our Services</a>
                     </div>
@@ -67,7 +67,6 @@
                         <div class="serving-token-card">
                             <div class="serving-token-number">{{ $token->token_number }}</div>
                             <div class="serving-token-details">
-                                {{-- ❌ Department Removed --}}
                                 <span class="serving-patient">{{ $token->patient_name ?? 'N/A' }}</span>
                             </div>
                             <div class="serving-status-badge">SERVING</div>
@@ -91,7 +90,6 @@
                                 <span class="label">Status</span>
                                 <span class="value status-{{ $userToken->status }}">{{ strtoupper($userToken->status) }}</span>
                             </div>
-                            {{-- ❌ Department Removed --}}
                             <div class="token-detail-item">
                                 <span class="label">Position</span>
                                 <span class="value">#{{ $userToken->position }}</span>
