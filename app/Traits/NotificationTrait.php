@@ -37,7 +37,7 @@ trait NotificationTrait
     }
 
     /**
-     * Send notification to admin
+     * Send notification to admin only
      */
     public function notifyAdmin($title, $message, $type, $data = [])
     {
@@ -49,17 +49,7 @@ trait NotificationTrait
     }
 
     /**
-     * Send notification to specific user
-     */
-    public function notifyUser($userId, $title, $message, $type, $data = [])
-    {
-        if ($userId) {
-            $this->createNotification($userId, $title, $message, $type, $data);
-        }
-    }
-
-    /**
-     * Send notification to all staff
+     * Send notification to staff only
      */
     public function notifyStaff($title, $message, $type, $data = [])
     {
@@ -80,6 +70,16 @@ trait NotificationTrait
     }
 
     /**
+     * Send notification to specific user
+     */
+    public function notifyUser($userId, $title, $message, $type, $data = [])
+    {
+        if ($userId) {
+            $this->createNotification($userId, $title, $message, $type, $data);
+        }
+    }
+
+    /**
      * Send notification to a specific role
      */
     public function notifyRole($role, $title, $message, $type, $data = [])
@@ -97,22 +97,22 @@ trait NotificationTrait
     private function getNotificationIcon($type)
     {
         $icons = [
-            // Doctor related
+            // Doctor related - Admin only
             'doctor_added' => 'fa-user-md',
             'doctor_updated' => 'fa-user-edit',
             'doctor_deleted' => 'fa-user-times',
             
-            // Service related
+            // Service related - Admin only
             'service_added' => 'fa-concierge-bell',
             'service_updated' => 'fa-edit',
             'service_deleted' => 'fa-trash',
             
-            // Staff related
+            // Staff related - Admin only
             'staff_approved' => 'fa-user-check',
             'staff_rejected' => 'fa-user-times',
             'staff_registered' => 'fa-user-plus',
             
-            // Token/Patient related
+            // Token/Patient related - Staff + User
             'token_generated' => 'fa-ticket-alt',
             'token_called' => 'fa-phone',
             'token_arrived' => 'fa-check-circle',

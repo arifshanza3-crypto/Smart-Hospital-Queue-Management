@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 
 class NotificationController extends Controller
 {
+    // ✅ Show notification page (View)
     public function index()
     {
         try {
@@ -18,52 +19,147 @@ class NotificationController extends Controller
                 return redirect()->route('login');
             }
             
-            // ✅ Get notifications for this user
-            $notifications = Notification::where('user_id', $user->id)
-                ->orderBy('created_at', 'desc')
-                ->get();
+            // ✅ Get notifications based on user role
+            $notifications = $this->getNotificationsByRole($user);
+            
+            if ($notifications === null) {
+                $notifications = collect([]);
+            }
             
             $unreadCount = $notifications->whereNull('read_at')->count();
+            $totalCount = $notifications->count();
+            $readCount = $totalCount - $unreadCount;
+            $userRole = $user->role ?? 'user';
 
-            // ✅ JSON response for AJAX calls
-            if (request()->wantsJson()) {
-                $formatted = $notifications->map(function($notification) {
-                    $data = is_string($notification->data) ? json_decode($notification->data, true) : $notification->data;
-                    
-                    return [
-                        'id' => $notification->id,
-                        'title' => $notification->title ?? 'Notification',
-                        'message' => $notification->message ?? '',
-                        'type' => $notification->type ?? 'general',
-                        'data' => $data ?? [],
-                        'is_read' => $notification->read_at ? true : false,
-                        'created_at' => $notification->created_at->toISOString()
-                    ];
-                });
-
-                return response()->json([
-                    'success' => true,
-                    'notifications' => $formatted,
-                    'unread_count' => $unreadCount,
-                    'total_count' => $notifications->count()
-                ]);
-            }
-
-            // ✅ Use Notification view (root folder)
-            return view('Notification', [
-                'notifications' => $notifications,
-                'unreadCount' => $unreadCount,
-                'userRole' => $user->role ?? 'user'
-            ]);
+            return view('Pages.Notification', compact(
+                'notifications', 
+                'unreadCount', 
+                'totalCount', 
+                'readCount', 
+                'userRole'
+            ));
             
         } catch (\Exception $e) {
             Log::error('Notification page error: ' . $e->getMessage());
             
-            return view('Notification', [
+            return view('Pages.Notification', [
                 'notifications' => collect([]),
                 'unreadCount' => 0,
+                'totalCount' => 0,
+                'readCount' => 0,
                 'userRole' => 'user'
             ]);
+        }
+    }
+
+    /**
+     * ✅ Get notifications based on user role
+     * - Admin: Doctors, Services, Users Management
+     * - Staff: Token System (Queue)
+     * - User: Own Token only
+     */
+    private function getNotificationsByRole($user)
+    {
+        $role = $user->role ?? 'user';
+
+        switch ($role) {
+            case 'admin':
+                // ✅ Admin: Doctors, Services, Users, Staff Approval
+                return Notification::where(function($query) use ($user) {
+                        $query->where('user_id', $user->id)
+                              ->orWhereNull('user_id');
+                    })
+                    ->whereIn('type', [
+                        'doctor_added',
+                        'doctor_updated',
+                        'doctor_deleted',
+                        'service_added',
+                        'service_updated',
+                        'service_deleted',
+                        'staff_registered',
+                        'staff_approved',
+                        'staff_rejected',
+                        'user_created',
+                        'user_updated',
+                        'user_deleted'
+                    ])
+                    ->orderBy('created_at', 'desc')
+                    ->get();
+
+            case 'staff':
+                // ✅ Staff: Token System (Queue)
+                return Notification::where(function($query) use ($user) {
+                        $query->where('user_id', $user->id)
+                              ->orWhereNull('user_id');
+                    })
+                    ->whereIn('type', [
+                        'token_generated',
+                        'token_called',
+                        'token_arrived',
+                        'token_completed',
+                        'token_cancelled',
+                        'physical_patient_added',
+                        'patient_missed'
+                    ])
+                    ->orderBy('created_at', 'desc')
+                    ->get();
+
+            default:
+                // ✅ User/Patient: Own Token only
+                return Notification::where('user_id', $user->id)
+                    ->whereIn('type', [
+                        'token_generated',
+                        'token_called',
+                        'token_arrived',
+                        'token_completed',
+                        'token_cancelled'
+                    ])
+                    ->orderBy('created_at', 'desc')
+                    ->get();
+        }
+    }
+
+    // ✅ JSON response for AJAX calls
+    public function getNotificationsJson()
+    {
+        try {
+            $user = Auth::user();
+            
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User not authenticated'
+                ], 401);
+            }
+
+            $notifications = $this->getNotificationsByRole($user);
+            $unreadCount = $notifications->whereNull('read_at')->count();
+
+            $formatted = $notifications->map(function($notification) {
+                return [
+                    'id' => $notification->id,
+                    'title' => $notification->title ?? 'Notification',
+                    'message' => $notification->message ?? '',
+                    'type' => $notification->type ?? 'general',
+                    'token_number' => $notification->token_number ?? null,
+                    'is_read' => $notification->read_at ? true : false,
+                    'created_at' => $notification->created_at->toISOString()
+                ];
+            });
+
+            return response()->json([
+                'success' => true,
+                'notifications' => $formatted,
+                'unread_count' => $unreadCount,
+                'total_count' => $notifications->count()
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Get notifications JSON error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
         }
     }
 
@@ -114,8 +210,6 @@ class NotificationController extends Controller
             $updated = Notification::where('user_id', $user->id)
                 ->whereNull('read_at')
                 ->update(['read_at' => now()]);
-
-            Log::info('Marked all notifications as read for user: ' . $user->id . ', Count: ' . $updated);
 
             return response()->json([
                 'success' => true,

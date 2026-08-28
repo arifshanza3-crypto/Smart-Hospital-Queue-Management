@@ -12,6 +12,7 @@ class Notification extends Model
         'title',
         'message',
         'type',
+        'token_number',    // ✅ Add token_number
         'data',
         'read_at'
     ];

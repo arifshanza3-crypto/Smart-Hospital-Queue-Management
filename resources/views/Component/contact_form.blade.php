@@ -1,13 +1,13 @@
 <link href="{{ asset('css/contect form.css') }}" rel="stylesheet">
-<section class="dental-contact-section">
+<section class="contact-section">
     <div class="section-container">
         <div class="content-side">
             <span class="label-accent">GET IN TOUCH</span>
-            <h2 class="main-title">Ready to eliminate <br><span class="highlight">the waiting room?</span></h2>
+            <h2 class="main-title">Ready to eliminate <br>the waiting room?</h2>
             <p class="sub-text">Whether you are a healthcare provider looking to streamline your clinic or a patient needing assistance, our team is here to help.</p>
             
             <div class="contact-info-list">
-                <div class="phone-highlight">Support: (303) 555-0105</div>
+                <!-- <div class="phone-highlight">Support: (303) 555-0105</div> -->
                 
                 <h4 class="info-heading">System Operations</h4>
                 <ul class="details">

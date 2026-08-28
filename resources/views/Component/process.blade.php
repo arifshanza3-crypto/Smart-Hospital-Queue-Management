@@ -12,7 +12,7 @@
                 <div class="step-number">01</div>
                 <div class="step-content">
                     <h3>Find Your Doctor</h3>
-                    <p>Search for specific doctors or hospitals in Gujranwala and check their real-time availability.</p>
+                    <p>Search for specific doctors and check their real-time availability.</p>
                 </div>
             </div>
 
@@ -20,7 +20,7 @@
                 <div class="step-number">02</div>
                 <div class="step-content">
                     <h3>Generate Token</h3>
-                    <p>Click to generate your digital token. The AI calculates your estimated wait time instantly.</p>
+                    <p>Click to generate your digital token and see your estimated wait time instantly.</p>
                 </div>
             </div>
 
@@ -28,7 +28,7 @@
                 <div class="step-number">03</div>
                 <div class="step-content">
                     <h3>Live Tracking</h3>
-                    <p>Track your position in the queue from home. Receive an SMS when you are 3rd in line.</p>
+                    <p>Track your position in the queue from home. Receive a notification when your turn is near in line.</p>
                 </div>
             </div>
 

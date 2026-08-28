@@ -1,0 +1,63 @@
+0000000000000000000000000000000000000000 6bcd52d1193078b02e037c9b81ba4040cd01318d arifshanza3-crypto <arifshanza3@gmail.com> 1782580468 +0300	commit (initial): token generate kiya system k through patinet ny
+6bcd52d1193078b02e037c9b81ba4040cd01318d 6bcd52d1193078b02e037c9b81ba4040cd01318d arifshanza3-crypto <arifshanza3@gmail.com> 1782627300 +0300	Branch: renamed refs/heads/master to refs/heads/main
+6bcd52d1193078b02e037c9b81ba4040cd01318d fb4f9d6f9f4ab549516781845791d0582aa0264e arifshanza3-crypto <arifshanza3@gmail.com> 1782630982 +0300	commit: add more fields in token form
+fb4f9d6f9f4ab549516781845791d0582aa0264e 8593fd7bd9fe685b187f79ebd557bc0e02b378e3 arifshanza3-crypto <arifshanza3@gmail.com> 1782632918 +0300	commit (merge): Resolved all merge conflicts successfully
+8593fd7bd9fe685b187f79ebd557bc0e02b378e3 d53820abc34bb5d507edc59c645ae1c09d0976dd arifshanza3-crypto <arifshanza3@gmail.com> 1782657788 +0300	commit: made slight changes in token form placeholders
+d53820abc34bb5d507edc59c645ae1c09d0976dd 918feb91c4021098f37a96c5f7beed8133999de1 arifshanza3-crypto <arifshanza3@gmail.com> 1782658087 +0300	commit: patient ki authentication remove kr di
+918feb91c4021098f37a96c5f7beed8133999de1 c98522b04b5918e725250b8b2da65da220bc73f4 arifshanza3-crypto <arifshanza3@gmail.com> 1782658968 +0300	commit: login page py forgot password ka button add kiya
+c98522b04b5918e725250b8b2da65da220bc73f4 9873398e866beea99b2693a20035672d830d993e arifshanza3-crypto <arifshanza3@gmail.com> 1782742449 +0300	commit (merge): route file mein conflict issue resolve kiya
+9873398e866beea99b2693a20035672d830d993e b452a588466d765a1939a42af6268c4abfc0c16f arifshanza3-crypto <arifshanza3@gmail.com> 1782743044 +0300	commit: sign up page ka conflict resolve kiya
+b452a588466d765a1939a42af6268c4abfc0c16f 1a4b1e5df345fea37fc35896f212acb32df8f4dd arifshanza3-crypto <arifshanza3@gmail.com> 1782743302 +0300	commit: sign up page sy patient ka role remove kr diya only staff apna account create kryga
+1a4b1e5df345fea37fc35896f212acb32df8f4dd 2411ed2701158543a822f5579c4daa8cc50a7fc7 arifshanza3-crypto <arifshanza3@gmail.com> 1782743538 +0300	commit: made little bit changes in sign up page placeholders
+2411ed2701158543a822f5579c4daa8cc50a7fc7 0809abc2d939819256cb7da37112393f61840433 arifshanza3-crypto <arifshanza3@gmail.com> 1782743785 +0300	commit: AuthController mein conflict resolve kiya
+0809abc2d939819256cb7da37112393f61840433 e51b296c627af8a6c898020d4f9d86f3947f4079 arifshanza3-crypto <arifshanza3@gmail.com> 1782802415 +0300	commit: resolve error of staff page
+e51b296c627af8a6c898020d4f9d86f3947f4079 5296e9b3aeb03b3b3618b8cba9588df86daf204d arifshanza3-crypto <arifshanza3@gmail.com> 1782802871 +0300	commit (merge): staff page ka error resolve kiya
+5296e9b3aeb03b3b3618b8cba9588df86daf204d 76fe915f5ac62a7946a62c511556f870eb3721e8 arifshanza3-crypto <arifshanza3@gmail.com> 1782829098 +0300	pull origin main: Fast-forward
+76fe915f5ac62a7946a62c511556f870eb3721e8 6a204f4c07445d31293b3bca61191ca883a60a1d arifshanza3-crypto <arifshanza3@gmail.com> 1782895751 +0300	commit: staff page py online or physical token combine krny ki koshish kr rai
+6a204f4c07445d31293b3bca61191ca883a60a1d 325ca5939ec17cc3df2b8229c83d82a22e4cd186 arifshanza3-crypto <arifshanza3@gmail.com> 1782898214 +0300	commit: token status py patient ka name or uska department show krwaya
+325ca5939ec17cc3df2b8229c83d82a22e4cd186 e93107a4b97f4bc705ceac407f82776afe1c14e2 arifshanza3-crypto <arifshanza3@gmail.com> 1782898673 +0300	commit: token status page ko update kiya or uska style change kiya
+e93107a4b97f4bc705ceac407f82776afe1c14e2 0b21244cb2316aa746d74be93133d5230e9b3540 arifshanza3-crypto <arifshanza3@gmail.com> 1782899217 +0300	commit: online generated token ko staff page py show krwaya
+0b21244cb2316aa746d74be93133d5230e9b3540 a6993094986e31a9035ec0c7f342f35d6b9c8899 arifshanza3-crypto <arifshanza3@gmail.com> 1783080171 +0300	pull origin main: Fast-forward
+a6993094986e31a9035ec0c7f342f35d6b9c8899 5b8b5999091f54e1147db992f21201e97507fbdd arifshanza3-crypto <arifshanza3@gmail.com> 1783080720 +0300	commit: add physical patient mein patient ka department field add kiya
+5b8b5999091f54e1147db992f21201e97507fbdd 5bd9f24c6da0c80f5d28fc0e214d8c1c86360994 arifshanza3-crypto <arifshanza3@gmail.com> 1783084597 +0300	commit: online or physical generated token ko ek queue mein combine kr diya
+5bd9f24c6da0c80f5d28fc0e214d8c1c86360994 1ad2683a04950699283c6d291d294cda19a52a57 arifshanza3-crypto <arifshanza3@gmail.com> 1783163304 +0300	commit: patient ki age wala option remove kr diya
+1ad2683a04950699283c6d291d294cda19a52a57 2cb30d19e03e8a21037162ea0a441e75049b5c00 arifshanza3-crypto <arifshanza3@gmail.com> 1783163771 +0300	commit: staff page py calling button add kiya
+2cb30d19e03e8a21037162ea0a441e75049b5c00 3d346ca31f5605ef3d69a6574ae46f343479e02d arifshanza3-crypto <arifshanza3@gmail.com> 1783164235 +0300	commit: staff page py token cancel ka button add kiya
+3d346ca31f5605ef3d69a6574ae46f343479e02d f97e3f0c6db14571cba8548bc543baffc9574544 arifshanza3-crypto <arifshanza3@gmail.com> 1783164913 +0300	commit: sttaf page py generated queue ko department wise kr diya or unki timing bhi us hisab sy set ki
+f97e3f0c6db14571cba8548bc543baffc9574544 22c31ee67fc6ecc036b296aaac25338f346e9b3b arifshanza3-crypto <arifshanza3@gmail.com> 1783165210 +0300	commit: token form sy mobile number ki field remove kr di or email ko optional sy change kr k compulsory kr diya
+22c31ee67fc6ecc036b296aaac25338f346e9b3b d1dbc0837e2c5890c40cc607a1926b162b634932 arifshanza3-crypto <arifshanza3@gmail.com> 1783337702 +0300	pull origin main: Fast-forward
+d1dbc0837e2c5890c40cc607a1926b162b634932 7b8a44bbc37c7c0ceeb64ae4c79e677444016f1e arifshanza3-crypto <arifshanza3@gmail.com> 1783337950 +0300	commit: Select department sy Lab field remove kr di
+7b8a44bbc37c7c0ceeb64ae4c79e677444016f1e e30c6cdc5b06c186f2dec982f8f790ca65e3b6ab arifshanza3-crypto <arifshanza3@gmail.com> 1783424817 +0300	commit: staff ki authentication ki
+e30c6cdc5b06c186f2dec982f8f790ca65e3b6ab 54feb0ad500b7b5128b3b8927a837bc83daf9d38 arifshanza3-crypto <arifshanza3@gmail.com> 1783602818 +0300	commit: token generation ka error resolve kiya
+54feb0ad500b7b5128b3b8927a837bc83daf9d38 0d55c5f592c94b658619d858a052762747df3bc4 arifshanza3-crypto <arifshanza3@gmail.com> 1783847571 +0300	commit: merge
+0d55c5f592c94b658619d858a052762747df3bc4 3d74dbf115c22fa89e4336d8cb08eba5bb78bab0 arifshanza3-crypto <arifshanza3@gmail.com> 1783847646 +0300	commit (merge): Merge branch 'main' of https://github.com/arifshanza3-crypto/Smart-Hospital-Queue-Management
+3d74dbf115c22fa89e4336d8cb08eba5bb78bab0 51888bfdcb857815f53d6ea6be1985dfe1cc36eb arifshanza3-crypto <arifshanza3@gmail.com> 1783942888 +0300	pull origin main: Fast-forward
+51888bfdcb857815f53d6ea6be1985dfe1cc36eb e3641ac48a2c58018d8490622669970b56c3b73d arifshanza3-crypto <arifshanza3@gmail.com> 1783943796 +0300	commit: token table dobara create kiya or successfullly token generate kiya
+e3641ac48a2c58018d8490622669970b56c3b73d 05aa19d83c9d248d16ea3eb334735fe9979aa154 arifshanza3-crypto <arifshanza3@gmail.com> 1784390636 +0300	commit: token status py currently serving token number show krwaya
+05aa19d83c9d248d16ea3eb334735fe9979aa154 0bca534235b469f165fd8855b32f8554353d40ad arifshanza3-crypto <arifshanza3@gmail.com> 1784392515 +0300	commit: sab departments k active tokens home page py display krwaye
+0bca534235b469f165fd8855b32f8554353d40ad 98e38cce87a3f490b2773549864e7110e1d83f0e arifshanza3-crypto <arifshanza3@gmail.com> 1784472046 +0300	commit: tokens managemnt ko auto sy manual kiya means staff handle kryga sab system py
+98e38cce87a3f490b2773549864e7110e1d83f0e 2217b81f7a380a33d542508814109aa5a78ed2ff arifshanza3-crypto <arifshanza3@gmail.com> 1784472731 +0300	commit: staff page py her department k serving tokens show krwaye
+2217b81f7a380a33d542508814109aa5a78ed2ff e36f311f7bdc9116e7438eb26429bce2f3dfac93 arifshanza3-crypto <arifshanza3@gmail.com> 1784473737 +0300	commit: sligt change in style of status page
+e36f311f7bdc9116e7438eb26429bce2f3dfac93 34bdf4d4bcba0553ffa91893ca0ec20d3923bb68 arifshanza3-crypto <arifshanza3@gmail.com> 1784477816 +0300	commit: token generation time correct kiya
+34bdf4d4bcba0553ffa91893ca0ec20d3923bb68 5370180e4cbfa78151d16e36e4e403259ba70c36 arifshanza3-crypto <arifshanza3@gmail.com> 1784478214 +0300	commit: patient ka est waitimg time fixed tha usko dynamic kiya
+5370180e4cbfa78151d16e36e4e403259ba70c36 74fedcd8c3b887d547e9914019ab92d702c9691f arifshanza3-crypto <arifshanza3@gmail.com> 1784530080 +0300	pull origin main: Fast-forward
+74fedcd8c3b887d547e9914019ab92d702c9691f 06415fc995ad0e042d0d75894c2f3c150e4c0a70 arifshanza3-crypto <arifshanza3@gmail.com> 1784531146 +0300	commit: token system sy departments ko remove kr diya
+06415fc995ad0e042d0d75894c2f3c150e4c0a70 aac75d8ffb0fdb5ca3cc40b4d5a568cc9985d078 arifshanza3-crypto <arifshanza3@gmail.com> 1784573940 +0300	commit: role based notitification system add kiya
+aac75d8ffb0fdb5ca3cc40b4d5a568cc9985d078 6b3e1247f30e0d61f40e6ce48d469327b3ab9296 arifshanza3-crypto <arifshanza3@gmail.com> 1784990179 +0300	commit: doctors ki details ko edit krny k liye layout page bnaya
+6b3e1247f30e0d61f40e6ce48d469327b3ab9296 ff8b00304b5939c52756512b1381c974d60d0b75 arifshanza3-crypto <arifshanza3@gmail.com> 1785174552 +0300	pull origin main: Fast-forward
+ff8b00304b5939c52756512b1381c974d60d0b75 ee191ae28c82d9541006db87d3936006e6af6c74 arifshanza3-crypto <arifshanza3@gmail.com> 1785174639 +0300	commit: admin panel sy added doctors ko home page py show krwaya
+ee191ae28c82d9541006db87d3936006e6af6c74 2eb4cefef4397039eb351be26021243836677662 arifshanza3-crypto <arifshanza3@gmail.com> 1785412464 +0300	commit: home page update kiya
+2eb4cefef4397039eb351be26021243836677662 1f9788012b485070f4cb36794e43d8ddf9da9c7a arifshanza3-crypto <arifshanza3@gmail.com> 1785506345 +0300	pull origin main: Fast-forward
+1f9788012b485070f4cb36794e43d8ddf9da9c7a e0ca2ef78c6510839ee998d96a4bf2b3d9088108 arifshanza3-crypto <arifshanza3@gmail.com> 1785507805 +0300	commit: notification sound py kaam kr rai
+e0ca2ef78c6510839ee998d96a4bf2b3d9088108 20702f77e255378e23dc1bde6b669607c23cc4ab arifshanza3-crypto <arifshanza3@gmail.com> 1785556461 +0300	commit: notification page bnaya
+20702f77e255378e23dc1bde6b669607c23cc4ab 8776ccaeacb46683c0b04e7973288e14e26bdf2a arifshanza3-crypto <arifshanza3@gmail.com> 1785558137 +0300	commit: doctor managemnt sy related notifications notification page py show krwaye
+8776ccaeacb46683c0b04e7973288e14e26bdf2a 3f837f9eb174e30686c39a606fd0d0cba771c21f arifshanza3-crypto <arifshanza3@gmail.com> 1786012246 +0300	pull origin main: Fast-forward
+3f837f9eb174e30686c39a606fd0d0cba771c21f 520b27f65619902ba24ef330233a258c7e8fde68 arifshanza3-crypto <arifshanza3@gmail.com> 1786013387 +0300	commit: service management sy related notifications show krwaye
+520b27f65619902ba24ef330233a258c7e8fde68 65d4ecde18dc2ec943133252bc07c16cb04a2ccf arifshanza3-crypto <arifshanza3@gmail.com> 1786014873 +0300	commit: token system sy related notifications show krwaye
+65d4ecde18dc2ec943133252bc07c16cb04a2ccf 53b8b643fc8a7c72e4c66bdc4f56c7e74e0f9ef9 arifshanza3-crypto <arifshanza3@gmail.com> 1786026337 +0300	commit: notification sound is now working for admin panel
+53b8b643fc8a7c72e4c66bdc4f56c7e74e0f9ef9 6d48f07933a3d41fc012fabad0a7509cccf1e5bd arifshanza3-crypto <arifshanza3@gmail.com> 1786026461 +0300	commit: slight change on notification page
+6d48f07933a3d41fc012fabad0a7509cccf1e5bd 3fa2df590f1e9b9c8db7d10869c00a247a2e70b3 arifshanza3-crypto <arifshanza3@gmail.com> 1786026677 +0300	commit: notification sound is added to admin panel
+3fa2df590f1e9b9c8db7d10869c00a247a2e70b3 8fd16a692dbc963384312446a7e43003d589bec7 arifshanza3-crypto <arifshanza3@gmail.com> 1786028715 +0300	commit: notification sound is added to staff dashboard
+8fd16a692dbc963384312446a7e43003d589bec7 5c7de0fa69fbff2644c040096587588cf50ffb3c arifshanza3-crypto <arifshanza3@gmail.com> 1786029126 +0300	commit: notification page py mark all as read ka button add kiya
+5c7de0fa69fbff2644c040096587588cf50ffb3c f16343c29b277f12f83516246c0d559090716043 arifshanza3-crypto <arifshanza3@gmail.com> 1786085622 +0300	pull origin main: Fast-forward
+f16343c29b277f12f83516246c0d559090716043 36b9e0c6e09e74ba08e9154f60d01190c84f367b arifshanza3-crypto <arifshanza3@gmail.com> 1786102150 +0300	commit: notification page ka error resolve kya

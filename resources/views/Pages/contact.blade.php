@@ -4,7 +4,7 @@
 <link href="{{ asset('css/contact.css') }}" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
-    <section class="contact-premium-hero" 
+    <section class="contact-hero" 
              style="background: linear-gradient(rgba(26, 58, 58, 0.9), rgba(26, 58, 58, 0.8)), 
                     url('{{ asset('Assert/contact.jpg') }}'); background-size: cover; background-position: center; background-attachment: fixed;">
         
@@ -14,8 +14,8 @@
         </div>
         
         <div class="container">
-            <div class="hero-text-center">
-                <span class="modern-badge">Let's Connect</span>
+            <div class="hero-text">
+                <span class="hero-badge">Let's Connect</span>
                 <h1>How Can We <span class="gradient-text">Help You?</span></h1>
                 <p>Whether you're a hospital looking to optimize or a patient with a query, our team is just a message away.</p>
             </div>

@@ -1,4 +1,4 @@
-<link href="{{ asset('css/about-special.css') }}" rel="stylesheet">
+<!-- <link href="{{ asset('css/about-special.css') }}" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
 
@@ -39,4 +39,4 @@
         </div>
 
     </div>
-</section>
+</section> -->

@@ -1,44 +1,132 @@
 /**
- * Notification System
+ * Notification System - For All Users (Admin, Staff, User)
  */
 
 let allNotifications = [];
 let currentFilter = 'all';
+let previousBadgeCount = 0;
+let isFetching = false;
 
-function loadNotifications() {
-    const list = document.getElementById('notificationsList');
-    if (!list) return;
+// ============================================ //
+// TOGGLE NOTIFICATIONS                        //
+// ============================================ //
 
-    fetch('/notifications', {
+window.toggleNotifications = function(event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+
+    const dropdown = document.getElementById('notificationDropdown');
+    if (dropdown) {
+        dropdown.classList.toggle('active');
+        if (dropdown.classList.contains('active')) {
+            fetchNotifications();
+        }
+    }
+};
+
+// ============================================ //
+// FETCH NOTIFICATIONS                         //
+// ============================================ //
+
+function fetchNotifications() {
+    if (isFetching) return;
+    isFetching = true;
+
+    fetch('/notifications/json', {
         headers: { 'Accept': 'application/json' }
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            allNotifications = data.notifications || [];
-            document.getElementById('totalCount').textContent = allNotifications.length;
-            document.getElementById('countAll').textContent = allNotifications.length;
-            
-            const unread = allNotifications.filter(n => !n.is_read).length;
-            document.getElementById('countUnread').textContent = unread;
-            document.getElementById('countRead').textContent = allNotifications.length - unread;
-            
-            renderNotifications(allNotifications);
-            updateBadge(unread);
+            allNotifications = data.notifications;
+            renderDropdownNotifications(data.notifications);
+            renderFullPageNotificationsIfPresent(data.notifications);
+            const unreadCount = data.unread_count || 0;
+            updateBadgeCount(unreadCount);
+            previousBadgeCount = unreadCount;
         }
+        isFetching = false;
     })
     .catch(error => {
-        console.error('Error:', error);
+        console.error('Error fetching notifications:', error);
+        isFetching = false;
     });
 }
 
-function renderNotifications(notifications) {
-    const list = document.getElementById('notificationsList');
-    const shownCount = document.getElementById('shownCount');
-
+function renderDropdownNotifications(notifications) {
+    const list = document.getElementById('notificationList');
     if (!list) return;
 
     if (!notifications || notifications.length === 0) {
+        list.innerHTML = `
+            <div style="text-align: center; padding: 30px 20px; color: #94a3b8; font-size: 14px;">
+                <div style="font-size: 30px; margin-bottom: 8px;">🔕</div>
+                No notifications
+            </div>
+        `;
+        return;
+    }
+
+    let html = '';
+    const latest = notifications.slice(0, 5);
+
+    latest.forEach(notification => {
+        const unreadClass = notification.is_read ? '' : 'unread';
+        const time = new Date(notification.created_at);
+        const timeStr = time.toLocaleString();
+        let icon = getNotificationIcon(notification.type);
+
+        html += `
+            <div class="notification-item ${unreadClass}" onclick="markNotificationAsRead(${notification.id})">
+                <div class="notification-icon">
+                    <i class="fas ${icon}"></i>
+                </div>
+                <div class="notification-content">
+                    <p class="notification-text"><strong>${notification.title}</strong></p>
+                    <p class="notification-text" style="font-size: 12px; color: #94a3b8;">${notification.message}</p>
+                    ${notification.token_number ? `<div style="font-size: 11px; color: #00d4ff;">🎫 Token: #${notification.token_number}</div>` : ''}
+                    <span class="notification-time">${timeStr}</span>
+                </div>
+                ${!notification.is_read ? '<div style="color: #0ea5e9; font-size: 8px;">●</div>' : ''}
+            </div>
+        `;
+    });
+
+    list.innerHTML = html;
+}
+
+function renderFullPageNotificationsIfPresent(notifications) {
+    const list = document.getElementById('notificationsList');
+    if (!list) return;
+
+    // Filter based on active tab
+    let filtered = notifications;
+    if (currentFilter === 'unread') {
+        filtered = notifications.filter(n => !n.is_read);
+    } else if (currentFilter === 'read') {
+        filtered = notifications.filter(n => n.is_read);
+    }
+
+    // Dynamic Counts Update
+    const totalCount = notifications.length;
+    const unreadCount = notifications.filter(n => !n.is_read).length;
+    const readCount = totalCount - unreadCount;
+
+    const elTotal = document.getElementById('totalCount');
+    const elCountAll = document.getElementById('countAll');
+    const elCountUnread = document.getElementById('countUnread');
+    const elCountRead = document.getElementById('countRead');
+    const elShownCount = document.getElementById('shownCount');
+
+    if (elTotal) elTotal.textContent = totalCount;
+    if (elCountAll) elCountAll.textContent = totalCount;
+    if (elCountUnread) elCountUnread.textContent = unreadCount;
+    if (elCountRead) elCountRead.textContent = readCount;
+    if (elShownCount) elShownCount.textContent = filtered.length;
+
+    if (!filtered || filtered.length === 0) {
         list.innerHTML = `
             <div class="empty-state">
                 <div class="empty-icon">🔕</div>
@@ -46,26 +134,29 @@ function renderNotifications(notifications) {
                 <p>You don't have any notifications yet.</p>
             </div>
         `;
-        if (shownCount) shownCount.textContent = '0';
         return;
     }
 
     let html = '';
-    notifications.forEach(notification => {
+    filtered.forEach(notification => {
         const isRead = notification.is_read;
         const readClass = isRead ? 'read' : 'unread';
-        const icon = notification.data?.icon || 'fa-bell';
-        const newTag = !isRead ? `<span class="new-tag">New</span>` : '';
+        const icon = getNotificationIcon(notification.type);
+        const timeStr = new Date(notification.created_at).toLocaleString();
 
         html += `
-            <div class="notification-item ${readClass}" data-id="${notification.id}" onclick="markAsRead(${notification.id})">
+            <div class="notification-item ${readClass}" data-id="${notification.id}" onclick="markNotificationAsRead(${notification.id})">
                 <div class="notification-icon">
                     <i class="fas ${icon}"></i>
                 </div>
                 <div class="notification-content">
-                    <div class="notification-title">${notification.title} ${newTag}</div>
+                    <div class="notification-title">
+                        ${notification.title}
+                        ${!isRead ? '<span class="new-tag">New</span>' : ''}
+                    </div>
                     <div class="notification-message">${notification.message}</div>
-                    <div class="notification-time">${new Date(notification.created_at).toLocaleString()}</div>
+                    ${notification.token_number ? `<div style="font-size: 12px; color: #00d4ff; margin-top: 4px;">🎫 Token: #${notification.token_number}</div>` : ''}
+                    <div class="notification-time">${timeStr}</div>
                 </div>
                 <div class="notification-status">
                     ${!isRead ? '<span class="unread-dot">●</span>' : '<span class="read-check">✓</span>'}
@@ -75,32 +166,43 @@ function renderNotifications(notifications) {
     });
 
     list.innerHTML = html;
-    if (shownCount) shownCount.textContent = notifications.length;
 }
 
-function filterNotifications(filter) {
+window.filterNotifications = function(filter) {
     currentFilter = filter;
-    
     document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.dataset.filter === filter) {
+        if (btn.getAttribute('data-filter') === filter) {
             btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
         }
     });
+    renderFullPageNotificationsIfPresent(allNotifications);
+};
 
-    let filtered = allNotifications;
-    if (filter === 'unread') {
-        filtered = allNotifications.filter(n => !n.is_read);
-    } else if (filter === 'read') {
-        filtered = allNotifications.filter(n => n.is_read);
-    }
-
-    renderNotifications(filtered);
+function getNotificationIcon(type) {
+    const icons = {
+        'token_generated': 'fa-ticket-alt',
+        'token_called': 'fa-phone',
+        'token_arrived': 'fa-check-circle',
+        'token_completed': 'fa-check-double',
+        'token_cancelled': 'fa-times-circle',
+        'physical_patient_added': 'fa-user-plus',
+        'staff_registered': 'fa-user-check',
+        'staff_approved': 'fa-user-check',
+        'staff_rejected': 'fa-user-times',
+        'account_approved': 'fa-check-circle',
+        'system_alert': 'fa-exclamation-triangle',
+        'doctor_added': 'fa-user-md',
+        'doctor_updated': 'fa-user-edit',
+        'doctor_deleted': 'fa-user-times'
+    };
+    return icons[type] || 'fa-bell';
 }
 
-function markAsRead(id) {
+window.markNotificationAsRead = function(id) {
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-    
+
     fetch(`/notifications/${id}/read`, {
         method: 'POST',
         headers: {
@@ -112,30 +214,16 @@ function markAsRead(id) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            const notification = allNotifications.find(n => n.id === id);
-            if (notification) {
-                notification.is_read = true;
-            }
-            const unread = allNotifications.filter(n => !n.is_read).length;
-            document.getElementById('countUnread').textContent = unread;
-            document.getElementById('countRead').textContent = allNotifications.length - unread;
-            filterNotifications(currentFilter);
-            updateBadge(unread);
-            showToast('✅ Notification marked as read!', 'success');
+            fetchNotifications();
+            checkUnreadCount();
         }
     })
     .catch(error => console.error('Error:', error));
-}
+};
 
-function markAllRead() {
+window.markAllRead = function() {
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-    const btn = document.getElementById('markAllBtn');
-    
-    if (btn) {
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Please wait...';
-    }
-    
+
     fetch('/notifications/read-all', {
         method: 'POST',
         headers: {
@@ -146,134 +234,45 @@ function markAllRead() {
     })
     .then(response => response.json())
     .then(data => {
-        if (btn) {
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-check-double"></i> Mark all as read';
-        }
         if (data.success) {
-            allNotifications.forEach(n => n.is_read = true);
-            document.getElementById('countUnread').textContent = 0;
-            document.getElementById('countRead').textContent = allNotifications.length;
-            filterNotifications(currentFilter);
-            updateBadge(0);
-            showToast('✅ All notifications marked as read!', 'success');
-        } else {
-            showToast('❌ Failed to mark all as read', 'error');
+            fetchNotifications();
+            checkUnreadCount();
+            updateBadgeCount(0);
+            previousBadgeCount = 0;
         }
     })
-    .catch(error => {
-        console.error('Error:', error);
-        if (btn) {
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-check-double"></i> Mark all as read';
-        }
-        showToast('❌ Error marking all as read', 'error');
-    });
-}
+    .catch(error => console.error('Error:', error));
+};
 
-function updateBadge(unreadCount) {
+function updateBadgeCount(count) {
     const badge = document.getElementById('notificationBadge');
     if (badge) {
-        if (unreadCount > 0) {
-            badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
-            badge.style.display = 'block';
+        if (count > 0) {
+            badge.textContent = count > 99 ? '99+' : count;
+            badge.classList.add('show');
         } else {
-            badge.style.display = 'none';
+            badge.classList.remove('show');
         }
     }
 }
-
-function showToast(message, type = 'success') {
-    const existing = document.querySelector('.toast-message');
-    if (existing) existing.remove();
-    
-    const toast = document.createElement('div');
-    toast.className = `toast-message toast-${type}`;
-    toast.textContent = message;
-    document.body.appendChild(toast);
-    
-    setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transform = 'translateY(20px)';
-        toast.style.transition = 'all 0.3s ease';
-        setTimeout(() => toast.remove(), 400);
-    }, 3500);
-}
-
-// ============================================ //
-// CHECK UNREAD COUNT                         //
-// ============================================ //
-
-let previousCount = 0;
 
 function checkUnreadCount() {
     fetch('/notifications/unread-count')
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                const count = data.count;
-                updateBadge(count);
-                
-                if (count > previousCount && count > 0) {
+                const currentCount = data.count;
+                updateBadgeCount(currentCount);
+
+                if (currentCount > previousBadgeCount && currentCount > 0) {
                     playNotificationSound();
                 }
-                previousCount = count;
+                previousBadgeCount = currentCount;
             }
         })
-        .catch(error => console.error('Error checking unread count:', error));
+        .catch(error => console.warn('Error checking notifications:', error));
 }
-
-// ============================================ //
-// SOUND                                       //
-// ============================================ //
-
-let notificationAudio = null;
-
-function initAudio() {
-    try {
-        notificationAudio = new Audio('/Notification%20Sound/notification.wav');
-        notificationAudio.volume = 0.8;
-        notificationAudio.preload = 'auto';
-        notificationAudio.onerror = function() {
-            console.warn('⚠️ Sound file not found');
-            notificationAudio = null;
-        };
-    } catch (error) {
-        console.warn('Audio init failed:', error);
-        notificationAudio = null;
-    }
-}
-
-function playNotificationSound() {
-    if (notificationAudio) {
-        try {
-            notificationAudio.currentTime = 0;
-            notificationAudio.play()
-                .then(() => console.log('🔊 Notification sound played!'))
-                .catch(() => console.log('🔇 Sound play blocked'));
-        } catch (error) {
-            console.log('🔇 Sound error:', error);
-        }
-    }
-}
-
-// ============================================ //
-// INIT                                       //
-// ============================================ //
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('✅ Notification system initialized');
-    
-    loadNotifications();
-    checkUnreadCount();
-    setInterval(checkUnreadCount, 10000);
-    setInterval(loadNotifications, 30000);
-    initAudio();
+    fetchNotifications();
 });
-
-// EXPOSE TO GLOBAL SCOPE
-window.filterNotifications = filterNotifications;
-window.markAsRead = markAsRead;
-window.markAllRead = markAllRead;
-window.loadNotifications = loadNotifications;
-window.checkUnreadCount = checkUnreadCount;

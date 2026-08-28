@@ -22,22 +22,22 @@
             </div>
         </div>
 
-        <div class="hero-slide">
+        <!-- <div class="hero-slide">
             <div class="hero-content-container">
                 <div class="hero-left">
                     <span class="hero-tag">Advanced Technology</span>
                     <h1 class="hero-title">Expert Doctors <br> & Expert Care</h1>
                     <p class="hero-description">Experience the next generation of patient care with real-time updates and seamless queue management.</p>
-                    <div class="hero-btn-group">
+                    <!-- <div class="hero-btn-group">
                         <a href="#" class="btn-secondary-hero">Learn More</a>
-                    </div>
-                </div>
+                    </div> -->
+                <!-- </div>
                 <div class="hero-right">
                     <img src="https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&q=80&w=1000" alt="Medical Technology">
                 </div>
             </div>
         </div>
-    </div>
+    </div> --> -->
 
     <div class="hero-bottom-bar">
         <div class="ticker-wrapper">
@@ -117,7 +117,7 @@
 
 {{-- ✅ COMPONENTS --}}
 @include("component/Doctors_details")
-@include("component/about-special")
+<!-- @include("component/about-special") -->
 @include("component/contact_form")
 
 <script src="{{ asset('js/home.js') }}"></script>

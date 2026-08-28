@@ -206,7 +206,7 @@ class StaffController extends Controller
             $token->called_at = now();
             $token->save();
 
-            // ✅ BELL NOTIFICATION
+            // ✅ BELL NOTIFICATION - Staff & Admins
             $this->notifyAllStaffAndAdmins(
                 'Token Called',
                 'Token ' . $token->token_number . ' (' . $token->patient_name . ') has been called',
@@ -219,11 +219,12 @@ class StaffController extends Controller
                 ]
             );
 
+            // ✅ BELL NOTIFICATION - User/Patient
             if ($token->patient_id) {
                 $this->notifyUser(
                     $token->patient_id,
                     'Token Called',
-                    'Your token ' . $token->token_number . ' has been called.',
+                    'Your token ' . $token->token_number . ' has been called. Please proceed to the counter.',
                     'token_called',
                     [
                         'token_number' => $token->token_number,
@@ -252,7 +253,7 @@ class StaffController extends Controller
             $token->started_at = now();
             $token->save();
 
-            // ✅ BELL NOTIFICATION
+            // ✅ BELL NOTIFICATION - Staff & Admins
             $this->notifyAllStaffAndAdmins(
                 'Patient Arrived',
                 'Patient ' . $token->patient_name . ' (Token: ' . $token->token_number . ') has arrived',
@@ -265,11 +266,12 @@ class StaffController extends Controller
                 ]
             );
 
+            // ✅ BELL NOTIFICATION - User/Patient
             if ($token->patient_id) {
                 $this->notifyUser(
                     $token->patient_id,
                     'Patient Arrived',
-                    'You have arrived for token ' . $token->token_number,
+                    'You have arrived for token ' . $token->token_number . '. Please wait for your turn.',
                     'token_arrived',
                     [
                         'token_number' => $token->token_number,
@@ -302,7 +304,7 @@ class StaffController extends Controller
             $this->recalculatePositions($department);
             $this->callNext();
 
-            // ✅ BELL NOTIFICATION
+            // ✅ BELL NOTIFICATION - Staff & Admins
             $this->notifyAllStaffAndAdmins(
                 'Service Completed',
                 'Service for ' . $token->patient_name . ' (Token: ' . $token->token_number . ') completed',
@@ -315,11 +317,12 @@ class StaffController extends Controller
                 ]
             );
 
+            // ✅ BELL NOTIFICATION - User/Patient
             if ($token->patient_id) {
                 $this->notifyUser(
                     $token->patient_id,
                     'Service Completed',
-                    'Your service for token ' . $token->token_number . ' is complete.',
+                    'Your service for token ' . $token->token_number . ' is complete. Thank you!',
                     'token_completed',
                     [
                         'token_number' => $token->token_number,
@@ -353,7 +356,7 @@ class StaffController extends Controller
             $this->recalculatePositions($department);
             $this->callNext();
 
-            // ✅ BELL NOTIFICATION
+            // ✅ BELL NOTIFICATION - Staff & Admins
             $this->notifyAllStaffAndAdmins(
                 'Token Cancelled',
                 'Token ' . $tokenNumber . ' (' . $tokenName . ') has been cancelled',
@@ -366,6 +369,7 @@ class StaffController extends Controller
                 ]
             );
 
+            // ✅ BELL NOTIFICATION - User/Patient
             if ($token->patient_id) {
                 $this->notifyUser(
                     $token->patient_id,
@@ -404,7 +408,7 @@ class StaffController extends Controller
             $this->recalculatePositions($department);
             $this->callNext();
 
-            // ✅ BELL NOTIFICATION
+            // ✅ BELL NOTIFICATION - Staff & Admins
             $this->notifyAllStaffAndAdmins(
                 'Patient Missed',
                 'Patient ' . $tokenName . ' (Token: ' . $tokenNumber . ') missed appointment',
@@ -417,6 +421,7 @@ class StaffController extends Controller
                 ]
             );
 
+            // ✅ BELL NOTIFICATION - User/Patient
             if ($token->patient_id) {
                 $this->notifyUser(
                     $token->patient_id,
@@ -463,7 +468,7 @@ class StaffController extends Controller
                 $next->called_at = now();
                 $next->save();
 
-                // ✅ BELL NOTIFICATION
+                // ✅ BELL NOTIFICATION - Staff & Admins
                 $this->notifyAllStaffAndAdmins(
                     'Next Token Called',
                     'Token ' . $next->token_number . ' (' . $next->patient_name . ') is next',
@@ -476,11 +481,12 @@ class StaffController extends Controller
                     ]
                 );
 
+                // ✅ BELL NOTIFICATION - User/Patient
                 if ($next->patient_id) {
                     $this->notifyUser(
                         $next->patient_id,
                         'Next Token Called',
-                        'Your token ' . $next->token_number . ' is next in queue.',
+                        'Your token ' . $next->token_number . ' is next in queue. Please be ready.',
                         'token_called',
                         [
                             'token_number' => $next->token_number,

@@ -22,7 +22,6 @@ class TokenController extends Controller
     public function generateToken(Request $request)
     {
         try {
-            // ✅ Validation without department
             $validated = $request->validate([
                 'patient_name' => 'required|string|max:255',
                 'phone' => 'nullable|string|max:20',
@@ -33,12 +32,13 @@ class TokenController extends Controller
             $userId = null;
             if (Auth::check()) {
                 $userId = Auth::id();
+                Log::info('User logged in, ID: ' . $userId);
+            } else {
+                Log::info('User not logged in');
             }
 
-            // ✅ Default department
             $department = $request->department ?? 'General';
 
-            // ✅ Generate token number
             $lastToken = Token::orderBy('id', 'desc')->first();
             if ($lastToken && $lastToken->token_number) {
                 $lastNumber = intval(substr($lastToken->token_number, 4));
@@ -48,7 +48,6 @@ class TokenController extends Controller
                 $tokenNumber = 'TKN-001';
             }
 
-            // ✅ Create token
             $token = Token::create([
                 'token_number' => $tokenNumber,
                 'patient_name' => $request->patient_name,
@@ -65,17 +64,18 @@ class TokenController extends Controller
                 'created_at' => now()
             ]);
 
-            // ✅ Save token in session for status page
             session(['current_token' => $tokenNumber]);
 
             Log::info('Token generated: ' . $tokenNumber . ' for ' . $request->patient_name);
 
             // ✅ Send notification to user (if logged in)
             if ($userId) {
+                Log::info('Sending notification to user: ' . $userId);
+                
                 $this->notifyUser(
                     $userId,
                     'Token Generated',
-                    'Your token ' . $tokenNumber . ' has been generated successfully',
+                    'Your token ' . $tokenNumber . ' has been generated successfully for ' . $department,
                     'token_generated',
                     [
                         'token_number' => $tokenNumber,
@@ -84,12 +84,16 @@ class TokenController extends Controller
                         'url' => route('status.page', ['token' => $tokenNumber])
                     ]
                 );
+                
+                Log::info('✅ Notification sent to user: ' . $userId);
+            } else {
+                Log::info('⚠️ User not logged in, skipping user notification');
             }
 
             // ✅ Send notification to all staff and admins
             $this->notifyAllStaffAndAdmins(
                 'New Token Generated',
-                'Token ' . $tokenNumber . ' generated for ' . $request->patient_name,
+                'Token ' . $tokenNumber . ' generated for ' . $request->patient_name . ' (' . $department . ')',
                 'token_generated',
                 [
                     'token_number' => $tokenNumber,
@@ -131,7 +135,6 @@ class TokenController extends Controller
                 ], 404);
             }
 
-            // ✅ Calculate waiting time
             $waitingTime = 0;
             if ($token->status === 'waiting') {
                 $waitingTokens = Token::where('department', $token->department)
