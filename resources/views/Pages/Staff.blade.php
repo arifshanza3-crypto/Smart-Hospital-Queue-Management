@@ -36,8 +36,6 @@
     </section>
 
     <main class="container">
-        {{-- ❌ Department Tabs Removed --}}
-
         <div class="data-card">
             <table class="queue-table">
                 <thead>
@@ -69,7 +67,7 @@
         </div>
     </div>
 
-    <!-- Patient Modal -->
+    <!-- Patient Modal - Updated with Mobile Number -->
     <div id="patientModal" class="modal">
         <div class="modal-content">
             <h3>Add New Patient</h3>
@@ -77,7 +75,12 @@
                 <label>Full Name</label>
                 <input type="text" id="p_name" placeholder="Enter name..." required>
             </div>
-            {{-- ❌ Department Field Removed --}}
+            {{-- ✅ NEW: Mobile Number Field --}}
+            <div class="form-group">
+                <label>Mobile Number</label>
+                <input type="tel" id="p_mobile" placeholder="03XX-XXXXXXX" required maxlength="11">
+                <small id="mobileError" style="color: #ff4b2b; display: none;">Please enter a valid 11-digit number starting with 03</small>
+            </div>
             <div class="modal-footer">
                 <button class="btn btn-text" onclick="closeModal('patientModal')">Cancel</button>
                 <button class="btn btn-primary" onclick="submitPatient()">Add to Queue</button>
@@ -110,4 +113,81 @@
     </div>
 
     <script src="{{ asset('js/Staff.js') }}"></script>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const mobileInput = document.getElementById('p_mobile');
+        const mobileError = document.getElementById('mobileError');
+
+        if (mobileInput) {
+            mobileInput.addEventListener('input', function(e) {
+                this.value = this.value.replace(/[^0-9]/g, '');
+                if (this.value.length > 11) {
+                    this.value = this.value.slice(0, 11);
+                }
+
+                const isValid = /^(03)\d{9}$/.test(this.value);
+                if (this.value.length > 0 && !isValid) {
+                    mobileError.style.display = 'block';
+                    this.style.border = "1px solid #ff4b2b";
+                } else {
+                    mobileError.style.display = 'none';
+                    this.style.border = "1px solid rgba(255,255,255,0.1)";
+                }
+            });
+        }
+    });
+
+    // ✅ Override submitPatient function to include mobile number
+    function submitPatient() {
+        const name = document.getElementById('p_name')?.value?.trim();
+        const mobile = document.getElementById('p_mobile')?.value?.trim();
+
+        if (!name) {
+            alert('Please enter patient name');
+            return;
+        }
+
+        if (!mobile) {
+            alert('Please enter mobile number');
+            return;
+        }
+
+        // Validate mobile number
+        const isValid = /^(03)\d{9}$/.test(mobile);
+        if (!isValid) {
+            document.getElementById('mobileError').style.display = 'block';
+            document.getElementById('p_mobile').style.border = "1px solid #ff4b2b";
+            return;
+        }
+
+        fetch('/staff/add-patient', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({
+                name: name,
+                mobile_number: mobile
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                closeModal('patientModal');
+                document.getElementById('p_name').value = '';
+                document.getElementById('p_mobile').value = '';
+                loadQueue();
+                alert('✅ ' + data.message);
+            } else {
+                alert('❌ ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('❌ Error adding patient');
+        });
+    }
+    </script>
 @endsection

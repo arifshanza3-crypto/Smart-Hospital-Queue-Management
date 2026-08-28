@@ -15,14 +15,19 @@ class Token extends Model
         'patient_name',
         'phone',
         'email',
-        'department',
+        'department',  // ✅ department added back
         'type',
         'status',
         'estimated_time',
         'position',
         'called_at',
         'completed_at'
-        // ❌ 'age' remove kar diya
+    ];
+
+    protected $casts = [
+        'patient_id' => 'string',
+        'position' => 'integer',
+        'estimated_time' => 'integer',
     ];
     
     public function patient()

@@ -3,7 +3,7 @@
 /* ============================================ */
 .hero-slider-section {
     position: relative;
-    height: 95vh;
+    height: 85vh;
     width: 100%;
     background: #071a1c;
     overflow: hidden;
@@ -32,7 +32,7 @@
 /* Left Side (Text) */
 .hero-left {
     flex: 1;
-    padding: 0 8% 100px 8%;
+    padding: 0 8% 80px 8%;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -50,45 +50,46 @@
 .hero-tag {
     display: inline-block;
     color: #00d4ff;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     font-weight: 700;
     letter-spacing: 3px;
     text-transform: uppercase;
-    margin-bottom: 15px;
+    margin-bottom: 12px;
     border-left: 3px solid #00d4ff;
     padding-left: 15px;
 }
 
 .hero-title {
     color: white;
-    font-size: 4.5rem;
+    font-size: 4rem;
     font-weight: 800;
     line-height: 1.1;
-    margin-bottom: 25px;
+    margin-bottom: 18px;
 }
 
 .hero-description {
     color: rgba(255, 255, 255, 0.7);
-    font-size: 1.1rem;
-    max-width: 500px;
-    margin-bottom: 30px;
+    font-size: 1rem;
+    max-width: 550px;
+    margin-bottom: 25px;
     line-height: 1.8;
 }
 
 .hero-btn-group {
-    margin-top: 10px;
-    margin-bottom: 20px;
+    margin-top: 8px;
+    margin-bottom: 15px;
 }
 
 .btn-secondary-hero {
     display: inline-block;
-    padding: 16px 35px;
+    padding: 14px 30px;
     border: 2px solid #00d4ff;
     border-radius: 50px;
     color: #00d4ff;
     text-decoration: none;
     font-weight: 700;
     text-transform: uppercase;
+    font-size: 0.85rem;
     letter-spacing: 1px;
     transition: 0.4s;
     background: transparent;
@@ -103,7 +104,7 @@
 
 /* Right Side (Image) */
 .hero-right {
-    flex: 1.2;
+    flex: 1.1;
     transform: translateX(100px);
     transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 1s;
     opacity: 0;
@@ -118,21 +119,24 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    clip-path: polygon(15% 0%, 100% 0%, 100% 100%, 0% 100%);
+    border-radius: 12px 0 0 12px;
+    clip-path: polygon(10% 0%, 100% 0%, 100% 100%, 0% 100%);
 }
 
-/* Ticker Bar */
+/* ============================================ */
+/* TICKER BAR - Smart Queue Benefits          */
+/* ============================================ */
 .hero-bottom-bar {
     position: absolute;
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 70px;
-    background: #0b2e33;
+    height: 30px;
+    background: linear-gradient(90deg, #1a4a50, #0b2e33, #1a4a50);
     display: flex;
     align-items: center;
     z-index: 10;
-    border-top: 1px solid rgba(0, 212, 255, 0.1);
+    border-top: 1px solid rgba(0, 212, 255, 0.08);
 }
 
 .ticker-wrapper {
@@ -143,15 +147,20 @@
 .ticker-content {
     display: inline-block;
     white-space: nowrap;
-    animation: tickerScroll 30s linear infinite;
+    animation: tickerScroll 25s linear infinite;
 }
 
 .ticker-content span {
-    color: white;
-    font-size: 0.95rem;
-    font-weight: 700;
-    margin: 0 30px;
-    letter-spacing: 1.5px;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.7rem;
+    font-weight: 500;
+    margin: 0 16px;
+    letter-spacing: 0.5px;
+    transition: color 0.3s ease;
+}
+
+.ticker-content span:hover {
+    color: #00d4ff;
 }
 
 @keyframes tickerScroll {
@@ -206,16 +215,6 @@
     margin: 10px 0;
 }
 
-.serving-dept {
-    display: inline-block;
-    background: rgba(0, 212, 255, 0.1);
-    color: #0b2e33;
-    padding: 2px 12px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 600;
-}
-
 .serving-patient {
     display: block;
     color: #7a8a8e;
@@ -238,7 +237,7 @@
 /* TOKEN STATUS SECTION                        */
 /* ============================================ */
 .token-status-section {
-    padding: 50px 0;
+    padding: 40px 0;
     background: #0b2e33;
 }
 
@@ -252,35 +251,36 @@
 .user-token-card {
     background: #ffffff;
     border-radius: 16px;
-    padding: 30px;
+    padding: 25px;
     box-shadow: 0 4px 25px rgba(0, 0, 0, 0.15);
     border: 1px solid rgba(0, 212, 255, 0.1);
     max-width: 500px;
-    margin: 0 auto 30px;
+    margin: 0 auto 25px;
 }
 
 .token-card-header {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-bottom: 15px;
+    margin-bottom: 12px;
 }
 
 .token-card-header h3 {
     margin: 0;
     color: #0b2e33;
+    font-size: 1.1rem;
 }
 
 .token-icon {
-    font-size: 20px;
+    font-size: 18px;
 }
 
 .token-number-large {
-    font-size: 48px;
+    font-size: 40px;
     font-weight: 800;
     color: #0b2e33;
     text-align: center;
-    padding: 10px 0;
+    padding: 8px 0;
     background: linear-gradient(135deg, #0b2e33, #1a7a82);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -290,8 +290,8 @@
 .token-details {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 10px 20px;
-    margin: 15px 0;
+    gap: 8px 16px;
+    margin: 10px 0;
 }
 
 .token-detail-item {
@@ -300,14 +300,14 @@
 }
 
 .token-detail-item .label {
-    font-size: 11px;
+    font-size: 10px;
     color: #7a8a8e;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 .token-detail-item .value {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 600;
     color: #1a2e33;
 }
@@ -318,17 +318,18 @@
 
 .token-card-footer {
     text-align: center;
-    margin-top: 15px;
+    margin-top: 12px;
 }
 
 .btn-view-status {
     display: inline-block;
-    padding: 10px 25px;
+    padding: 8px 22px;
     background: linear-gradient(135deg, #0b2e33, #1a7a82);
     color: white;
     border-radius: 8px;
     text-decoration: none;
     font-weight: 600;
+    font-size: 0.9rem;
     transition: all 0.3s ease;
 }
 
@@ -342,17 +343,17 @@
 /* ============================================ */
 @media (max-width: 992px) {
     .hero-title {
-        font-size: 3.5rem;
+        font-size: 3rem;
     }
     
     .hero-left {
-        padding: 0 5% 80px 5%;
+        padding: 0 5% 60px 5%;
     }
 }
 
 @media (max-width: 768px) {
     .hero-slider-section {
-        height: 100vh;
+        height: 90vh;
     }
     
     .hero-content-container {
@@ -360,30 +361,31 @@
     }
     
     .hero-left {
-        padding: 20px 5% 60px 5%;
+        padding: 15px 5% 40px 5%;
         flex: 1;
     }
     
     .hero-title {
-        font-size: 2.8rem;
+        font-size: 2.4rem;
     }
     
     .hero-right {
-        flex: 0.8;
-        min-height: 200px;
+        flex: 0.7;
+        min-height: 150px;
     }
     
     .hero-right img {
         clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+        border-radius: 0;
     }
     
     .hero-bottom-bar {
-        height: 50px;
+        height: 24px;
     }
     
     .ticker-content span {
-        font-size: 0.75rem;
-        margin: 0 15px;
+        font-size: 0.5rem;
+        margin: 0 10px;
     }
     
     .token-details {
@@ -397,20 +399,29 @@
 
 @media (max-width: 480px) {
     .hero-title {
-        font-size: 2rem;
+        font-size: 1.8rem;
     }
     
     .hero-description {
-        font-size: 0.9rem;
-    }
-    
-    .btn-secondary-hero {
-        padding: 12px 25px;
         font-size: 0.8rem;
     }
     
+    .btn-secondary-hero {
+        padding: 10px 20px;
+        font-size: 0.7rem;
+    }
+    
+    .hero-bottom-bar {
+        height: 20px;
+    }
+    
+    .ticker-content span {
+        font-size: 0.4rem;
+        margin: 0 6px;
+    }
+    
     .token-number-large {
-        font-size: 32px;
+        font-size: 28px;
     }
     
     .serving-tokens-grid {
@@ -418,7 +429,19 @@
     }
     
     .user-token-card {
-        padding: 20px;
-        margin: 0 10px 20px;
+        padding: 16px;
+        margin: 0 10px 15px;
+    }
+    
+    .serving-token-card {
+        padding: 14px;
+    }
+    
+    .serving-token-number {
+        font-size: 18px;
+    }
+    
+    .section-title {
+        font-size: 14px;
     }
 }

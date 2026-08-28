@@ -10,14 +10,14 @@
             <div class="hero-content-container">
                 <div class="hero-left">
                     <span class="hero-tag">Smart Solutions</span>
-                    <h1 class="hero-title">Medical Hospital <br> & Healthcare</h1>
-                    <p class="hero-description">Efficiently managing your time with our advanced digital queuing system designed for modern healthcare facilities.</p>
+                    <h1 class="hero-title">Smart Queue <br>Management System</h1>
+                    <p class="hero-description">Experience smarter healthcare with our real-time queue management system – reducing wait times, improving patient care, and optimizing hospital workflow.</p>
                     <div class="hero-btn-group">
-                        <a href="#" class="btn-secondary-hero">Our Services</a>
+                        <a href="{{ route('services') }}" class="btn-secondary-hero">Our Services</a>
                     </div>
                 </div>
                 <div class="hero-right">
-                    <img src="https://images.unsplash.com/photo-1551076805-e1869033e561?auto=format&fit=crop&q=80&w=1000" alt="Healthcare Professional">
+                    <img src="https://images.unsplash.com/photo-1587351021759-3e566b6af7cc?auto=format&fit=crop&q=80&w=1000" alt="Smart Queue Management">
                 </div>
             </div>
         </div>
@@ -26,28 +26,44 @@
             <div class="hero-content-container">
                 <div class="hero-left">
                     <span class="hero-tag">Advanced Technology</span>
-                    <h1 class="hero-title">Expert Doctors <br> & Expert Care</h1>
+                    <h1 class="hero-title">Expert Doctors <br>& Expert Care</h1>
                     <p class="hero-description">Experience the next generation of patient care with real-time updates and seamless queue management.</p>
+<<<<<<< HEAD
                     <!-- <div class="hero-btn-group">
                         <a href="#" class="btn-secondary-hero">Learn More</a>
                     </div> -->
                 <!-- </div>
+=======
+                    <div class="hero-btn-group">
+                        <a href="{{ route('about') }}" class="btn-secondary-hero">Learn More</a>
+                    </div>
+                </div>
+>>>>>>> 0e2f13c81a0d22d7d61fb3ea1cdf2a8f08f28036
                 <div class="hero-right">
-                    <img src="https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&q=80&w=1000" alt="Medical Technology">
+                    <img src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=1000" alt="Medical Technology">
                 </div>
             </div>
         </div>
     </div> --> -->
 
+    {{-- ✅ TICKER BAR - Smart Queue Benefits --}}
     <div class="hero-bottom-bar">
         <div class="ticker-wrapper">
             <div class="ticker-content">
-                <span>WELLNESS</span> <span>•</span> <span>THERAPIST</span> <span>•</span> <span>NURSING</span> <span>•</span> 
-                <span>PATIENT CARE</span> <span>•</span> <span>HEALTH CENTER</span> <span>•</span> <span>EMERGENCY</span> <span>•</span> 
-                <span>MEDICAL SERVICES</span> <span>•</span>
-                <span>WELLNESS</span> <span>•</span> <span>THERAPIST</span> <span>•</span> <span>NURSING</span> <span>•</span> 
-                <span>PATIENT CARE</span> <span>•</span> <span>HEALTH CENTER</span> <span>•</span> <span>EMERGENCY</span> <span>•</span> 
-                <span>MEDICAL SERVICES</span> <span>•</span>
+                <span>⚡ Real-Time Queue Updates</span> <span>•</span> 
+                <span>⏱️ Reduce Wait Times</span> <span>•</span> 
+                <span>📱 Instant Notifications</span> <span>•</span> 
+                <span>🎯 Smart Patient Flow</span> <span>•</span> 
+                <span>🔄 Seamless Experience</span> <span>•</span> 
+                <span>📊 Live Analytics</span> <span>•</span> 
+                <span>🏥 Efficient Care</span> <span>•</span>
+                <span>⚡ Real-Time Queue Updates</span> <span>•</span> 
+                <span>⏱️ Reduce Wait Times</span> <span>•</span> 
+                <span>📱 Instant Notifications</span> <span>•</span> 
+                <span>🎯 Smart Patient Flow</span> <span>•</span> 
+                <span>🔄 Seamless Experience</span> <span>•</span> 
+                <span>📊 Live Analytics</span> <span>•</span> 
+                <span>🏥 Efficient Care</span> <span>•</span>
             </div>
         </div>
     </div>
@@ -67,7 +83,6 @@
                         <div class="serving-token-card">
                             <div class="serving-token-number">{{ $token->token_number }}</div>
                             <div class="serving-token-details">
-                                <span class="serving-dept">{{ $token->department }}</span>
                                 <span class="serving-patient">{{ $token->patient_name ?? 'N/A' }}</span>
                             </div>
                             <div class="serving-status-badge">SERVING</div>
@@ -90,10 +105,6 @@
                             <div class="token-detail-item">
                                 <span class="label">Status</span>
                                 <span class="value status-{{ $userToken->status }}">{{ strtoupper($userToken->status) }}</span>
-                            </div>
-                            <div class="token-detail-item">
-                                <span class="label">Department</span>
-                                <span class="value">{{ $userToken->department }}</span>
                             </div>
                             <div class="token-detail-item">
                                 <span class="label">Position</span>

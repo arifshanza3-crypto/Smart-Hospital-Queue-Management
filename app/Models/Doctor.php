@@ -18,8 +18,7 @@ class Doctor extends Model
         'qualification',
         'email',
         'phone',
-        'status',
-        // ❌ 'photo' remove kar diya
+        'status',  // ✅ active / inactive only
         'profile_image',
         'shift',
         'experience',
@@ -64,7 +63,6 @@ class Doctor extends Model
     {
         $badges = [
             'active' => 'success',
-            'on_duty' => 'primary',
             'inactive' => 'danger'
         ];
         return $badges[$this->status] ?? 'secondary';
@@ -75,7 +73,6 @@ class Doctor extends Model
     {
         $texts = [
             'active' => 'Active',
-            'on_duty' => 'On Duty',
             'inactive' => 'Inactive'
         ];
         return $texts[$this->status] ?? ucfirst($this->status);
@@ -84,7 +81,7 @@ class Doctor extends Model
     // ✅ Scopes
     public function scopeActive($query)
     {
-        return $query->where('status', 'active')->orWhere('status', 'on_duty');
+        return $query->where('status', 'active');
     }
 
     public function scopeBySpecialization($query, $specialization)

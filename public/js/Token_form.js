@@ -1,56 +1,72 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const tokenForm = document.getElementById('tokenRequestForm');
-    const userNumber = document.getElementById('userNumber');
-    const infoModal = document.getElementById('infoModal');
+    const form = document.getElementById('tokenRequestForm');
+    const mobileInput = document.getElementById('mobileNumber');
+    const mobileError = document.getElementById('mobileError');
     const patientModal = document.getElementById('patientModal');
-    const errorMsg = document.getElementById('errorMsg');
+    const closeModal = document.getElementById('closeModal');
+    const modalOkBtn = document.getElementById('modalOkBtn');
 
-    // 1. Modal trigger
-    userNumber.addEventListener('click', function() {
-        if (this.readOnly) infoModal.style.display = 'flex';
-    });
-
-    const unlockField = () => {
-        infoModal.style.display = 'none';
-        userNumber.readOnly = false;
-        userNumber.focus();
-    };
-
-    document.getElementById('confirmInfo').addEventListener('click', unlockField);
-    document.getElementById('closeInfo').addEventListener('click', unlockField);
-
-    // 2. Strict Numeric Input Only
-    userNumber.addEventListener('input', function(e) {
-        // Remove any non-numeric characters
+    // ✅ Mobile Number Validation: Only numbers, max 11 digits, starts with 03
+    mobileInput.addEventListener('input', function(e) {
+        // Remove non-numeric characters
         this.value = this.value.replace(/[^0-9]/g, '');
         
-        // Prevent typing more than 11 characters
+        // Max 11 digits
         if (this.value.length > 11) {
             this.value = this.value.slice(0, 11);
         }
+
+        // Validate in real-time
+        if (this.value.length > 0) {
+            const isValid = /^(03)\d{9}$/.test(this.value);
+            if (this.value.length > 0 && !isValid) {
+                mobileError.classList.remove('d-none');
+                this.style.border = "1px solid #ff4b2b";
+            } else {
+                mobileError.classList.add('d-none');
+                this.style.border = "1px solid rgba(255,255,255,0.1)";
+            }
+        }
     });
 
-    // 3. Final Form Validation
-    tokenForm.addEventListener('submit', function(e) {
+    // ✅ Form Submit Validation
+    form.addEventListener('submit', function(e) {
         e.preventDefault();
-        const phoneVal = userNumber.value;
 
-        // Condition: Exactly 11 digits AND starts with 03
-        const isValid = /^(03)\d{9}$/.test(phoneVal);
+        const mobileVal = mobileInput.value;
+        const isValid = /^(03)\d{9}$/.test(mobileVal);
 
         if (!isValid) {
-            errorMsg.classList.remove('d-none');
-            userNumber.style.border = "1px solid #ff4b2b";
+            mobileError.classList.remove('d-none');
+            mobileInput.style.border = "1px solid #ff4b2b";
+            mobileInput.focus();
             return;
         }
 
-        // Success
-        errorMsg.classList.add('d-none');
-        userNumber.style.border = "1px solid rgba(255,255,255,0.1)";
+        // ✅ All good - show success modal
         patientModal.style.display = 'flex';
+    });
 
-        setTimeout(() => {
-            window.location.href = "/Status";
-        }, 3500);
+    // ✅ Close Modal functions
+    function closeModalFn() {
+        patientModal.style.display = 'none';
+        form.submit();
+    }
+
+    closeModal.addEventListener('click', closeModalFn);
+    modalOkBtn.addEventListener('click', closeModalFn);
+
+    // Close modal on outside click
+    patientModal.addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeModalFn();
+        }
+    });
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && patientModal.style.display === 'flex') {
+            closeModalFn();
+        }
     });
 });

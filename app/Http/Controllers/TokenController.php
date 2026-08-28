@@ -22,10 +22,14 @@ class TokenController extends Controller
     public function generateToken(Request $request)
     {
         try {
+<<<<<<< HEAD
+=======
+            // ✅ Validation - Email is nullable (optional)
+>>>>>>> 0e2f13c81a0d22d7d61fb3ea1cdf2a8f08f28036
             $validated = $request->validate([
                 'patient_name' => 'required|string|max:255',
-                'phone' => 'nullable|string|max:20',
-                'email' => 'nullable|email|max:255'
+                'email' => 'nullable|email|max:255',  // ✅ Email Optional
+                'mobile_number' => 'required|string|max:11|regex:/^03\d{9}$/',
             ]);
 
             // ✅ Check if user is logged in
@@ -37,8 +41,12 @@ class TokenController extends Controller
                 Log::info('User not logged in');
             }
 
+<<<<<<< HEAD
             $department = $request->department ?? 'General';
 
+=======
+            // ✅ Generate token number
+>>>>>>> 0e2f13c81a0d22d7d61fb3ea1cdf2a8f08f28036
             $lastToken = Token::orderBy('id', 'desc')->first();
             if ($lastToken && $lastToken->token_number) {
                 $lastNumber = intval(substr($lastToken->token_number, 4));
@@ -48,18 +56,23 @@ class TokenController extends Controller
                 $tokenNumber = 'TKN-001';
             }
 
+<<<<<<< HEAD
+=======
+            // ✅ Get last position
+            $lastPosition = Token::whereIn('status', ['waiting', 'calling'])->count();
+
+            // ✅ Create token with mobile_number as phone
+>>>>>>> 0e2f13c81a0d22d7d61fb3ea1cdf2a8f08f28036
             $token = Token::create([
                 'token_number' => $tokenNumber,
                 'patient_name' => $request->patient_name,
                 'patient_id' => $userId,
-                'department' => $department,
-                'phone' => $request->phone,
-                'email' => $request->email,
+                'department' => 'General',
+                'phone' => $request->mobile_number,
+                'email' => $request->email,  // ✅ Can be null
                 'status' => 'waiting',
                 'type' => 'online',
-                'position' => Token::where('department', $department)
-                    ->whereIn('status', ['waiting', 'calling'])
-                    ->count() + 1,
+                'position' => $lastPosition + 1,
                 'estimated_time' => 15,
                 'created_at' => now()
             ]);
@@ -79,7 +92,6 @@ class TokenController extends Controller
                     'token_generated',
                     [
                         'token_number' => $tokenNumber,
-                        'department' => $department,
                         'patient_name' => $request->patient_name,
                         'url' => route('status.page', ['token' => $tokenNumber])
                     ]
@@ -98,7 +110,6 @@ class TokenController extends Controller
                 [
                     'token_number' => $tokenNumber,
                     'patient_name' => $request->patient_name,
-                    'department' => $department,
                     'url' => route('staff.dashboard')
                 ]
             );
@@ -137,24 +148,29 @@ class TokenController extends Controller
 
             $waitingTime = 0;
             if ($token->status === 'waiting') {
-                $waitingTokens = Token::where('department', $token->department)
-                    ->where('status', 'waiting')
+                $waitingTokens = Token::where('status', 'waiting')
                     ->where('position', '<', $token->position)
                     ->count();
                 $waitingTime = $waitingTokens * 15;
             }
+
+            // ✅ Get currently serving token
+            $servingToken = Token::where('status', 'serving')
+                ->orderBy('created_at', 'desc')
+                ->first();
+            $nowServing = $servingToken ? $servingToken->token_number : 'N/A';
 
             return response()->json([
                 'success' => true,
                 'token' => [
                     'token_number' => $token->token_number,
                     'patient_name' => $token->patient_name,
-                    'department' => $token->department,
                     'status' => $token->status,
                     'position' => $token->position,
                     'estimated_time' => $token->estimated_time,
                     'waiting_time' => $waitingTime,
-                    'created_at' => $token->created_at
+                    'now_serving' => $nowServing,
+                    'created_at' => $token->created_at ? $token->created_at->format('h:i A') : 'N/A'
                 ]
             ]);
 
