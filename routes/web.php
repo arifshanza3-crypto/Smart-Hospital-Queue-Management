@@ -12,7 +12,6 @@ use App\Http\Controllers\TokenController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\StaffProfileController;
 use App\Http\Controllers\NotificationController;
 
 // =============================================
@@ -44,7 +43,7 @@ Route::get('/Doctors', [PageController::class, 'Doctors'])->name('doctors');
 Route::get('/Token_form', [TokenController::class, 'showForm'])->name('token.form');
 Route::post('/token/generate', [TokenController::class, 'generateToken'])->name('token.generate');
 
-// ✅ Status Routes - Both with and without token parameter
+// ✅ Status Routes
 Route::get('/Status', [PageController::class, 'Status'])->name('status.page');
 Route::get('/status/{token}', [PageController::class, 'Status'])->name('status.page.token');
 
@@ -59,13 +58,22 @@ Route::get('/signup', [AuthController::class, 'showSignupForm'])->name('signup')
 Route::post('/signup', [AuthController::class, 'signup'])->name('signup.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// =============================================
 // ✅ FORGOT PASSWORD ROUTES
-// =============================================
-Route::get('/forgot-password', [AuthController::class, 'showForgotForm'])->name('password.request');
-Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email');
-Route::get('/reset-password/{token}', [AuthController::class, 'showResetForm'])->name('password.reset');
-Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
+Route::get('/forgot-password', [AuthController::class, 'showForgotForm'])
+    ->middleware('guest')
+    ->name('password.request');
+
+Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])
+    ->middleware('guest')
+    ->name('password.email');
+
+Route::get('/reset-password/{token}', [AuthController::class, 'showResetForm'])
+    ->middleware('guest')
+    ->name('password.reset');
+
+Route::post('/reset-password', [AuthController::class, 'resetPassword'])
+    ->middleware('guest')
+    ->name('password.update');
 
 // =============================================
 // ✅ STAFF ROUTES
@@ -85,9 +93,9 @@ Route::prefix('staff')->name('staff.')->middleware(['auth', 'role:staff,admin'])
     Route::get('/get-department-stats', [StaffController::class, 'getDepartmentStats'])->name('get-department-stats');
     
     Route::prefix('profile')->name('profile.')->group(function () {
-        Route::get('/', [StaffProfileController::class, 'index'])->name('index');
-        Route::put('/update', [StaffProfileController::class, 'update'])->name('update');
-        Route::put('/password', [StaffProfileController::class, 'updatePassword'])->name('password');
+        Route::get('/', [ProfileController::class, 'index'])->name('index');
+        Route::put('/update', [ProfileController::class, 'update'])->name('update');
+        Route::put('/password', [ProfileController::class, 'updatePassword'])->name('password');
     });
 });
 
@@ -103,7 +111,6 @@ Route::prefix('notifications')->name('notifications.')->middleware('auth')->grou
     Route::delete('/{id}', [NotificationController::class, 'destroy'])->name('destroy');
 });
 
-// ✅ FIXED: Connected directly to NotificationController@index
 Route::get('/notifications-page', [NotificationController::class, 'index'])->name('notifications.page')->middleware('auth');
 
 // =============================================
@@ -119,7 +126,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
     Route::get('/user-management', [UserController::class, 'index'])->name('user-management');
     Route::get('/services-management', [ServiceController::class, 'index'])->name('services-management');
 
-    // ✅ Doctor Routes with Status Update
     Route::prefix('doctors')->name('doctors.')->group(function () {
         Route::get('/', [DoctorController::class, 'index'])->name('index');
         Route::get('/create', [DoctorController::class, 'create'])->name('create');
@@ -127,7 +133,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
         Route::get('/{id}/edit', [DoctorController::class, 'edit'])->name('edit');
         Route::put('/{id}', [DoctorController::class, 'update'])->name('update');
         Route::delete('/{id}', [DoctorController::class, 'destroy'])->name('destroy');
-        // ✅ Status Update Route (Only Active/Inactive)
         Route::patch('/{id}/status/{status}', [DoctorController::class, 'updateStatus'])->name('update-status');
     });
     
@@ -173,6 +178,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
     });
 });
 
+// =============================================
+// ✅ USER DASHBOARD
+// =============================================
 Route::get('/dashboard', function() {
     $user = auth()->user();
     
@@ -185,6 +193,9 @@ Route::get('/dashboard', function() {
     }
 })->middleware('auth')->name('dashboard');
 
+// =============================================
+// ✅ PROFILE ROUTES
+// =============================================
 Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -193,24 +204,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar.update');
 });
 
-
-// ==================== FORGOT PASSWORD ROUTES ====================
-Route::get('/forgot-password', [AuthController::class, 'showForgotForm'])
-    ->middleware('guest')
-    ->name('password.request');
-
-Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])
-    ->middleware('guest')
-    ->name('password.email');
-
-Route::get('/reset-password/{token}', [AuthController::class, 'showResetForm'])
-    ->middleware('guest')
-    ->name('password.reset');
-
-Route::post('/reset-password', [AuthController::class, 'resetPassword'])
-    ->middleware('guest')
-    ->name('password.update');
-
-// ==================== API ROUTES (AJAX) ====================
+// =============================================
+// ✅ API ROUTES (AJAX)
+// =============================================
 Route::post('/api/validate-token', [AuthController::class, 'validateResetToken']);
 Route::post('/api/resend-link', [AuthController::class, 'resendResetLink']);

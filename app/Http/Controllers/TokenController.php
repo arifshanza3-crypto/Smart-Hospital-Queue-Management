@@ -2,18 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Token;
-use App\Models\User;
-use App\Models\Notification;
-use App\Traits\NotificationTrait;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Token;
 use Illuminate\Support\Facades\Log;
 
 class TokenController extends Controller
 {
-    use NotificationTrait;
-
     public function showForm()
     {
         return view('Pages.Token_form');
@@ -21,165 +15,121 @@ class TokenController extends Controller
 
     public function generateToken(Request $request)
     {
+        Log::info('Token controller reached');
+        Log::info($request->all());
+
+        // ✅ Validation (department validation remove kar diya gaya hai aur 'phone' match kiya gaya hai)
+        $request->validate([
+            'patient_name' => 'required|string|max:255',
+            'phone'        => 'required|string|max:15',
+            'email'        => 'nullable|email|max:255',
+        ]);
+
+        // ✅ Default department OPD assign hoga agar form se pass nahi hota
+        $department = $request->department ?? 'OPD';
+
+        // ✅ Check existing token by phone
+        $existingToken = Token::where('phone', $request->phone)
+                              ->whereIn('status', ['waiting', 'calling', 'serving'])
+                              ->first();
+
+        if ($existingToken) {
+            return redirect()->back()->with('error', 'You already have an active token: ' . $existingToken->token_number);
+        }
+
+        // ✅ Generate token number
+        $lastToken = Token::orderBy('id', 'desc')->first();
+
+        if ($lastToken && $lastToken->token_number) {
+            $lastNumber = intval(substr($lastToken->token_number, 4));
+            $newNumber = $lastNumber + 1;
+            $tokenNumber = 'TKN-' . str_pad($newNumber, 3, '0', STR_PAD_LEFT);
+        } else {
+            $tokenNumber = 'TKN-001';
+        }
+
+        // ✅ Calculate position
+        $position = Token::whereIn('status', ['waiting', 'calling'])->count() + 1;
+
+        // ✅ Calculate estimated time
+        $estimatedTime = $position * 15;
+
         try {
-<<<<<<< HEAD
-=======
-            // ✅ Validation - Email is nullable (optional)
->>>>>>> 0e2f13c81a0d22d7d61fb3ea1cdf2a8f08f28036
-            $validated = $request->validate([
-                'patient_name' => 'required|string|max:255',
-                'email' => 'nullable|email|max:255',  // ✅ Email Optional
-                'mobile_number' => 'required|string|max:11|regex:/^03\d{9}$/',
-            ]);
-
-            // ✅ Check if user is logged in
-            $userId = null;
-            if (Auth::check()) {
-                $userId = Auth::id();
-                Log::info('User logged in, ID: ' . $userId);
-            } else {
-                Log::info('User not logged in');
-            }
-
-<<<<<<< HEAD
-            $department = $request->department ?? 'General';
-
-=======
-            // ✅ Generate token number
->>>>>>> 0e2f13c81a0d22d7d61fb3ea1cdf2a8f08f28036
-            $lastToken = Token::orderBy('id', 'desc')->first();
-            if ($lastToken && $lastToken->token_number) {
-                $lastNumber = intval(substr($lastToken->token_number, 4));
-                $newNumber = $lastNumber + 1;
-                $tokenNumber = 'TKN-' . str_pad($newNumber, 3, '0', STR_PAD_LEFT);
-            } else {
-                $tokenNumber = 'TKN-001';
-            }
-
-<<<<<<< HEAD
-=======
-            // ✅ Get last position
-            $lastPosition = Token::whereIn('status', ['waiting', 'calling'])->count();
-
-            // ✅ Create token with mobile_number as phone
->>>>>>> 0e2f13c81a0d22d7d61fb3ea1cdf2a8f08f28036
             $token = Token::create([
-                'token_number' => $tokenNumber,
-                'patient_name' => $request->patient_name,
-                'patient_id' => $userId,
-                'department' => 'General',
-                'phone' => $request->mobile_number,
-                'email' => $request->email,  // ✅ Can be null
-                'status' => 'waiting',
-                'type' => 'online',
-                'position' => $lastPosition + 1,
-                'estimated_time' => 15,
-                'created_at' => now()
+                'token_number'   => $tokenNumber,
+                'patient_id'     => null,
+                'patient_name'   => $request->patient_name,
+                'phone'          => $request->phone,
+                'email'          => $request->email,
+                'department'     => $department,
+                'type'           => 'online',
+                'status'         => 'waiting',
+                'position'       => $position,
+                'estimated_time' => $estimatedTime,
+                'created_at'     => now()
             ]);
+
+            Log::info('Token saved: ' . $tokenNumber);
 
             session(['current_token' => $tokenNumber]);
 
-            Log::info('Token generated: ' . $tokenNumber . ' for ' . $request->patient_name);
-
-            // ✅ Send notification to user (if logged in)
-            if ($userId) {
-                Log::info('Sending notification to user: ' . $userId);
-                
-                $this->notifyUser(
-                    $userId,
-                    'Token Generated',
-                    'Your token ' . $tokenNumber . ' has been generated successfully for ' . $department,
-                    'token_generated',
-                    [
-                        'token_number' => $tokenNumber,
-                        'patient_name' => $request->patient_name,
-                        'url' => route('status.page', ['token' => $tokenNumber])
-                    ]
-                );
-                
-                Log::info('✅ Notification sent to user: ' . $userId);
-            } else {
-                Log::info('⚠️ User not logged in, skipping user notification');
-            }
-
-            // ✅ Send notification to all staff and admins
-            $this->notifyAllStaffAndAdmins(
-                'New Token Generated',
-                'Token ' . $tokenNumber . ' generated for ' . $request->patient_name . ' (' . $department . ')',
-                'token_generated',
-                [
-                    'token_number' => $tokenNumber,
-                    'patient_name' => $request->patient_name,
-                    'url' => route('staff.dashboard')
-                ]
-            );
-
-            return redirect()->route('status.page', ['token' => $tokenNumber])
-                ->with('success', 'Token ' . $tokenNumber . ' generated successfully!');
+            return redirect('/Status?token=' . $tokenNumber)->with('success', 'Token generated! Your Token: ' . $tokenNumber);
 
         } catch (\Exception $e) {
-            Log::error('Error generating token: ' . $e->getMessage());
-            return redirect()->back()
-                ->with('error', 'Error generating token: ' . $e->getMessage())
-                ->withInput();
+            Log::error('Token save error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error generating token: ' . $e->getMessage());
         }
     }
 
     public function getTokenStatus(Request $request)
     {
-        try {
-            $tokenNumber = $request->query('token');
-            
-            if (!$tokenNumber) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Token number is required'
-                ], 400);
-            }
+        $tokenNumber = $request->query('token') ?? session('current_token');
 
-            $token = Token::where('token_number', $tokenNumber)->first();
-
-            if (!$token) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Token not found'
-                ], 404);
-            }
-
-            $waitingTime = 0;
-            if ($token->status === 'waiting') {
-                $waitingTokens = Token::where('status', 'waiting')
-                    ->where('position', '<', $token->position)
-                    ->count();
-                $waitingTime = $waitingTokens * 15;
-            }
-
-            // ✅ Get currently serving token
-            $servingToken = Token::where('status', 'serving')
-                ->orderBy('created_at', 'desc')
-                ->first();
-            $nowServing = $servingToken ? $servingToken->token_number : 'N/A';
-
-            return response()->json([
-                'success' => true,
-                'token' => [
-                    'token_number' => $token->token_number,
-                    'patient_name' => $token->patient_name,
-                    'status' => $token->status,
-                    'position' => $token->position,
-                    'estimated_time' => $token->estimated_time,
-                    'waiting_time' => $waitingTime,
-                    'now_serving' => $nowServing,
-                    'created_at' => $token->created_at ? $token->created_at->format('h:i A') : 'N/A'
-                ]
-            ]);
-
-        } catch (\Exception $e) {
-            Log::error('Error getting token status: ' . $e->getMessage());
+        if (!$tokenNumber) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error getting token status'
-            ], 500);
+                'message' => 'No token found'
+            ]);
         }
+
+        $token = Token::where('token_number', $tokenNumber)->first();
+
+        if (!$token) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Token not found'
+            ]);
+        }
+
+        $position = Token::where('department', $token->department)
+                         ->whereIn('status', ['waiting', 'calling'])
+                         ->where('created_at', '<', $token->created_at)
+                         ->count() + 1;
+
+        $estimatedTime = $position * 15;
+
+        $serving = Token::where('department', $token->department)
+                        ->where('status', 'serving')
+                        ->first();
+
+        $totalWaiting = Token::where('department', $token->department)
+                             ->whereIn('status', ['waiting', 'calling'])
+                             ->count();
+        
+        $progress = $totalWaiting > 0 ? (($totalWaiting - $position + 1) / $totalWaiting * 100) : 100;
+        $progress = min(100, max(0, $progress));
+
+        return response()->json([
+            'success'        => true,
+            'token_number'   => $token->token_number,
+            'patient_name'   => $token->patient_name ?? 'N/A',
+            'department'     => $token->department,
+            'status'         => $token->status,
+            'position'       => $position,
+            'estimated_time' => $estimatedTime,
+            'serving'        => $serving ? $serving->token_number : '--',
+            'progress'       => round($progress, 0),
+            'created_at'     => $token->created_at ? $token->created_at->setTimezone('Asia/Karachi')->format('h:i A') : '--'
+        ]);
     }
 }

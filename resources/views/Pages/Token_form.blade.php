@@ -33,16 +33,16 @@
                     <input type="text" name="patient_name" class="form-control token-input" placeholder="Enter your full name" required>
                 </div>
 
-                {{-- ✅ Email Field - Optional (no required) --}}
+                {{-- ✅ Email Field - Optional --}}
                 <div class="input-container">
                     <label class="input-label">Email <span style="color: rgba(255,255,255,0.3); font-weight: 400;">(Optional)</span></label>
                     <input type="email" name="email" class="form-control token-input" placeholder="Enter your email">
                 </div>
 
-                {{-- ✅ Mobile Number Field --}}
+                {{-- ✅ Mobile Number Field (Input name fixed to 'phone') --}}
                 <div class="input-container">
                     <label class="input-label">Mobile Number</label>
-                    <input type="tel" name="mobile_number" id="mobileNumber" class="form-control token-input" placeholder="03XX-XXXXXXX" required maxlength="11">
+                    <input type="tel" name="phone" id="mobileNumber" class="form-control token-input" placeholder="03XX-XXXXXXX" required maxlength="11">
                     <div id="mobileError" class="validation-error d-none">Please enter a valid 11-digit number starting with 03</div>
                 </div>
 
@@ -72,20 +72,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const closeModal = document.getElementById('closeModal');
     const modalOkBtn = document.getElementById('modalOkBtn');
 
+    let isSubmitting = false;
+
     // ✅ Mobile Number Validation: Only numbers, max 11 digits, starts with 03
     mobileInput.addEventListener('input', function(e) {
-        // Remove non-numeric characters
         this.value = this.value.replace(/[^0-9]/g, '');
         
-        // Max 11 digits
         if (this.value.length > 11) {
             this.value = this.value.slice(0, 11);
         }
 
-        // Validate in real-time
         if (this.value.length > 0) {
             const isValid = /^(03)\d{9}$/.test(this.value);
-            if (this.value.length > 0 && !isValid) {
+            if (!isValid) {
                 mobileError.classList.remove('d-none');
                 this.style.border = "1px solid #ff4b2b";
             } else {
@@ -95,8 +94,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // ✅ Form Submit Validation
+    // ✅ Form Submit Handling
     form.addEventListener('submit', function(e) {
+        if (isSubmitting) return;
+
         e.preventDefault();
 
         const mobileVal = mobileInput.value;
@@ -109,30 +110,29 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // ✅ All good - show success modal
+        // Show modal before actual form submit
         patientModal.style.display = 'flex';
     });
 
-    // ✅ Close Modal functions
-    function closeModalFn() {
+    // ✅ Submit Form on Modal Close / OK
+    function executeFormSubmit() {
         patientModal.style.display = 'none';
+        isSubmitting = true;
         form.submit();
     }
 
-    closeModal.addEventListener('click', closeModalFn);
-    modalOkBtn.addEventListener('click', closeModalFn);
+    closeModal.addEventListener('click', executeFormSubmit);
+    modalOkBtn.addEventListener('click', executeFormSubmit);
 
-    // Close modal on outside click
     patientModal.addEventListener('click', function(e) {
         if (e.target === this) {
-            closeModalFn();
+            executeFormSubmit();
         }
     });
 
-    // Close modal on Escape key
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape' && patientModal.style.display === 'flex') {
-            closeModalFn();
+            executeFormSubmit();
         }
     });
 });
