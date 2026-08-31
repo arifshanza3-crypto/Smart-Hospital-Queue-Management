@@ -102,6 +102,11 @@
     color: #28a745;
 }
 
+.badge.status-cancelled {
+    background: rgba(220, 53, 69, 0.2);
+    color: #dc3545;
+}
+
 .status-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -146,6 +151,10 @@
 
 .status-item .value.status-completed {
     color: #28a745;
+}
+
+.status-item .value.status-cancelled {
+    color: #dc3545;
 }
 
 .now-serving-value {
@@ -217,6 +226,47 @@
         justify-content: center;
     }
 }
+
+/* Toast Messages */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+}
+
+.toast {
+    background: rgba(11, 46, 51, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 16px 24px;
+    margin-bottom: 10px;
+    color: #fff;
+    font-size: 0.9rem;
+    min-width: 300px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    animation: slideIn 0.3s ease;
+}
+
+.toast-success {
+    border-left: 4px solid #28a745;
+}
+
+.toast-error {
+    border-left: 4px solid #dc3545;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
 </style>
 
 <div class="status-container">
@@ -233,40 +283,50 @@
             </div>
 
             <div class="status-grid">
-                {{-- ✅ PATIENT NAME --}}
+                {{-- PATIENT NAME --}}
                 <div class="status-item">
                     <span class="label">PATIENT</span>
                     <span class="value">{{ $token->patient_name ?? 'N/A' }}</span>
                 </div>
 
-                {{-- ✅ STATUS --}}
+                {{-- STATUS --}}
                 <div class="status-item">
                     <span class="label">STATUS</span>
                     <span class="value status-{{ $token->status ?? 'waiting' }}">{{ ucfirst($token->status ?? 'Waiting') }}</span>
                 </div>
 
-                {{-- ✅ POSITION NUMBER --}}
+                {{-- POSITION NUMBER --}}
                 <div class="status-item">
                     <span class="label">POSITION</span>
                     <span class="value">#{{ $token->position ?? 'N/A' }}</span>
                 </div>
 
-                {{-- ✅ ESTIMATED WAITING TIME --}}
+                {{-- ESTIMATED WAITING TIME --}}
                 <div class="status-item">
                     <span class="label">EST. WAIT</span>
                     <span class="value">{{ $token->estimated_time ?? 'N/A' }} min</span>
                 </div>
 
-                {{-- ✅ NOW SERVING --}}
+                {{-- NOW SERVING --}}
                 <div class="status-item">
                     <span class="label">NOW SERVING</span>
                     <span class="value now-serving-value">{{ $nowServing ?? 'N/A' }}</span>
                 </div>
 
-                {{-- ✅ GENERATED TIME --}}
+                {{-- GENERATED TIME - Minus 2 hours fix --}}
                 <div class="status-item">
                     <span class="label">GENERATED</span>
-                    <span class="value">{{ $token->created_at ? $token->created_at->format('h:i A') : 'N/A' }}</span>
+                    <span class="value">
+                        @php
+                            $time = 'N/A';
+                            if ($token->created_at) {
+                                $timestamp = strtotime($token->created_at);
+                                $timestamp = $timestamp - (2 * 3600);
+                                $time = date('h:i A', $timestamp);
+                            }
+                        @endphp
+                        {{ $time }}
+                    </span>
                 </div>
             </div>
 
@@ -286,9 +346,47 @@ function refreshStatus() {
 }
 
 // Auto refresh every 30 seconds
-setInterval(function() {
+let refreshInterval = setInterval(function() {
     location.reload();
 }, 30000);
+
+// Agar token complete ya cancel ho gaya toh auto-refresh band karein
+@if(isset($token) && in_array($token->status, ['completed', 'cancelled']))
+    clearInterval(refreshInterval);
+@endif
+
+// Toast notifications for success/error messages
+document.addEventListener('DOMContentLoaded', function() {
+    @if(session('success'))
+        showToast('{{ session('success') }}', 'success');
+    @endif
+    
+    @if(session('error'))
+        showToast('{{ session('error') }}', 'error');
+    @endif
+});
+
+function showToast(message, type = 'success') {
+    const container = document.getElementById('toast-container') || createToastContainer();
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.textContent = message;
+    container.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(100%)';
+        setTimeout(() => toast.remove(), 300);
+    }, 5000);
+}
+
+function createToastContainer() {
+    const container = document.createElement('div');
+    container.id = 'toast-container';
+    container.className = 'toast-container';
+    document.body.appendChild(container);
+    return container;
+}
 </script>
 
 @endsection

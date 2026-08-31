@@ -18,17 +18,14 @@ class TokenController extends Controller
         Log::info('Token controller reached');
         Log::info($request->all());
 
-        // ✅ Validation (department validation remove kar diya gaya hai aur 'phone' match kiya gaya hai)
         $request->validate([
             'patient_name' => 'required|string|max:255',
             'phone'        => 'required|string|max:15',
             'email'        => 'nullable|email|max:255',
         ]);
 
-        // ✅ Default department OPD assign hoga agar form se pass nahi hota
         $department = $request->department ?? 'OPD';
 
-        // ✅ Check existing token by phone
         $existingToken = Token::where('phone', $request->phone)
                               ->whereIn('status', ['waiting', 'calling', 'serving'])
                               ->first();
@@ -37,7 +34,6 @@ class TokenController extends Controller
             return redirect()->back()->with('error', 'You already have an active token: ' . $existingToken->token_number);
         }
 
-        // ✅ Generate token number
         $lastToken = Token::orderBy('id', 'desc')->first();
 
         if ($lastToken && $lastToken->token_number) {
@@ -48,10 +44,7 @@ class TokenController extends Controller
             $tokenNumber = 'TKN-001';
         }
 
-        // ✅ Calculate position
         $position = Token::whereIn('status', ['waiting', 'calling'])->count() + 1;
-
-        // ✅ Calculate estimated time
         $estimatedTime = $position * 15;
 
         try {
@@ -66,10 +59,11 @@ class TokenController extends Controller
                 'status'         => 'waiting',
                 'position'       => $position,
                 'estimated_time' => $estimatedTime,
-                'created_at'     => now()
+                'created_at'     => date('Y-m-d H:i:s')
             ]);
 
             Log::info('Token saved: ' . $tokenNumber);
+            Log::info('Created at: ' . $token->created_at);
 
             session(['current_token' => $tokenNumber]);
 
@@ -119,6 +113,14 @@ class TokenController extends Controller
         $progress = $totalWaiting > 0 ? (($totalWaiting - $position + 1) / $totalWaiting * 100) : 100;
         $progress = min(100, max(0, $progress));
 
+        // ✅ RAW time from database - MINUS 2 HOURS (fix for server time)
+        $rawTime = '--';
+        if ($token->created_at) {
+            $timestamp = strtotime($token->created_at);
+            $timestamp = $timestamp - (2 * 3600); // 2 hours minus
+            $rawTime = date('h:i A', $timestamp);
+        }
+
         return response()->json([
             'success'        => true,
             'token_number'   => $token->token_number,
@@ -129,7 +131,7 @@ class TokenController extends Controller
             'estimated_time' => $estimatedTime,
             'serving'        => $serving ? $serving->token_number : '--',
             'progress'       => round($progress, 0),
-            'created_at'     => $token->created_at ? $token->created_at->setTimezone('Asia/Karachi')->format('h:i A') : '--'
+            'created_at'     => $rawTime
         ]);
     }
 }

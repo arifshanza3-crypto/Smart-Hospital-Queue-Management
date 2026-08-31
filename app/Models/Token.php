@@ -15,13 +15,14 @@ class Token extends Model
         'patient_name',
         'phone',
         'email',
-        'department',  // ✅ department added back
+        'department',
         'type',
         'status',
         'estimated_time',
         'position',
         'called_at',
-        'completed_at'
+        'completed_at',
+        'created_at'
     ];
 
     protected $casts = [
