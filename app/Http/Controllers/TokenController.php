@@ -45,7 +45,7 @@ class TokenController extends Controller
         }
 
         $position = Token::whereIn('status', ['waiting', 'calling'])->count() + 1;
-        $estimatedTime = $position * 15;
+        $estimatedTime = 0; // ✅ Default 0 set karein, dynamic calculate hoga
 
         try {
             $token = Token::create([
@@ -95,12 +95,14 @@ class TokenController extends Controller
             ]);
         }
 
+        // ✅ Dynamic Position Calculate
         $position = Token::where('department', $token->department)
                          ->whereIn('status', ['waiting', 'calling'])
                          ->where('created_at', '<', $token->created_at)
                          ->count() + 1;
 
-        $estimatedTime = $position * 15;
+        // ✅ Dynamic Estimated Time - Model method use karein
+        $estimatedTime = $token->getDynamicEstimatedTime();
 
         $serving = Token::where('department', $token->department)
                         ->where('status', 'serving')
@@ -117,7 +119,7 @@ class TokenController extends Controller
         $rawTime = '--';
         if ($token->created_at) {
             $timestamp = strtotime($token->created_at);
-            $timestamp = $timestamp - (2 * 3600); // 2 hours minus
+            $timestamp = $timestamp - (2 * 3600);
             $rawTime = date('h:i A', $timestamp);
         }
 

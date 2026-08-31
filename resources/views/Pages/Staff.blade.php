@@ -21,15 +21,15 @@
             <div class="stats-grid">
                 <div class="stat-item">
                     <span class="stat-label">Total in Queue</span>
-                    <h2 id="stat-total">0</h2>
+                    <h2 id="stat-total">{{ $totalQueue ?? 0 }}</h2>
                 </div>
                 <div class="stat-item">
                     <span class="stat-label">Now Serving</span>
-                    <h2 id="stat-serving">--</h2>
+                    <h2 id="stat-serving">{{ $nowServingToken ?? '--' }}</h2>
                 </div>
                 <div class="stat-item">
                     <span class="stat-label">Total Pending Wait</span>
-                    <h2 id="stat-avg-time">0m</h2>
+                    <h2 id="stat-avg-time">{{ $avgWaitTime ?? 0 }}m</h2>
                 </div>
             </div>
         </div>
@@ -48,7 +48,43 @@
                         <th>Action</th>
                     </tr>
                 </thead>
-                <tbody id="queue-body"></tbody>
+                <tbody id="queue-body">
+                    @if(isset($tokens) && $tokens->count() > 0)
+                        @foreach($tokens as $token)
+                        <tr>
+                            <td><strong>{{ $token->token_number }}</strong></td>
+                            <td>
+                                <div>{{ $token->patient_name ?? 'N/A' }}</div>
+                                <small style="color: rgba(255,255,255,0.4);">{{ $token->phone ?? '' }}</small>
+                            </td>
+                            <td>{{ ucfirst($token->type ?? 'online') }}</td>
+                            <td>{{ $token->estimated_time ?? 0 }} min</td>
+                            <td>
+                                <span class="status-badge {{ $token->status }}">
+                                    {{ ucfirst($token->status) }}
+                                </span>
+                            </td>
+                            <td>
+                                @if($token->status == 'waiting')
+                                    <button onclick="callPatient({{ $token->id }})" class="btn-sm btn-call">Call</button>
+                                @elseif($token->status == 'calling')
+                                    <button onclick="startService({{ $token->id }})" class="btn-sm btn-start">Start</button>
+                                @elseif($token->status == 'serving')
+                                    <button onclick="completeService({{ $token->id }})" class="btn-sm btn-complete">Complete</button>
+                                @endif
+                                <button onclick="cancelToken({{ $token->id }})" class="btn-sm btn-cancel">Cancel</button>
+                            </td>
+                        </tr>
+                        @endforeach
+                    @else
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 40px; color: rgba(255,255,255,0.3);">
+                                <i class="fas fa-inbox" style="font-size: 40px; display: block; margin-bottom: 10px;"></i>
+                                No patients in queue
+                            </td>
+                        </tr>
+                    @endif
+                </tbody>
             </table>
         </div>
     </main>
@@ -111,6 +147,50 @@
             </div>
         </div>
     </div>
+
+    <style>
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .status-badge.waiting {
+            background: rgba(245, 124, 0, 0.2);
+            color: #f57c00;
+        }
+        .status-badge.calling {
+            background: rgba(13, 71, 161, 0.2);
+            color: #0d47a1;
+        }
+        .status-badge.serving {
+            background: rgba(27, 94, 32, 0.2);
+            color: #1b5e20;
+        }
+        .status-badge.completed {
+            background: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+        }
+        .btn-sm {
+            padding: 4px 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 2px;
+            transition: all 0.3s ease;
+        }
+        .btn-sm:hover {
+            transform: scale(1.05);
+        }
+        .btn-call { background: #007bff; color: white; }
+        .btn-start { background: #28a745; color: white; }
+        .btn-complete { background: #17a2b8; color: white; }
+        .btn-cancel { background: #dc3545; color: white; }
+    </style>
 
     <script src="{{ asset('js/Staff.js') }}"></script>
     
@@ -178,7 +258,7 @@
                 closeModal('patientModal');
                 document.getElementById('p_name').value = '';
                 document.getElementById('p_mobile').value = '';
-                loadQueue();
+                location.reload();
                 alert('✅ ' + data.message);
             } else {
                 alert('❌ ' + data.message);
@@ -187,6 +267,75 @@
         .catch(error => {
             console.error('Error:', error);
             alert('❌ Error adding patient');
+        });
+    }
+
+    // ✅ Call Patient
+    function callPatient(id) {
+        fetch('/staff/start-serving', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({ token_id: id })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) location.reload();
+            else alert('Error: ' + data.message);
+        });
+    }
+
+    // ✅ Start Service
+    function startService(id) {
+        fetch('/staff/start-service', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({ token_id: id })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) location.reload();
+            else alert('Error: ' + data.message);
+        });
+    }
+
+    // ✅ Complete Service
+    function completeService(id) {
+        fetch('/staff/complete-service', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({ token_id: id })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) location.reload();
+            else alert('Error: ' + data.message);
+        });
+    }
+
+    // ✅ Cancel Token
+    function cancelToken(id) {
+        if (!confirm('Are you sure you want to cancel this token?')) return;
+        fetch('/staff/cancel-token', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({ token_id: id })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) location.reload();
+            else alert('Error: ' + data.message);
         });
     }
     </script>

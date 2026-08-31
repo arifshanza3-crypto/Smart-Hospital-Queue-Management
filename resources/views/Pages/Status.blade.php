@@ -295,16 +295,26 @@
                     <span class="value status-{{ $token->status ?? 'waiting' }}">{{ ucfirst($token->status ?? 'Waiting') }}</span>
                 </div>
 
-                {{-- POSITION NUMBER --}}
+                {{-- POSITION NUMBER - DYNAMIC --}}
                 <div class="status-item">
                     <span class="label">POSITION</span>
-                    <span class="value">#{{ $token->position ?? 'N/A' }}</span>
+                    <span class="value">
+                        @php
+                            $pos = $dynamicPosition ?? ($token->position ?? 'N/A');
+                        @endphp
+                        #{{ $pos }}
+                    </span>
                 </div>
 
-                {{-- ESTIMATED WAITING TIME --}}
+                {{-- ESTIMATED WAITING TIME - DYNAMIC --}}
                 <div class="status-item">
                     <span class="label">EST. WAIT</span>
-                    <span class="value">{{ $token->estimated_time ?? 'N/A' }} min</span>
+                    <span class="value">
+                        @php
+                            $estTime = $dynamicEstimatedTime ?? 0;
+                        @endphp
+                        {{ $estTime }} min
+                    </span>
                 </div>
 
                 {{-- NOW SERVING --}}
@@ -315,11 +325,11 @@
 
                 {{-- GENERATED TIME - Minus 2 hours fix --}}
                 <div class="status-item">
-                    <span class="label">GENERATED</span>
+                    <span class="label">REQUESTED</span>
                     <span class="value">
                         @php
                             $time = 'N/A';
-                            if ($token->created_at) {
+                            if ($token && $token->created_at) {
                                 $timestamp = strtotime($token->created_at);
                                 $timestamp = $timestamp - (2 * 3600);
                                 $time = date('h:i A', $timestamp);
@@ -345,13 +355,13 @@ function refreshStatus() {
     location.reload();
 }
 
-// Auto refresh every 30 seconds
+// Auto refresh every 15 seconds for better real-time updates
 let refreshInterval = setInterval(function() {
     location.reload();
-}, 30000);
+}, 15000);
 
 // Agar token complete ya cancel ho gaya toh auto-refresh band karein
-@if(isset($token) && in_array($token->status, ['completed', 'cancelled']))
+@if(isset($token) && in_array($token->status, ['completed', 'cancelled', 'missed', 'serving']))
     clearInterval(refreshInterval);
 @endif
 

@@ -88,21 +88,40 @@ class PageController extends Controller
         
         $token = null;
         $nowServing = 'N/A';
+        $dynamicEstimatedTime = 0;
+        $dynamicPosition = 0;
         
         if ($tokenNumber) {
             $token = Token::where('token_number', $tokenNumber)->first();
             
-            // ✅ Get currently serving token
-            $servingToken = Token::where('status', 'serving')
-                ->orderBy('created_at', 'desc')
-                ->first();
-            
-            if ($servingToken) {
-                $nowServing = $servingToken->token_number;
+            if ($token) {
+                // ✅ Dynamic Position Calculate
+                $dynamicPosition = Token::where('status', 'waiting')
+                    ->where('position', '<=', $token->position)
+                    ->count();
+                
+                // ✅ Dynamic Estimated Time Calculate
+                if ($token->status == 'waiting') {
+                    $aheadCount = Token::where('status', 'waiting')
+                        ->where('position', '<', $token->position)
+                        ->count();
+                    $dynamicEstimatedTime = $aheadCount * 15;
+                } else {
+                    $dynamicEstimatedTime = 0;
+                }
+                
+                // ✅ Get currently serving token
+                $servingToken = Token::where('status', 'serving')
+                    ->orderBy('created_at', 'desc')
+                    ->first();
+                
+                if ($servingToken) {
+                    $nowServing = $servingToken->token_number;
+                }
             }
         }
         
-        return view('Pages.Status', compact('token', 'nowServing'));
+        return view('Pages.Status', compact('token', 'nowServing', 'dynamicEstimatedTime', 'dynamicPosition'));
     }
     
     public function Token_form()

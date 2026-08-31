@@ -15,7 +15,7 @@ class StaffController extends Controller
 {
     use NotificationTrait;
 
-    // ✅ Staff Dashboard
+    // ✅ Staff Dashboard - Fixed to show tokens
     public function dashboard()
     {
         if (!Auth::check()) {
@@ -28,16 +28,30 @@ class StaffController extends Controller
             return redirect('/login')->with('error', 'Access denied.');
         }
         
+        // ✅ Get all waiting/calling/serving tokens
+        $tokens = Token::whereIn('status', ['waiting', 'calling', 'serving'])
+                       ->orderBy('position', 'asc')
+                       ->get();
+        
+        // ✅ Statistics
+        $totalQueue = $tokens->count();
+        $nowServing = Token::where('status', 'serving')->first();
+        $nowServingToken = $nowServing ? $nowServing->token_number : '--';
+        
+        // ✅ Calculate average wait time
+        $avgWaitTime = 0;
+        if ($totalQueue > 0) {
+            $totalEstTime = $tokens->sum('estimated_time');
+            $avgWaitTime = round($totalEstTime / $totalQueue);
+        }
+        
+        // ✅ For backward compatibility (QueueReport)
         $patients = QueueReport::orderBy('created_at', 'desc')->get();
-        $totalQueue = QueueReport::whereIn('status', ['waiting', 'in_progress'])->count();
-        $nowServing = QueueReport::where('status', 'in_progress')->count();
-        $nowServingToken = QueueReport::where('status', 'in_progress')->first()->token_number ?? 'N/A';
         $completedToday = QueueReport::whereDate('created_at', today())->where('status', 'completed')->count();
-        $avgWaitTime = QueueReport::where('status', 'completed')->avg('waiting_time') ?? 0;
         
         return view('Pages.Staff', compact(
-            'patients', 'totalQueue', 'nowServing', 
-            'nowServingToken', 'completedToday', 'avgWaitTime'
+            'tokens', 'totalQueue', 'nowServingToken', 'avgWaitTime',
+            'patients', 'completedToday'
         ));
     }
 
@@ -148,16 +162,20 @@ class StaffController extends Controller
             }
 
             $department = $request->department ?? 'OPD';
+
+            // ✅ Dynamic Position Calculate
             $position = Token::where('department', $department)
                              ->whereIn('status', ['waiting', 'calling'])
                              ->count() + 1;
-            $estimatedTime = $position * $this->getDepartmentTime($department);
+
+            // ✅ Estimated time 0 set karein - dynamic calculate hoga
+            $estimatedTime = 0;
 
             $token = Token::create([
                 'token_number' => $tokenNumber,
                 'patient_id' => null,
                 'patient_name' => $request->name,
-                'phone' => $request->mobile_number,  // ✅ Mobile number saved here
+                'phone' => $request->mobile_number,
                 'email' => null,
                 'department' => $department,
                 'status' => 'waiting',
@@ -512,10 +530,9 @@ class StaffController extends Controller
         }
     }
 
-    // ✅ Recalculate positions
+    // ✅ Recalculate positions - Updated with Dynamic Time
     private function recalculatePositions($department)
     {
-        $timePerPatient = $this->getDepartmentTime($department);
         $tokens = Token::where('department', $department)
                        ->whereIn('status', ['waiting', 'calling'])
                        ->orderBy('created_at', 'asc')
@@ -524,7 +541,8 @@ class StaffController extends Controller
         $position = 1;
         foreach ($tokens as $token) {
             $token->position = $position;
-            $token->estimated_time = $position * $timePerPatient;
+            // ✅ Dynamic estimated time - position based (0 based indexing)
+            $token->estimated_time = ($position - 1) * 15;
             $token->save();
             $position++;
         }
