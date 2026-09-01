@@ -10,14 +10,17 @@
     const tokenNumberElement = document.getElementById('patientTokenNumber');
     const tokenNumber = tokenNumberElement ? tokenNumberElement.textContent : null;
 
+    // Store initial values
+    let initialEstimatedTime = 0;
+    let tokenStatus = 'waiting';
+
     /**
      * Main function to fetch token status from server
      */
     function fetchTokenStatus() {
         console.log('🔄 Fetching token status...');
 
-        // If no token number, show error
-        if (!tokenNumber || tokenNumber === '--' || tokenNumber === 'No Token') {
+        if (!tokenNumber || tokenNumber === '--' || tokenNumber === 'N/A') {
             const badge = document.getElementById('tokenBadge');
             if (badge) {
                 badge.textContent = '✕ Invalid';
@@ -27,7 +30,6 @@
             return;
         }
 
-        // Fetch token status from API
         fetch(`/patient/token-status?token=${encodeURIComponent(tokenNumber)}`)
             .then(response => response.json())
             .then(data => {
@@ -49,32 +51,78 @@
     function updatePatientUI(data) {
         console.log('📦 Token Data:', data);
 
-        // ✅ Update basic info
+        // Update basic info
         setElementText('patientTokenNumber', data.token_number || '--');
-        
-        // ✅ PATIENT NAME - FIXED
-        const patientNameElement = document.getElementById('patientName');
-        if (patientNameElement) {
-            patientNameElement.textContent = data.patient_name || '--';
-            console.log('✅ Patient Name set to:', data.patient_name || '--');
-        }
-        
-        setElementText('patientDepartment', data.department || '--');
+        setElementText('patientName', data.patient_name || '--');
         setElementText('patientPosition', '#' + (data.position || '--'));
-        
-        // ✅ Dynamic wait time display
-        const waitTime = data.estimated_time || 0;
-        const waitTimeText = waitTime > 0 ? Math.ceil(waitTime) + 'm' : 'Now';
-        setElementText('patientWaitTime', waitTimeText);
-        
+
+        // Update estimated time
+        initialEstimatedTime = data.estimated_time || 0;
+        updateWaitTimeDisplay();
+
         setElementText('patientServing', data.serving || '--');
 
-        // ✅ Update status badge
+        // Update status badge
         updateStatusBadge(data.status || 'waiting');
+        tokenStatus = data.status || 'waiting';
     }
 
     /**
-     * Update status badge based on token status
+     * Update waiting time dynamically
+     */
+    function updateWaitTimeDisplay() {
+        const timeElement = document.getElementById('patientWaitTime');
+        if (!timeElement) return;
+
+        // Get generated time
+        const generatedTimeStr = document.getElementById('patientTime')?.textContent || '';
+        let remainingMinutes = initialEstimatedTime;
+
+        if (generatedTimeStr && generatedTimeStr !== 'N/A') {
+            const now = new Date();
+            const generated = parseTimeString(generatedTimeStr);
+            
+            if (generated) {
+                const elapsedMinutes = Math.floor((now - generated) / (1000 * 60));
+                remainingMinutes = Math.max(0, initialEstimatedTime - elapsedMinutes);
+            }
+        }
+
+        // Update display
+        if (remainingMinutes > 0) {
+            timeElement.textContent = Math.ceil(remainingMinutes) + ' min';
+        } else {
+            timeElement.textContent = '0 min';
+        }
+
+        // Animation effect
+        timeElement.classList.add('changed');
+        setTimeout(() => {
+            timeElement.classList.remove('changed');
+        }, 500);
+    }
+
+    /**
+     * Parse time string (HH:MM AM/PM) to Date object
+     */
+    function parseTimeString(timeStr) {
+        const parts = timeStr.match(/(\d+):(\d+)\s*(AM|PM)/);
+        if (!parts) return null;
+
+        let hours = parseInt(parts[1]);
+        const minutes = parseInt(parts[2]);
+        const ampm = parts[3];
+
+        if (ampm === 'PM' && hours !== 12) hours += 12;
+        if (ampm === 'AM' && hours === 12) hours = 0;
+
+        const date = new Date();
+        date.setHours(hours, minutes, 0, 0);
+        return date;
+    }
+
+    /**
+     * Update status badge
      */
     function updateStatusBadge(status) {
         const statusBadge = document.getElementById('patientStatus');
@@ -82,12 +130,9 @@
 
         if (!statusBadge) return;
 
-        // Reset classes
         statusBadge.className = 'value status-badge';
-        if (badge) badge.style.color = 'white';
-
-        // Set status specific styles
         const statusLower = status.toLowerCase();
+
         switch (statusLower) {
             case 'serving':
             case 'calling':
@@ -95,41 +140,38 @@
                 statusBadge.textContent = 'In Progress';
                 if (badge) {
                     badge.textContent = '● In Progress';
-                    badge.style.background = '#4a6cf7';
+                    badge.className = 'badge status-serving';
                 }
                 break;
-
             case 'completed':
                 statusBadge.classList.add('status-completed');
                 statusBadge.textContent = 'Completed';
                 if (badge) {
                     badge.textContent = '● Completed';
-                    badge.style.background = '#22c55e';
+                    badge.className = 'badge status-completed';
                 }
                 break;
-
             case 'cancelled':
                 statusBadge.classList.add('status-cancelled');
                 statusBadge.textContent = 'Cancelled';
                 if (badge) {
                     badge.textContent = '● Cancelled';
-                    badge.style.background = '#ef4444';
+                    badge.className = 'badge status-cancelled';
                 }
                 break;
-
-            default: // waiting
+            default:
                 statusBadge.classList.add('status-waiting');
                 statusBadge.textContent = 'Waiting';
                 if (badge) {
                     badge.textContent = '● Waiting';
-                    badge.style.background = '#f59e0b';
+                    badge.className = 'badge status-waiting';
                 }
                 break;
         }
     }
 
     /**
-     * Helper: Set element text content safely
+     * Helper: Set element text
      */
     function setElementText(id, text) {
         const element = document.getElementById(id);
@@ -151,52 +193,51 @@
         const badge = document.getElementById('tokenBadge');
         if (badge) {
             badge.textContent = '✕ Error';
-            badge.style.background = '#dc3545';
-            badge.style.color = 'white';
+            badge.className = 'badge status-cancelled';
         }
     }
 
     /**
-     * Manual refresh function (called from button)
+     * Manual refresh function
      */
     window.refreshStatus = function() {
         console.log('🔄 Refresh button clicked!');
-        fetchTokenStatus();
+        location.reload();
     };
-
-    // Make fetchTokenStatus globally accessible for inline onclick
-    window.fetchTokenStatus = fetchTokenStatus;
 
     // ============================================ //
     // AUTO-REFRESH SETUP                          //
     // ============================================ //
 
-    // Initial fetch when DOM is ready
+    // Initial fetch
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function() {
-            // ✅ Time set karo (sirf ek baar)
+            // Set generated time (only once)
             const timeElement = document.getElementById('patientTime');
-            if (timeElement && (!timeElement.textContent || timeElement.textContent === '--')) {
+            if (timeElement && timeElement.textContent === '--') {
                 const now = new Date();
                 const hours12 = now.getHours() % 12 || 12;
                 const ampm = now.getHours() >= 12 ? 'PM' : 'AM';
-                timeElement.textContent = hours12 + ':' + String(now.getMinutes()).padStart(2, '0') + ' ' + ampm;
+                timeElement.textContent = hours12 + ':' + 
+                    String(now.getMinutes()).padStart(2, '0') + ' ' + ampm;
             }
             fetchTokenStatus();
         });
     } else {
-        // ✅ Time set karo (sirf ek baar)
-        const timeElement = document.getElementById('patientTime');
-        if (timeElement && (!timeElement.textContent || timeElement.textContent === '--')) {
-            const now = new Date();
-            const hours12 = now.getHours() % 12 || 12;
-            const ampm = now.getHours() >= 12 ? 'PM' : 'AM';
-            timeElement.textContent = hours12 + ':' + String(now.getMinutes()).padStart(2, '0') + ' ' + ampm;
-        }
         fetchTokenStatus();
     }
 
-    // Auto-refresh every 10 seconds
-    setInterval(fetchTokenStatus, 10000);
+    // Auto-update every 10 seconds
+    setInterval(function() {
+        fetchTokenStatus();
+        updateWaitTimeDisplay();
+    }, 10000);
+
+    // Full page refresh every 60 seconds (if waiting)
+    setInterval(function() {
+        if (tokenStatus === 'waiting' || tokenStatus === 'calling') {
+            location.reload();
+        }
+    }, 60000);
 
 })();

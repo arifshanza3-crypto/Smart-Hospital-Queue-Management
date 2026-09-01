@@ -1,11 +1,12 @@
 /* ============================================ */
-/* NOTIFICATIONS PAGE STYLES                    */
+/* NOTIFICATIONS PAGE - LIGHT BLUE THEME        */
 /* ============================================ */
 
+/* --- Page Background - Light Blue --- */
 .notifications-page {
     padding: 30px 0;
-    background: #0b2e33;
     min-height: 100vh;
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 50%, #90caf9 100%);
 }
 
 .container {
@@ -14,6 +15,7 @@
     padding: 0 20px;
 }
 
+/* --- Header --- */
 .notifications-header {
     display: flex;
     justify-content: space-between;
@@ -31,14 +33,15 @@
 }
 
 .header-left h1 {
-    color: #fff;
+    color: #0b2e33;
     font-size: 28px;
     margin: 0;
+    font-weight: 700;
 }
 
 .notification-count {
-    background: #00d4ff;
-    color: #0b2e33;
+    background: #0b2e33;
+    color: #ffffff;
     padding: 2px 12px;
     border-radius: 20px;
     font-size: 14px;
@@ -62,118 +65,92 @@
 }
 
 .role-tag.admin {
-    background: rgba(239, 68, 68, 0.15);
-    color: #ef4444;
-    border: 1px solid rgba(239, 68, 68, 0.2);
+    background: rgba(239, 68, 68, 0.12);
+    color: #b03030;
+    border: 1px solid rgba(239, 68, 68, 0.15);
 }
 
 .role-tag.staff {
-    background: rgba(59, 130, 246, 0.15);
-    color: #3b82f6;
-    border: 1px solid rgba(59, 130, 246, 0.2);
+    background: rgba(11, 46, 51, 0.1);
+    color: #0b2e33;
+    border: 1px solid rgba(11, 46, 51, 0.2);
 }
 
 .role-tag.user {
-    background: rgba(16, 185, 129, 0.15);
-    color: #10b981;
-    border: 1px solid rgba(16, 185, 129, 0.2);
+    background: rgba(16, 185, 129, 0.12);
+    color: #1a7a4a;
+    border: 1px solid rgba(16, 185, 129, 0.15);
 }
 
-.header-right {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-.btn-mark-all,
-.btn-refresh {
-    padding: 8px 18px;
-    border: none;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.btn-mark-all {
-    background: #00d4ff;
-    color: #0b2e33;
-}
-
-.btn-mark-all:hover {
-    background: #00b8e6;
-    transform: translateY(-2px);
-}
-
-.btn-refresh {
-    background: rgba(255, 255, 255, 0.1);
-    color: #fff;
-}
-
-.btn-refresh:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: translateY(-2px);
-}
-
+/* --- Filter Buttons --- */
 .notifications-filter {
     display: flex;
     gap: 10px;
     margin-bottom: 25px;
     flex-wrap: wrap;
+    background: rgba(255, 255, 255, 0.6);
+    padding: 10px 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(11, 46, 51, 0.1);
 }
 
 .filter-btn {
     padding: 8px 20px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(11, 46, 51, 0.15);
     border-radius: 8px;
-    background: transparent;
-    color: rgba(255, 255, 255, 0.6);
+    background: #ffffff;
+    color: #0b2e33;
     cursor: pointer;
     transition: all 0.3s ease;
-    font-weight: 500;
+    font-weight: 600;
 }
 
 .filter-btn:hover {
-    background: rgba(255, 255, 255, 0.05);
-    color: #fff;
+    background: rgba(11, 46, 51, 0.08);
+    color: #0b2e33;
 }
 
 .filter-btn.active {
-    background: rgba(0, 212, 255, 0.15);
-    border-color: #00d4ff;
-    color: #00d4ff;
+    background: #0b2e33;
+    border-color: #0b2e33;
+    color: #ffffff;
 }
 
 .filter-btn .count {
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(11, 46, 51, 0.1);
     padding: 1px 10px;
     border-radius: 20px;
     font-size: 11px;
     margin-left: 6px;
-    color: rgba(255, 255, 255, 0.3);
+    color: #0b2e33;
 }
 
 .filter-btn.active .count {
-    background: rgba(0, 212, 255, 0.15);
-    color: #00d4ff;
+    background: rgba(255, 255, 255, 0.25);
+    color: #ffffff;
 }
 
+/* --- Notifications List --- */
 .notifications-list {
-    background: rgba(255, 255, 255, 0.03);
-    border-radius: 12px;
+    background: #f7fafc;
+    border-radius: 20px;
     overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(11, 46, 51, 0.12);
     min-height: 200px;
+    box-shadow: 0 4px 20px rgba(11, 46, 51, 0.08);
 }
 
+/* --- Notification Items --- */
 .notification-item {
     display: flex;
     align-items: flex-start;
     gap: 15px;
-    padding: 16px 20px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    padding: 18px 20px;
+    border-bottom: 1px solid rgba(11, 46, 51, 0.08);
     cursor: pointer;
     transition: all 0.3s ease;
+    background: #ffffff;
+    opacity: 1 !important;
 }
 
 .notification-item:last-child {
@@ -181,22 +158,24 @@
 }
 
 .notification-item:hover {
-    background: rgba(255, 255, 255, 0.04);
+    background: #eef6f8;
 }
 
 .notification-item.unread {
-    background: rgba(0, 212, 255, 0.05);
-    border-left: 3px solid #00d4ff;
+    background: #f0f7f9;
+    border-left: 4px solid #0b2e33;
 }
 
 .notification-item.read {
-    opacity: 0.6;
+    background: #ffffff;
+    opacity: 1 !important;
 }
 
 .notification-icon {
-    font-size: 24px;
+    font-size: 22px;
     min-width: 40px;
     padding-top: 2px;
+    color: #0b2e33 !important;
 }
 
 .notification-content {
@@ -204,114 +183,107 @@
 }
 
 .notification-title {
-    color: #fff;
-    font-weight: 600;
-    font-size: 15px;
-    margin-bottom: 4px;
+    color: #0b2e33 !important;
+    font-weight: 700 !important;
+    font-size: 16px !important;
+    margin-bottom: 4px !important;
+    display: flex !important;
+    align-items: center !important;
 }
 
 .notification-message {
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 14px;
+    color: #2c4a4f !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    line-height: 1.4 !important;
+    margin-top: 2px !important;
 }
 
 .notification-token {
-    color: #00d4ff;
-    font-size: 13px;
-    font-weight: 500;
-    margin-top: 4px;
+    color: #0b2e33 !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    margin-top: 6px !important;
+    background: #e2eff2 !important;
+    padding: 3px 12px !important;
+    border-radius: 12px !important;
+    display: inline-block !important;
+    border: 1px solid rgba(11, 46, 51, 0.15) !important;
 }
 
 .notification-time {
-    color: rgba(255, 255, 255, 0.3);
-    font-size: 12px;
-    margin-top: 6px;
+    color: #5c787d !important;
+    font-size: 12px !important;
+    margin-top: 6px !important;
+    font-weight: 500 !important;
 }
 
-.notification-status {
-    min-width: 30px;
-    text-align: right;
-}
-
+/* Status Icons */
 .unread-dot {
-    color: #00d4ff;
-    font-size: 12px;
+    color: #0b2e33 !important;
+    font-size: 14px !important;
     animation: pulse 2s ease-in-out infinite;
 }
 
 .read-check {
-    color: rgba(255, 255, 255, 0.15);
-    font-size: 14px;
+    color: #0b2e33 !important;
+    font-size: 16px !important;
+    font-weight: bold !important;
 }
 
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
-}
-
+/* Empty State */
 .empty-state {
     text-align: center;
     padding: 60px 20px;
-    color: rgba(255, 255, 255, 0.3);
+    color: #2c4a4f !important;
 }
 
 .empty-icon {
     font-size: 60px;
     margin-bottom: 15px;
-    opacity: 0.4;
+    opacity: 0.6;
 }
 
 .empty-state h3 {
-    color: rgba(255, 255, 255, 0.5);
+    color: #0b2e33 !important;
     font-size: 20px;
     margin-bottom: 8px;
+    font-weight: 700;
 }
 
 .empty-state p {
     font-size: 14px;
+    color: #5c787d !important;
 }
 
-.loading-spinner {
-    text-align: center;
-    padding: 40px;
-    color: rgba(255, 255, 255, 0.3);
-}
-
-.loading-spinner i {
-    font-size: 28px;
-}
-
-.error-message {
-    text-align: center;
-    padding: 40px;
-    color: #ef4444;
-}
-
+/* Footer */
 .notifications-footer {
     text-align: center;
     padding: 15px;
-    color: rgba(255, 255, 255, 0.2);
+    color: #0b2e33 !important;
     font-size: 13px;
-    border-top: 1px solid rgba(255,255,255,0.03);
+    font-weight: 600;
+    border-top: 1px solid rgba(11, 46, 51, 0.1);
     margin-top: 15px;
 }
 
+/* Back Link */
 .back-link {
     display: inline-block;
     padding: 10px 24px;
-    background: rgba(0, 212, 255, 0.08);
-    color: #00d4ff;
+    background: #0b2e33 !important;
+    color: #ffffff !important;
     text-decoration: none;
-    border-radius: 8px;
+    border-radius: 10px;
     transition: all 0.3s ease;
-    font-weight: 500;
+    font-weight: 600;
     font-size: 14px;
-    border: 1px solid rgba(0, 212, 255, 0.1);
+    border: none !important;
 }
 
 .back-link:hover {
-    background: rgba(0, 212, 255, 0.15);
-    border-color: rgba(0, 212, 255, 0.2);
+    background: #1a5a63 !important;
+    color: #ffffff !important;
 }
 
 .text-center {
@@ -322,21 +294,16 @@
     margin-top: 20px;
 }
 
-/* ===== RESPONSIVE ===== */
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+/* RESPONSIVE */
 @media (max-width: 768px) {
     .notifications-header {
         flex-direction: column;
         align-items: flex-start;
-    }
-
-    .header-right {
-        width: 100%;
-    }
-
-    .btn-mark-all,
-    .btn-refresh {
-        flex: 1;
-        text-align: center;
     }
 
     .notification-item {
@@ -354,6 +321,7 @@
 @media (max-width: 480px) {
     .notifications-filter {
         gap: 6px;
+        padding: 8px 12px;
     }
 
     .filter-btn {

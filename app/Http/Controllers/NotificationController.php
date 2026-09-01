@@ -64,7 +64,6 @@ class NotificationController extends Controller
 
         switch ($role) {
             case 'admin':
-                // ✅ Admin: Doctors, Services, Users, Staff Approval
                 return Notification::where(function($query) use ($user) {
                         $query->where('user_id', $user->id)
                               ->orWhereNull('user_id');
@@ -87,7 +86,6 @@ class NotificationController extends Controller
                     ->get();
 
             case 'staff':
-                // ✅ Staff: Token System (Queue)
                 return Notification::where(function($query) use ($user) {
                         $query->where('user_id', $user->id)
                               ->orWhereNull('user_id');
@@ -105,7 +103,6 @@ class NotificationController extends Controller
                     ->get();
 
             default:
-                // ✅ User/Patient: Own Token only
                 return Notification::where('user_id', $user->id)
                     ->whereIn('type', [
                         'token_generated',
@@ -119,7 +116,7 @@ class NotificationController extends Controller
         }
     }
 
-    // ✅ JSON response for AJAX calls
+    // ✅ JSON response for AJAX calls (Navbar Dropdown & Page Sync)
     public function getNotificationsJson()
     {
         try {
@@ -136,14 +133,18 @@ class NotificationController extends Controller
             $unreadCount = $notifications->whereNull('read_at')->count();
 
             $formatted = $notifications->map(function($notification) {
+                $extraData = is_string($notification->data) 
+                    ? json_decode($notification->data, true) 
+                    : $notification->data;
+
                 return [
                     'id' => $notification->id,
-                    'title' => $notification->title ?? 'Notification',
-                    'message' => $notification->message ?? '',
-                    'type' => $notification->type ?? 'general',
-                    'token_number' => $notification->token_number ?? null,
-                    'is_read' => $notification->read_at ? true : false,
-                    'created_at' => $notification->created_at->toISOString()
+                    'title' => $notification->title ?? ($extraData['title'] ?? 'Notification'),
+                    'message' => $notification->message ?? ($extraData['message'] ?? ''),
+                    'type' => $notification->type ?? ($extraData['type'] ?? 'general'),
+                    'token_number' => $notification->token_number ?? ($extraData['token'] ?? null),
+                    'is_read' => !is_null($notification->read_at),
+                    'created_at' => $notification->created_at ? $notification->created_at->toISOString() : now()->toISOString()
                 ];
             });
 
