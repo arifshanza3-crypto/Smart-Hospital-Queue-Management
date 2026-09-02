@@ -1,4 +1,5 @@
 <link href="{{ asset('css/contect form.css') }}" rel="stylesheet">
+
 <section class="contact-section">
     <div class="section-container">
         <div class="content-side">
@@ -7,8 +8,6 @@
             <p class="sub-text">Whether you are a healthcare provider looking to streamline your clinic or a patient needing assistance, our team is here to help.</p>
             
             <div class="contact-info-list">
-                <!-- <div class="phone-highlight">Support: (303) 555-0105</div> -->
-                
                 <h4 class="info-heading">System Operations</h4>
                 <ul class="details">
                     <li><i class="icon-loc"></i> Smart Queue HQ - Tech District, Sector 7</li>
@@ -24,18 +23,18 @@
                 <h3>Send a Message</h3>
                 
                 <div class="form-group">
-                    <label>Full Name</label>
-                    <input type="text" name="full_name" placeholder="Enter your name" required>
+                    <label for="full_name">Full Name</label>
+                    <input type="text" id="full_name" name="full_name" placeholder="Enter your name" required>
                 </div>
 
                 <div class="form-group">
-                    <label>Email Address</label>
-                    <input type="email" name="email" placeholder="example@hospital.com" required>
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="example@hospital.com" required>
                 </div>
 
                 <div class="form-group">
-                    <label>How can we help?</label>
-                    <textarea name="message" rows="3" placeholder="Tell us about your clinic or your issue..."></textarea>
+                    <label for="message">How can we help?</label>
+                    <textarea id="message" name="message" rows="3" placeholder="Tell us about your clinic or your issue..."></textarea>
                 </div>
 
                 <button type="submit" class="btn-submit">SEND MESSAGE</button>
@@ -43,4 +42,5 @@
         </div>
     </div>
 </section>
+
 <script src="{{ asset('js/contect form.js') }}"></script>

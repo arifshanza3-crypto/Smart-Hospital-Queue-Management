@@ -128,9 +128,10 @@
 
 {{-- ✅ COMPONENTS --}}
 @include("component/Doctors_details")
-<!-- @include("component/about-special") -->
+
+{{-- @include("component/about-special") --}}
+
 @include("component/contact_form")
 
 <script src="{{ asset('js/home.js') }}"></script>
-
 @endsection

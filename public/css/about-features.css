@@ -1,13 +1,17 @@
+/* ============================================ */
+/* FEATURES SECTION - FRESH MEDICAL THEME       */
+/* ============================================ */
+
 :root {
-    --dark-green: #1a3a3a;
-    --bg-light: #3e8686;
-    --accent-blue: #00d4ff;
+    --primary-cyan: #0284c7;
+    --dark-teal: #0b3c4d;
+    --text-muted: #1e4959;
     --card-bg: #ffffff;
 }
 
 .features-section {
     padding: 100px 20px;
-    background-color: #f8fafc; 
+    background: linear-gradient(180deg, #ffffff 0%, #f0f9ff 100%); 
 }
 
 .container {
@@ -21,7 +25,7 @@
 }
 
 .tagline {
-    color: var(--bg-light);
+    color: var(--primary-cyan);
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1.5px;
@@ -30,16 +34,17 @@
 
 .section-title {
     font-size: 36px;
-    color: var(--dark-green);
+    color: var(--dark-teal);
     margin: 10px 0 20px;
     font-weight: 800;
 }
 
 .section-desc {
-    color: #64748b;
+    color: var(--text-muted);
     max-width: 600px;
     margin: 0 auto;
     font-size: 18px;
+    line-height: 1.6;
 }
 
 .features-grid {
@@ -52,32 +57,32 @@
     background: var(--card-bg);
     padding: 40px;
     border-radius: 24px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 10px 25px rgba(2, 132, 199, 0.05);
     transition: all 0.3s ease;
-    border: 1px solid #e2e8f0;
+    border: 1px solid #e0f2fe;
     text-align: left;
 }
 
 .feature-card:hover {
     transform: translateY(-10px);
-    border-color: var(--accent-blue);
-    box-shadow: 0 20px 40px rgba(0, 212, 255, 0.1);
+    border-color: #bae6fd;
+    box-shadow: 0 20px 40px rgba(2, 132, 199, 0.12);
 }
 
 /* Icon Box Styling */
 .icon-box {
     width: 64px;
     height: 64px;
-    background: rgba(0, 212, 255, 0.1);
-    color: var(--accent-blue);
+    background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+    color: var(--primary-cyan);
     border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 25px;
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.1);
 }
 
-/* This is the part that was missing */
 .icon-box i {
     font-size: 28px;
     display: block;
@@ -85,13 +90,13 @@
 
 .feature-card h3 {
     font-size: 22px;
-    color: var(--dark-green);
+    color: var(--dark-teal);
     margin-bottom: 15px;
     font-weight: 700;
 }
 
 .feature-card p {
-    color: #64748b;
+    color: var(--text-muted);
     line-height: 1.6;
     font-size: 15px;
 }

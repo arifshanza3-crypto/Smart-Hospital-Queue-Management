@@ -1,7 +1,12 @@
+/* ============================================ */
+/* PROCESS SECTION - FRESH MEDICAL LIGHT THEME  */
+/* ============================================ */
+
 :root {
-    --dark-green: #1a3a3a;
-    --bg-light: #3e8686;
-    --accent-blue: #00d4ff;
+    --primary-cyan: #0284c7;
+    --dark-teal: #0b3c4d;      /* High contrast dark color for text */
+    --bg-light-blue: #e0f2fe;
+    --text-muted: #1e4959;     /* Easy readable paragraph color */
 }
 
 .process-section {
@@ -30,9 +35,9 @@
         left: 40px;
         top: 0;
         bottom: 0;
-        width: 2px;
-        background: linear-gradient(to bottom, var(--accent-blue), var(--bg-light));
-        opacity: 0.3;
+        width: 3px;
+        background: linear-gradient(to bottom, var(--primary-cyan), var(--bg-light-blue));
+        opacity: 0.6;
     }
 }
 
@@ -45,14 +50,15 @@
 }
 
 .step-card:hover {
-    transform: translateX(15px);
+    transform: translateX(12px);
 }
 
+/* Step Number Badge - High Contrast Text */
 .step-number {
     width: 80px;
     height: 80px;
-    background: var(--dark-green);
-    color: var(--accent-blue);
+    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+    color: #ffffff;             /* Fully visible bold white text */
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -60,7 +66,8 @@
     font-size: 24px;
     font-weight: 800;
     flex-shrink: 0;
-    border: 4px solid var(--accent-blue);
+    border: 4px solid #e0f2fe;
+    box-shadow: 0 6px 18px rgba(2, 132, 199, 0.25);
     z-index: 2;
 }
 
@@ -68,19 +75,27 @@
     background: #f8fafc;
     padding: 30px;
     border-radius: 20px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid #e0f2fe;
     width: 100%;
+    box-shadow: 0 4px 15px rgba(2, 132, 199, 0.05);
+    transition: all 0.3s ease;
+}
+
+.step-card:hover .step-content {
+    background: #ffffff;
+    border-color: #bae6fd;
+    box-shadow: 0 10px 25px rgba(2, 132, 199, 0.12);
 }
 
 .step-content h3 {
-    color: var(--dark-green);
+    color: var(--dark-teal);    /* Clear dark text for heading */
     font-size: 22px;
     margin-bottom: 10px;
     font-weight: 700;
 }
 
 .step-content p {
-    color: #64748b;
+    color: var(--text-muted);   /* Distinct dark teal-gray for body text */
     line-height: 1.6;
     margin: 0;
 }

@@ -1,3 +1,6 @@
+/* ============================================ */
+/* DOCTORS SECTION - FRESH MEDICAL GREEN & BLUE */
+/* ============================================ */
 
 * {
     margin: 0;
@@ -6,16 +9,16 @@
 }
 
 body {
-    background: #ffff;
-    color: #0a0a1a;
+    background: #ffffff;
+    color: #112a20;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Section Styles */
 .doctors-section {
-    padding: 60px 0;
-    background: #ffffff;
-    min-height: 100vh;
+    padding: 80px 0 0 !important;
+    margin-bottom: 0 !important;
+    background: linear-gradient(135deg, #eef7fa 0%, #e1f3f7 50%, #d2edf4 100%);
+    min-height: auto;
 }
 
 .container {
@@ -24,13 +27,12 @@ body {
     padding: 0 15px;
 }
 
-/* Section Header */
 .section-header {
-    margin-bottom: 40px;
+    margin-bottom: 50px;
 }
 
 .section-title {
-    color: #0a0a1a;
+    color: #112a20;
     font-size: 2.5rem;
     font-weight: 700;
     margin-bottom: 15px;
@@ -42,13 +44,13 @@ body {
     display: block;
     width: 80px;
     height: 4px;
-    background: linear-gradient(90deg, #00d4ff, #007bff);
+    background: linear-gradient(90deg, #1b5e20, #2e7d32);
     margin: 15px auto 0;
     border-radius: 2px;
 }
 
 .section-description {
-    color: #0a0a1a;
+    color: #2d4f40;
     font-size: 1.1rem;
     max-width: 700px;
     margin: 0 auto 0;
@@ -56,17 +58,13 @@ body {
     line-height: 1.8;
 }
 
-/* ============================================
-   GRID SYSTEM - 4 CARDS PER ROW
-   ============================================ */
-
+/* Grid System */
 .row {
     display: flex;
     flex-wrap: wrap;
     margin: 0 -12px;
 }
 
-/* 4 columns per row */
 .col-xl-3 {
     flex: 0 0 25%;
     max-width: 25%;
@@ -74,49 +72,27 @@ body {
     margin-bottom: 24px;
 }
 
-/* For medium screens - 2 columns */
-@media (max-width: 1200px) {
-    .col-xl-3 {
-        flex: 0 0 33.333%;
-        max-width: 33.333%;
-    }
-}
+@media (max-width: 1200px) { .col-xl-3 { flex: 0 0 33.333%; max-width: 33.333%; } }
+@media (max-width: 992px) { .col-xl-3 { flex: 0 0 50%; max-width: 50%; } }
+@media (max-width: 576px) { .col-xl-3 { flex: 0 0 100%; max-width: 100%; } }
 
-@media (max-width: 992px) {
-    .col-xl-3 {
-        flex: 0 0 50%;
-        max-width: 50%;
-    }
-}
-
-@media (max-width: 576px) {
-    .col-xl-3 {
-        flex: 0 0 100%;
-        max-width: 100%;
-    }
-}
-
-/* ============================================
-   DOCTOR CARDS - SMALL IMAGE, LARGE INFO
-   ============================================ */
-
+/* Doctor Cards */
 .doctor-card {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
+    background: #ffffff;
     border-radius: 16px;
     overflow: hidden;
     transition: all 0.3s ease;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(27, 94, 32, 0.12);
     height: 100%;
     display: flex;
     flex-direction: column;
+    box-shadow: 0 4px 15px rgba(27, 94, 32, 0.05);
 }
 
 .doctor-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
-    border-color: rgba(0, 212, 255, 0.3);
-    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-8px);
+    box-shadow: 0 14px 35px rgba(27, 94, 32, 0.15);
+    border-color: rgba(46, 125, 50, 0.3);
 }
 
 .doctor-card-inner {
@@ -125,17 +101,12 @@ body {
     flex-direction: column;
 }
 
-/* ============================================
-   DOCTOR IMAGE - SMALL SIZE
-   ============================================ */
-
 .doctor-image-wrapper {
     position: relative;
     width: 100%;
     padding-top: 60%;
-    /* Smaller image height */
     overflow: hidden;
-    background: #1a1a2e;
+    background: #eef7fa;
     flex-shrink: 0;
 }
 
@@ -150,98 +121,78 @@ body {
 }
 
 .doctor-card:hover .doctor-image {
-    transform: scale(1.05);
+    transform: scale(1.04);
 }
-
-/* ============================================
-   STATUS BADGE ON CARD
-   ============================================ */
 
 .doctor-status {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    padding: 3px 12px;
-    border-radius: 15px;
+    top: 12px;
+    right: 12px;
+    padding: 4px 14px;
+    border-radius: 20px;
     font-size: 10px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    background: rgba(0, 0, 0, 0.85);
-    backdrop-filter: blur(5px);
-    border: 1px solid transparent;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(27, 94, 32, 0.12);
 }
 
 .doctor-status.available,
-.doctor-status.active {
-    color: #4caf50;
-    border-color: #4caf50;
-}
-
+.doctor-status.active { color: #2e7d32; border-color: #2e7d32; }
 .doctor-status.busy,
-.doctor-status.on_duty {
-    color: #ff9800;
-    border-color: #ff9800;
-}
-
+.doctor-status.on_duty { color: #d97706; border-color: #d97706; }
 .doctor-status.unavailable,
-.doctor-status.inactive {
-    color: #f44336;
-    border-color: #f44336;
-}
-
-/* ============================================
-   DOCTOR INFO - LARGE SPACE
-   ============================================ */
+.doctor-status.inactive { color: #dc2626; border-color: #dc2626; }
 
 .doctor-info {
-    padding: 16px 18px 18px;
+    padding: 18px 20px 20px;
     flex: 1;
     display: flex;
     flex-direction: column;
     min-height: 160px;
-    /* Ensures info area is large */
 }
 
 .doctor-name {
-    color: #fff;
+    color: #112a20;
     font-size: 1.05rem;
-    font-weight: 600;
+    font-weight: 700;
     margin-bottom: 3px;
     line-height: 1.3;
 }
 
 .doctor-specialty {
-    color: #00d4ff;
+    color: #1b5e20;
     font-size: 0.82rem;
     margin-bottom: 10px;
-    font-weight: 500;
+    font-weight: 600;
 }
 
 .doctor-meta {
     display: flex;
-    gap: 12px;
+    gap: 14px;
     margin-bottom: 12px;
-    color: rgba(255, 255, 255, 0.6);
+    color: #2d4f40;
     font-size: 0.78rem;
     flex-wrap: wrap;
 }
 
 .doctor-meta i {
     margin-right: 4px;
-    color: #00d4ff;
+    color: #2e7d32;
 }
 
-/* ============================================
-   VIEW DETAILS BUTTON
-   ============================================ */
+/* ============================================ */
+/* UPDATED BUTTONS - DEEP MEDICAL BLUE/TEAL     */
+/* ============================================ */
 
 .view-details-btn {
-    background: linear-gradient(135deg, #00d4ff, #007bff);
-    color: white;
+    background: linear-gradient(135deg, #0b3c4d 0%, #155e75 100%);
+    color: #ffffff;
     border: none;
-    padding: 8px 16px;
-    border-radius: 8px;
+    padding: 10px 18px;
+    border-radius: 10px;
     font-weight: 600;
     font-size: 0.82rem;
     cursor: pointer;
@@ -252,25 +203,24 @@ body {
 }
 
 .view-details-btn:hover {
+    background: linear-gradient(135deg, #0e4c61 0%, #1a7491 100%);
     transform: translateY(-2px);
-    box-shadow: 0 5px 20px rgba(0, 212, 255, 0.3);
+    box-shadow: 0 6px 20px rgba(11, 60, 77, 0.25);
 }
 
-/* ============================================
-   VIEW ALL BUTTON
-   ============================================ */
-
+/* View All Container & Button */
 .view-all-container {
-    margin-top: 40px;
+    margin-top: 30px !important;
+    margin-bottom: 0 !important;
+    padding-bottom: 30px !important;
     text-align: center;
-    padding-top: 10px;
 }
 
 .view-all-btn {
     display: inline-block;
     padding: 14px 45px;
-    background: linear-gradient(135deg, #00d4ff, #007bff);
-    color: white;
+    background: linear-gradient(135deg, #0b3c4d 0%, #155e75 100%);
+    color: #ffffff;
     text-decoration: none;
     border-radius: 50px;
     font-weight: 600;
@@ -282,9 +232,10 @@ body {
 }
 
 .view-all-btn:hover {
+    background: linear-gradient(135deg, #0e4c61 0%, #1a7491 100%);
     transform: translateY(-3px);
-    box-shadow: 0 10px 30px rgba(0, 212, 255, 0.4);
-    color: white;
+    box-shadow: 0 10px 30px rgba(11, 60, 77, 0.3);
+    color: #ffffff;
     text-decoration: none;
 }
 
@@ -294,22 +245,19 @@ body {
     display: inline-block;
 }
 
-.view-all-btn:hover span {
-    transform: translateX(8px);
+.view-all-btn:hover span { 
+    transform: translateX(8px); 
 }
 
-/* ============================================
-   MODAL / POPUP STYLES
-   ============================================ */
-
+/* Modal / Popup Styles */
 .dr-popup-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.85);
-    backdrop-filter: blur(10px);
+    background: rgba(17, 42, 32, 0.85);
+    backdrop-filter: blur(12px);
     z-index: 9999;
     display: none;
     justify-content: center;
@@ -318,35 +266,30 @@ body {
 }
 
 .dr-popup-content {
-    background: linear-gradient(145deg, #1a1a2e, #16213e);
-    border-radius: 25px;
+    background: #ffffff;
+    border-radius: 24px;
     max-width: 800px;
     width: 100%;
     max-height: 90vh;
     overflow-y: auto;
-    padding: 30px;
+    padding: 32px;
     position: relative;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(27, 94, 32, 0.12);
     animation: modalSlideIn 0.3s ease;
+    box-shadow: 0 20px 60px rgba(27, 94, 32, 0.2);
 }
 
 @keyframes modalSlideIn {
-    from {
-        transform: translateY(-50px) scale(0.95);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0) scale(1);
-        opacity: 1;
-    }
+    from { transform: translateY(-50px) scale(0.95); opacity: 0; }
+    to { transform: translateY(0) scale(1); opacity: 1; }
 }
 
 .dr-popup-close {
     position: absolute;
-    top: 15px;
+    top: 16px;
     right: 20px;
-    font-size: 32px;
-    color: rgba(255, 255, 255, 0.6);
+    font-size: 28px;
+    color: #2d4f40;
     cursor: pointer;
     transition: all 0.3s ease;
     z-index: 10;
@@ -356,50 +299,34 @@ body {
 }
 
 .dr-popup-close:hover {
-    color: #fff;
+    color: #1b5e20;
     transform: rotate(90deg);
 }
 
-.dr-popup-flex {
-    display: flex;
-    gap: 30px;
-}
+.dr-popup-flex { display: flex; gap: 30px; }
 
-/* Modal Image Container */
 .dr-popup-image-container {
     flex: 0 0 40%;
     position: relative;
-    border-radius: 15px;
+    border-radius: 16px;
     overflow: hidden;
-    background: #0a0a1a;
+    background: #eef7fa;
     min-height: 300px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.dr-loader {
-    display: none;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-
 .spinner {
     width: 50px;
     height: 50px;
-    border: 3px solid rgba(255, 255, 255, 0.1);
-    border-top: 3px solid #00d4ff;
+    border: 3px solid rgba(27, 94, 32, 0.15);
+    border-top: 3px solid #1b5e20;
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
 
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
+@keyframes spin { to { transform: rotate(360deg); } }
 
 #modalImg {
     width: 100%;
@@ -409,15 +336,10 @@ body {
     display: none;
 }
 
-/* Modal Details */
-.dr-popup-details {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
+.dr-popup-details { flex: 1; display: flex; flex-direction: column; }
 
 .pop-title {
-    color: #fff;
+    color: #112a20;
     font-size: 1.8rem;
     font-weight: 700;
     margin-bottom: 20px;
@@ -428,271 +350,57 @@ body {
     display: block;
     width: 50px;
     height: 3px;
-    background: linear-gradient(90deg, #00d4ff, #007bff);
+    background: linear-gradient(90deg, #1b5e20, #2e7d32);
     margin-top: 8px;
     border-radius: 2px;
 }
 
-.pop-info {
-    flex: 1;
-}
-
 .pop-info p {
-    color: rgba(255, 255, 255, 0.8);
+    color: #2d4f40;
     margin-bottom: 12px;
     display: flex;
     align-items: center;
     gap: 10px;
     padding: 8px 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(27, 94, 32, 0.08);
 }
 
-.pop-info p:last-child {
-    border-bottom: none;
-}
-
-.pop-info p strong {
-    color: #fff;
-    min-width: 100px;
-    font-weight: 600;
-}
-
-.pop-info p span {
-    color: #90caf9;
-}
-
-/* Status Badge in Modal */
-.status-badge {
-    display: inline-block;
-    padding: 3px 15px;
-    border-radius: 20px;
-    font-weight: 600;
-    font-size: 0.9rem;
-}
+.pop-info p strong { color: #112a20; min-width: 100px; font-weight: 600; }
+.pop-info p span { color: #1b5e20; }
 
 .status-badge.available,
-.status-badge.active {
-    background: rgba(76, 175, 80, 0.2);
-    color: #4caf50;
-    border: 1px solid #4caf50;
-}
+.status-badge.active { background: rgba(46, 125, 50, 0.1); color: #2e7d32; border: 1px solid #2e7d32; }
 
-.status-badge.busy,
-.status-badge.on_duty {
-    background: rgba(255, 152, 0, 0.2);
-    color: #ff9800;
-    border: 1px solid #ff9800;
-}
-
-.status-badge.unavailable,
-.status-badge.inactive {
-    background: rgba(244, 67, 54, 0.2);
-    color: #f44336;
-    border: 1px solid #f44336;
-}
-
-/* Modal Actions */
-.modal-actions {
-    display: flex;
-    gap: 15px;
-    margin-top: 20px;
-}
-
-.join-btn,
-.appointment-btn {
-    flex: 1;
-    padding: 12px 20px;
-    border: none;
-    border-radius: 12px;
-    font-weight: 600;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
+.modal-actions { display: flex; gap: 15px; margin-top: 20px; }
 
 .join-btn {
-    background: linear-gradient(135deg, #00d4ff, #007bff);
-    color: white;
-}
-
-.join-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 20px rgba(0, 212, 255, 0.4);
+    background: linear-gradient(135deg, #0b3c4d 0%, #155e75 100%);
+    color: #ffffff;
 }
 
 .appointment-btn {
-    background: rgba(255, 255, 255, 0.1);
-    color: #fff;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: #eef7fa;
+    color: #0b3c4d;
+    border: 1px solid rgba(11, 60, 77, 0.2);
 }
 
-.appointment-btn:hover {
-    background: rgba(255, 255, 255, 0.15);
-    transform: translateY(-2px);
-}
+.appointment-btn:hover { background: #e1f3f7; transform: translateY(-2px); }
 
-/* ============================================
-   RESPONSIVE
-   ============================================ */
-
-/* Tablet - 2 columns */
+/* Responsive */
 @media (max-width: 992px) {
-    .container {
-        max-width: 100%;
-        padding: 0 20px;
-    }
-
-    .section-title {
-        font-size: 2rem;
-    }
-
-    .dr-popup-flex {
-        flex-direction: column;
-    }
-
-    .dr-popup-image-container {
-        flex: 0 0 250px;
-        min-height: 250px;
-    }
-
-    #modalImg {
-        min-height: 250px;
-    }
+    .container { max-width: 100%; padding: 0 20px; }
+    .section-title { font-size: 2rem; }
+    .dr-popup-flex { flex-direction: column; }
+    .dr-popup-image-container { flex: 0 0 250px; min-height: 250px; }
 }
 
-/* Mobile - 1 column */
 @media (max-width: 576px) {
-    .container {
-        padding: 0 12px;
-    }
-
-    .section-title {
-        font-size: 1.6rem;
-    }
-
-    .section-description {
-        font-size: 0.95rem;
-    }
-
-    .doctor-info {
-        padding: 14px 14px 16px;
-        min-height: 140px;
-    }
-
-    .doctor-name {
-        font-size: 0.95rem;
-    }
-
-    .doctor-specialty {
-        font-size: 0.78rem;
-    }
-
-    .doctor-meta {
-        font-size: 0.72rem;
-        gap: 8px;
-    }
-
-    .view-details-btn {
-        font-size: 0.78rem;
-        padding: 7px 14px;
-    }
-
-    .view-all-btn {
-        padding: 12px 30px;
-        font-size: 0.95rem;
-    }
-
-    .pop-info p {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 3px;
-    }
-
-    .pop-info p strong {
-        min-width: auto;
-    }
-
-    .modal-actions {
-        flex-direction: column;
-    }
-
-    .dr-popup-content {
-        padding: 20px;
-    }
-
-    .dr-popup-image-container {
-        flex: 0 0 200px;
-        min-height: 200px;
-    }
-
-    #modalImg {
-        min-height: 200px;
-    }
+    .container { padding: 0 12px; }
+    .doctors-section { padding: 50px 0 0 !important; }
+    .section-title { font-size: 1.6rem; }
+    .dr-popup-content { padding: 20px; }
 }
 
-/* Extra Small Mobile */
-@media (max-width: 400px) {
-    .doctor-info {
-        padding: 10px 10px 12px;
-        min-height: 120px;
-    }
-
-    .doctor-name {
-        font-size: 0.85rem;
-    }
-
-    .doctor-specialty {
-        font-size: 0.72rem;
-        margin-bottom: 6px;
-    }
-
-    .doctor-meta {
-        font-size: 0.68rem;
-        gap: 6px;
-        margin-bottom: 8px;
-    }
-
-    .view-details-btn {
-        font-size: 0.72rem;
-        padding: 6px 10px;
-    }
-}
-
-/* ============================================
-   FONT AWESOME ICONS (fallback)
-   ============================================ */
-
-.fas {
-    font-family: 'Font Awesome 6 Free';
-    font-weight: 900;
-}
-
-/* Fallback if Font Awesome not loaded */
-.fa-briefcase::before {
-    content: '💼';
-}
-
-.fa-star::before {
-    content: '⭐';
-}
-
-/* ============================================
-   SCROLLBAR STYLING
-   ============================================ */
-
-::-webkit-scrollbar {
-    width: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: #0a0a1a;
-}
-
-::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, #00d4ff, #007bff);
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #00d4ff;
-}
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #eef7fa; }
+::-webkit-scrollbar-thumb { background: linear-gradient(135deg, #0b3c4d 0%, #155e75 100%); border-radius: 4px; }

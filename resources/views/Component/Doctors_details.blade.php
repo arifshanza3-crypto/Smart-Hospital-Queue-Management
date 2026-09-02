@@ -1,6 +1,6 @@
 <link rel="stylesheet" href="{{ asset('css/Doctor_details.css') }}">
 
-<section class="doctors-section">
+<section class="doctors-section no-bottom-gap">
     <div class="container">
         <div class="section-header text-center">
             <h2 class="section-title">Meet Our Expert Doctors</h2>
@@ -53,19 +53,6 @@
 
 {{-- Pass doctors data to JavaScript --}}
 <script>
-    // ✅ Doctors data from backend
     window.doctorsData = @json($doctors ?? []);
-    
-    console.log('=== DOCTORS DETAILS PAGE ===');
-    console.log('Total Doctors:', window.doctorsData.length);
-    
-    if (window.doctorsData.length > 0) {
-        console.log('Sample Doctor:', window.doctorsData[0]);
-        console.log('Doctor Name:', window.doctorsData[0].name);
-        console.log('Specialization:', window.doctorsData[0].specialization);
-    } else {
-        console.log('⚠️ No doctors data received from controller!');
-    }
 </script>
-
 <script src="{{ asset('js/Doctors_details.js') }}"></script>
