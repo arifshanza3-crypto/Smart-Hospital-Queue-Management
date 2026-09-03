@@ -1,5 +1,5 @@
 /* ============================================ */
-/* STATUS PAGE - Matching Footer Colors */
+/* STATUS PAGE - HOME PAGE THEME                */
 /* ============================================ */
 
 .status-container {
@@ -8,21 +8,22 @@
     justify-content: center;
     align-items: center;
     padding: 20px;
-    background: linear-gradient(135deg, #f0f9fc 0%, #dceef5 50%, #c5e3ed 100%);
+    background: linear-gradient(135deg, #f0f7fa 0%, #e0ecf0 50%, #d4e4e8 100%);
 }
 
 .status-card {
-    background: #ffffff;
-    border: 1px solid rgba(0, 0, 0, 0.06);
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(11, 46, 51, 0.06);
     border-radius: 20px;
     padding: 28px 32px 24px;
     max-width: 480px;
     width: 100%;
-    box-shadow: 0 4px 20px rgba(0, 40, 60, 0.08);
+    box-shadow: 0 4px 20px rgba(11, 46, 51, 0.06);
 }
 
 .status-card h2 {
-    color: #0b2e33;
+    color: #0a2a3a;
     font-size: 1.1rem;
     font-weight: 700;
     text-align: center;
@@ -30,7 +31,7 @@
 }
 
 .status-card h3 {
-    color: #0b2e33;
+    color: #0a2a3a;
     font-size: 1.4rem;
     font-weight: 800;
     text-align: center;
@@ -38,7 +39,7 @@
 }
 
 .status-card .subtitle {
-    color: #4a7a85;
+    color: #3a5a6a;
     text-align: center;
     font-size: 0.75rem;
     margin-bottom: 18px;
@@ -56,7 +57,7 @@
 
 .token-number .label {
     display: block;
-    color: #0b2e33;
+    color: #0a2a3a;
     font-size: 0.6rem;
     text-transform: uppercase;
     letter-spacing: 2px;
@@ -66,7 +67,7 @@
 
 .token-number .value {
     display: block;
-    color: #0b2e33;
+    color: #0a2a3a;
     font-size: 2rem;
     font-weight: 800;
     margin: 2px 0;
@@ -83,12 +84,12 @@
 
 .badge.status-waiting {
     background: #e8f0f2;
-    color: #0b2e33;
+    color: #0a2a3a;
 }
 
 .badge.status-calling {
     background: #d4e8ed;
-    color: #0b4a55;
+    color: #0a2a3a;
 }
 
 .badge.status-serving {
@@ -115,7 +116,7 @@
 }
 
 .status-item {
-    background: #f5f9fa;
+    background: rgba(11, 46, 51, 0.04);
     padding: 8px 12px;
     border-radius: 10px;
     border: 1px solid rgba(11, 46, 51, 0.04);
@@ -123,7 +124,7 @@
 
 .status-item .label {
     display: block;
-    color: #0b2e33;
+    color: #0a2a3a;
     font-size: 0.5rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -133,18 +134,18 @@
 
 .status-item .value {
     display: block;
-    color: #0b2e33;
+    color: #0a2a3a;
     font-size: 0.85rem;
     font-weight: 700;
     margin-top: 1px;
 }
 
 .status-item .value.status-waiting {
-    color: #0b2e33;
+    color: #0a2a3a;
 }
 
 .status-item .value.status-calling {
-    color: #0b4a55;
+    color: #0a2a3a;
 }
 
 .status-item .value.status-serving {
@@ -160,7 +161,7 @@
 }
 
 .now-serving-value {
-    color: #0b2e33 !important;
+    color: #0a2a3a !important;
     font-weight: 700 !important;
 }
 
@@ -176,13 +177,13 @@
 
 .status-waiting {
     background: #e8f0f2;
-    color: #0b2e33;
+    color: #0a2a3a;
     border: 1px solid #d0dde0;
 }
 
 .status-serving {
     background: #d4e8ed;
-    color: #0b4a55;
+    color: #0a2a3a;
     border: 1px solid #b8d4dc;
 }
 
@@ -233,13 +234,13 @@
 
 .status-actions .btn-home {
     background: #e8f0f2;
-    color: #0b2e33;
+    color: #0a2a3a;
     border: 1px solid #d0dde0;
 }
 
 .status-actions .btn-home:hover {
     background: #d4e0e2;
-    color: #0b2e33;
+    color: #0a2a3a;
 }
 
 /* --- Toast Messages --- */
@@ -256,7 +257,7 @@
     border-radius: 10px;
     padding: 12px 20px;
     margin-bottom: 8px;
-    color: #0b2e33;
+    color: #0a2a3a;
     font-size: 0.85rem;
     min-width: 250px;
     box-shadow: 0 8px 30px rgba(11, 46, 51, 0.08);
@@ -288,7 +289,7 @@
 }
 
 .wait-time-update.changed {
-    color: #0b2e33;
+    color: #0a2a3a;
     transform: scale(1.04);
 }
 

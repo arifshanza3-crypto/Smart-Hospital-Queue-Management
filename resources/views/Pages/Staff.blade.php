@@ -66,13 +66,43 @@
                             </td>
                             <td>
                                 @if($token->status == 'waiting')
-                                    <button onclick="callPatient({{ $token->id }})" class="btn-sm btn-call">Call</button>
+                                    {{-- ✅ Call Button --}}
+                                    <button onclick="updateTokenStatus({{ $token->id }}, 'calling')" class="btn-sm btn-call">
+                                        <i class="fas fa-phone"></i> Call
+                                    </button>
+                                    {{-- ✅ Cancel Button --}}
+                                    <button onclick="updateTokenStatus({{ $token->id }}, 'cancelled')" class="btn-sm btn-cancel">
+                                        <i class="fas fa-times"></i> Cancel
+                                    </button>
+
                                 @elseif($token->status == 'calling')
-                                    <button onclick="startService({{ $token->id }})" class="btn-sm btn-start">Start</button>
+                                    {{-- ✅ Start Serving Button --}}
+                                    <button onclick="updateTokenStatus({{ $token->id }}, 'serving')" class="btn-sm btn-start">
+                                        <i class="fas fa-play"></i> Start
+                                    </button>
+                                    {{-- ✅ Cancel Button --}}
+                                    <button onclick="updateTokenStatus({{ $token->id }}, 'cancelled')" class="btn-sm btn-cancel">
+                                        <i class="fas fa-times"></i> Cancel
+                                    </button>
+
                                 @elseif($token->status == 'serving')
-                                    <button onclick="completeService({{ $token->id }})" class="btn-sm btn-complete">Complete</button>
+                                    {{-- ✅ Complete Button --}}
+                                    <button onclick="updateTokenStatus({{ $token->id }}, 'completed')" class="btn-sm btn-complete">
+                                        <i class="fas fa-check"></i> Complete
+                                    </button>
+
+                                @elseif($token->status == 'completed')
+                                    {{-- ✅ Served Badge --}}
+                                    <span class="badge-served">
+                                        <i class="fas fa-check-circle"></i> Served
+                                    </span>
+
+                                @elseif($token->status == 'cancelled')
+                                    {{-- ✅ Cancelled Badge --}}
+                                    <span class="badge-cancelled">
+                                        <i class="fas fa-times-circle"></i> Cancelled
+                                    </span>
                                 @endif
-                                <button onclick="cancelToken({{ $token->id }})" class="btn-sm btn-cancel">Cancel</button>
                             </td>
                         </tr>
                         @endforeach
@@ -149,6 +179,7 @@
     </div>
 
     <style>
+        /* --- Status Badges --- */
         .status-badge {
             display: inline-block;
             padding: 4px 12px;
@@ -173,27 +204,89 @@
             background: rgba(40, 167, 69, 0.2);
             color: #28a745;
         }
+        .status-badge.cancelled {
+            background: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+        }
+
+        /* --- Action Buttons --- */
         .btn-sm {
-            padding: 4px 12px;
+            padding: 6px 14px;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             font-size: 0.7rem;
             font-weight: 600;
             cursor: pointer;
-            margin: 2px;
+            margin: 2px 4px;
             transition: all 0.3s ease;
         }
         .btn-sm:hover {
             transform: scale(1.05);
         }
-        .btn-call { background: #007bff; color: white; }
-        .btn-start { background: #28a745; color: white; }
-        .btn-complete { background: #17a2b8; color: white; }
-        .btn-cancel { background: #dc3545; color: white; }
+        .btn-sm i {
+            margin-right: 4px;
+        }
+
+        /* ✅ Call Button - Blue */
+        .btn-call {
+            background: #3b82f6;
+            color: #ffffff;
+        }
+        .btn-call:hover {
+            background: #2563eb;
+        }
+
+        /* ✅ Start Button - Green */
+        .btn-start {
+            background: #22c55e;
+            color: #ffffff;
+        }
+        .btn-start:hover {
+            background: #16a34a;
+        }
+
+        /* ✅ Complete Button - Purple */
+        .btn-complete {
+            background: #8b5cf6;
+            color: #ffffff;
+        }
+        .btn-complete:hover {
+            background: #7c3aed;
+        }
+
+        /* ✅ Cancel Button - Red */
+        .btn-cancel {
+            background: #ef4444;
+            color: #ffffff;
+        }
+        .btn-cancel:hover {
+            background: #dc2626;
+        }
+
+        /* --- Badges --- */
+        .badge-served {
+            display: inline-block;
+            padding: 6px 14px;
+            background: #dcfce7;
+            color: #16a34a;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .badge-cancelled {
+            display: inline-block;
+            padding: 6px 14px;
+            background: #fee2e2;
+            color: #dc2626;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 12px;
+        }
     </style>
 
     <script src="{{ asset('js/Staff.js') }}"></script>
-    
+
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         const mobileInput = document.getElementById('p_mobile');
@@ -218,7 +311,56 @@
         }
     });
 
-    // ✅ Override submitPatient function to include mobile number
+    // ✅ Unified Function — 1 Button, 3 Functions
+    function updateTokenStatus(id, status) {
+        let endpoint = '';
+        let actionText = '';
+
+        switch(status) {
+            case 'calling':
+                endpoint = '/staff/start-serving';
+                actionText = 'Call';
+                break;
+            case 'serving':
+                endpoint = '/staff/start-service';
+                actionText = 'Start Service';
+                break;
+            case 'completed':
+                endpoint = '/staff/complete-service';
+                actionText = 'Complete';
+                break;
+            case 'cancelled':
+                endpoint = '/staff/cancel-token';
+                actionText = 'Cancel';
+                if (!confirm('Are you sure you want to cancel this token?')) return;
+                break;
+            default:
+                return;
+        }
+
+        fetch(endpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({ token_id: id })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('❌ Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('❌ Error updating token status');
+        });
+    }
+
+    // ✅ Add Physical Patient
     function submitPatient() {
         const name = document.getElementById('p_name')?.value?.trim();
         const mobile = document.getElementById('p_mobile')?.value?.trim();
@@ -233,7 +375,6 @@
             return;
         }
 
-        // Validate mobile number
         const isValid = /^(03)\d{9}$/.test(mobile);
         if (!isValid) {
             document.getElementById('mobileError').style.display = 'block';
@@ -270,73 +411,37 @@
         });
     }
 
-    // ✅ Call Patient
-    function callPatient(id) {
-        fetch('/staff/start-serving', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-            },
-            body: JSON.stringify({ token_id: id })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) location.reload();
-            else alert('Error: ' + data.message);
-        });
+    // ✅ Modal Functions
+    function openModal(id) {
+        document.getElementById(id).classList.add('show');
+        document.getElementById(id).style.display = 'flex';
     }
 
-    // ✅ Start Service
-    function startService(id) {
-        fetch('/staff/start-service', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-            },
-            body: JSON.stringify({ token_id: id })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) location.reload();
-            else alert('Error: ' + data.message);
-        });
+    function closeModal(id) {
+        document.getElementById(id).classList.remove('show');
+        document.getElementById(id).style.display = 'none';
     }
 
-    // ✅ Complete Service
-    function completeService(id) {
-        fetch('/staff/complete-service', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-            },
-            body: JSON.stringify({ token_id: id })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) location.reload();
-            else alert('Error: ' + data.message);
-        });
+    // ✅ Timer Modal Functions (placeholder)
+    function patientArrived() {
+        alert('✅ Patient arrived - Starting service');
+        closeModal('timerModal');
     }
 
-    // ✅ Cancel Token
-    function cancelToken(id) {
-        if (!confirm('Are you sure you want to cancel this token?')) return;
-        fetch('/staff/cancel-token', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-            },
-            body: JSON.stringify({ token_id: id })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) location.reload();
-            else alert('Error: ' + data.message);
-        });
+    function extendTimer() {
+        alert('⏰ Timer extended by 2 minutes');
+    }
+
+    function cancelCurrentPatient() {
+        if (confirm('Cancel current patient?')) {
+            closeModal('timerModal');
+        }
+    }
+
+    function submitGlobalTime() {
+        const minutes = document.getElementById('global_min').value;
+        alert('⏱ Global time set to ' + minutes + ' minutes');
+        closeModal('timeModal');
     }
     </script>
 @endsection

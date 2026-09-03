@@ -1,12 +1,12 @@
 /* ============================================ */
-/* NOTIFICATIONS PAGE - LIGHT BLUE THEME        */
+/* NOTIFICATIONS PAGE - HOME PAGE THEME         */
 /* ============================================ */
 
-/* --- Page Background - Light Blue --- */
+/* --- Page Background - Light Teal Gradient --- */
 .notifications-page {
     padding: 30px 0;
     min-height: 100vh;
-    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 50%, #90caf9 100%);
+    background: linear-gradient(135deg, #f0f7fa 0%, #e0ecf0 50%, #d4e4e8 100%);
 }
 
 .container {
@@ -33,14 +33,14 @@
 }
 
 .header-left h1 {
-    color: #0b2e33;
+    color: #0a2a3a;
     font-size: 28px;
     margin: 0;
     font-weight: 700;
 }
 
 .notification-count {
-    background: #0b2e33;
+    background: #0a2a3a;
     color: #ffffff;
     padding: 2px 12px;
     border-radius: 20px;
@@ -71,9 +71,9 @@
 }
 
 .role-tag.staff {
-    background: rgba(11, 46, 51, 0.1);
-    color: #0b2e33;
-    border: 1px solid rgba(11, 46, 51, 0.2);
+    background: rgba(11, 46, 51, 0.08);
+    color: #0a2a3a;
+    border: 1px solid rgba(11, 46, 51, 0.1);
 }
 
 .role-tag.user {
@@ -88,56 +88,57 @@
     gap: 10px;
     margin-bottom: 25px;
     flex-wrap: wrap;
-    background: rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.5);
     padding: 10px 16px;
     border-radius: 12px;
-    border: 1px solid rgba(11, 46, 51, 0.1);
+    border: 1px solid rgba(11, 46, 51, 0.06);
 }
 
 .filter-btn {
     padding: 8px 20px;
-    border: 1px solid rgba(11, 46, 51, 0.15);
+    border: 1px solid rgba(11, 46, 51, 0.1);
     border-radius: 8px;
-    background: #ffffff;
-    color: #0b2e33;
+    background: transparent;
+    color: #0a2a3a;
     cursor: pointer;
     transition: all 0.3s ease;
     font-weight: 600;
 }
 
 .filter-btn:hover {
-    background: rgba(11, 46, 51, 0.08);
-    color: #0b2e33;
+    background: rgba(11, 46, 51, 0.06);
+    color: #0a2a3a;
 }
 
 .filter-btn.active {
-    background: #0b2e33;
-    border-color: #0b2e33;
-    color: #ffffff;
+    background: rgba(11, 46, 51, 0.1);
+    border-color: #0a2a3a;
+    color: #0a2a3a;
 }
 
 .filter-btn .count {
-    background: rgba(11, 46, 51, 0.1);
+    background: rgba(11, 46, 51, 0.06);
     padding: 1px 10px;
     border-radius: 20px;
     font-size: 11px;
     margin-left: 6px;
-    color: #0b2e33;
+    color: #0a2a3a;
 }
 
 .filter-btn.active .count {
-    background: rgba(255, 255, 255, 0.25);
-    color: #ffffff;
+    background: rgba(11, 46, 51, 0.12);
+    color: #0a2a3a;
 }
 
 /* --- Notifications List --- */
 .notifications-list {
-    background: #f7fafc;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(10px);
     border-radius: 20px;
     overflow: hidden;
-    border: 1px solid rgba(11, 46, 51, 0.12);
+    border: 1px solid rgba(11, 46, 51, 0.06);
     min-height: 200px;
-    box-shadow: 0 4px 20px rgba(11, 46, 51, 0.08);
+    box-shadow: 0 4px 20px rgba(11, 46, 51, 0.05);
 }
 
 /* --- Notification Items --- */
@@ -145,12 +146,11 @@
     display: flex;
     align-items: flex-start;
     gap: 15px;
-    padding: 18px 20px;
-    border-bottom: 1px solid rgba(11, 46, 51, 0.08);
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(11, 46, 51, 0.06);
     cursor: pointer;
     transition: all 0.3s ease;
-    background: #ffffff;
-    opacity: 1 !important;
+    background: transparent;
 }
 
 .notification-item:last-child {
@@ -158,61 +158,78 @@
 }
 
 .notification-item:hover {
-    background: #eef6f8;
+    background: rgba(11, 46, 51, 0.04);
 }
 
 .notification-item.unread {
-    background: #f0f7f9;
-    border-left: 4px solid #0b2e33;
+    background: rgba(11, 46, 51, 0.06);
+    border-left: 3px solid #0a2a3a;
 }
 
 .notification-item.read {
-    background: #ffffff;
-    opacity: 1 !important;
+    opacity: 0.7;
 }
 
 .notification-icon {
     font-size: 22px;
     min-width: 40px;
     padding-top: 2px;
-    color: #0b2e33 !important;
+    color: #0a2a3a !important;
 }
 
 .notification-content {
     flex: 1;
 }
 
+/* ✅ ALL TEXT - DARK */
 .notification-title {
-    color: #0b2e33 !important;
+    color: #0a2a3a !important;
     font-weight: 700 !important;
     font-size: 16px !important;
     margin-bottom: 4px !important;
     display: flex !important;
     align-items: center !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
 }
 
 .notification-message {
-    color: #2c4a4f !important;
+    color: #1a3a45 !important;
     font-size: 14px !important;
     font-weight: 500 !important;
     line-height: 1.4 !important;
     margin-top: 2px !important;
 }
 
+/* ✅ ROUND TOKEN BADGE - FIXED */
 .notification-token {
-    color: #0b2e33 !important;
-    font-size: 13px !important;
+    color: #ffffff !important;
+    font-size: 12px !important;
     font-weight: 700 !important;
-    margin-top: 6px !important;
-    background: #e2eff2 !important;
-    padding: 3px 12px !important;
-    border-radius: 12px !important;
+    margin-top: 4px !important;
+    background: #0a2a3a !important;
+    padding: 3px 14px !important;
+    border-radius: 20px !important;
     display: inline-block !important;
-    border: 1px solid rgba(11, 46, 51, 0.15) !important;
+    border: none !important;
+    letter-spacing: 0.3px !important;
+}
+
+/* ✅ ROUND NEW TAG - FIXED */
+.new-tag {
+    font-size: 9px;
+    background: #0a2a3a !important;
+    color: #ffffff !important;
+    padding: 3px 14px !important;
+    border-radius: 20px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    display: inline-block !important;
 }
 
 .notification-time {
-    color: #5c787d !important;
+    color: #4a6a75 !important;
     font-size: 12px !important;
     margin-top: 6px !important;
     font-weight: 500 !important;
@@ -220,13 +237,13 @@
 
 /* Status Icons */
 .unread-dot {
-    color: #0b2e33 !important;
+    color: #0a2a3a !important;
     font-size: 14px !important;
     animation: pulse 2s ease-in-out infinite;
 }
 
 .read-check {
-    color: #0b2e33 !important;
+    color: rgba(11, 46, 51, 0.15) !important;
     font-size: 16px !important;
     font-weight: bold !important;
 }
@@ -235,17 +252,17 @@
 .empty-state {
     text-align: center;
     padding: 60px 20px;
-    color: #2c4a4f !important;
+    color: #3a6a75 !important;
 }
 
 .empty-icon {
     font-size: 60px;
     margin-bottom: 15px;
-    opacity: 0.6;
+    opacity: 0.4;
 }
 
 .empty-state h3 {
-    color: #0b2e33 !important;
+    color: #0a2a3a !important;
     font-size: 20px;
     margin-bottom: 8px;
     font-weight: 700;
@@ -253,17 +270,17 @@
 
 .empty-state p {
     font-size: 14px;
-    color: #5c787d !important;
+    color: #4a6a75 !important;
 }
 
 /* Footer */
 .notifications-footer {
     text-align: center;
     padding: 15px;
-    color: #0b2e33 !important;
+    color: #5a7a85 !important;
     font-size: 13px;
     font-weight: 600;
-    border-top: 1px solid rgba(11, 46, 51, 0.1);
+    border-top: 1px solid rgba(11, 46, 51, 0.06);
     margin-top: 15px;
 }
 
@@ -271,19 +288,19 @@
 .back-link {
     display: inline-block;
     padding: 10px 24px;
-    background: #0b2e33 !important;
-    color: #ffffff !important;
+    background: rgba(11, 46, 51, 0.06) !important;
+    color: #0a2a3a !important;
     text-decoration: none;
     border-radius: 10px;
     transition: all 0.3s ease;
     font-weight: 600;
     font-size: 14px;
-    border: none !important;
+    border: 1px solid rgba(11, 46, 51, 0.08) !important;
 }
 
 .back-link:hover {
-    background: #1a5a63 !important;
-    color: #ffffff !important;
+    background: rgba(11, 46, 51, 0.12) !important;
+    color: #0a2a3a !important;
 }
 
 .text-center {
