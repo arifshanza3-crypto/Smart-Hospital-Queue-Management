@@ -21,6 +21,7 @@ class Token extends Model
         'estimated_time',
         'position',
         'called_at',
+        'started_at',
         'completed_at',
         'created_at'
     ];
@@ -29,6 +30,10 @@ class Token extends Model
         'patient_id' => 'string',
         'position' => 'integer',
         'estimated_time' => 'integer',
+        'called_at' => 'datetime',
+        'started_at' => 'datetime',
+        'completed_at' => 'datetime',
+        'created_at' => 'datetime',
     ];
     
     public function patient()

@@ -1,5 +1,5 @@
 /* ============================================ */
-/* STAFF PAGE - Light Theme (Same Colors)      */
+/* STAFF PAGE - Light Theme                    */
 /* ============================================ */
 
 /* --- Hero Header --- */
@@ -159,7 +159,7 @@
     background: rgba(11, 46, 51, 0.02);
 }
 
-/* --- Status Badges in Table --- */
+/* --- Status Badges --- */
 .status-badge {
     padding: 3px 12px;
     border-radius: 12px;
@@ -194,41 +194,80 @@
     color: #8a3030;
 }
 
-/* --- Action Buttons in Table --- */
-.btn-start {
-    padding: 4px 14px;
-    border-radius: 8px;
+/* --- Action Buttons --- */
+.btn-sm {
+    padding: 6px 14px;
     border: none;
+    border-radius: 8px;
     font-size: 0.7rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
-    background: #0b2e33;
-    color: #fff;
+    margin: 2px 4px;
+    transition: all 0.3s ease;
 }
 
-.btn-start:hover {
-    background: #1a5a63;
+.btn-sm:hover {
     transform: scale(1.05);
 }
 
+.btn-sm i {
+    margin-right: 4px;
+}
+
+.btn-call {
+    background: #3b82f6;
+    color: #ffffff;
+}
+.btn-call:hover {
+    background: #2563eb;
+}
+
+.btn-start {
+    background: #22c55e;
+    color: #ffffff;
+}
+.btn-start:hover {
+    background: #16a34a;
+}
+
+.btn-complete {
+    background: #8b5cf6;
+    color: #ffffff;
+}
+.btn-complete:hover {
+    background: #7c3aed;
+}
+
 .btn-cancel {
-    padding: 4px 14px;
-    border-radius: 8px;
-    border: none;
-    font-size: 0.7rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    background: #e8f0f2;
-    color: #8a3030;
+    background: #ef4444;
+    color: #ffffff;
 }
-
 .btn-cancel:hover {
-    background: #f0dcdc;
+    background: #dc2626;
 }
 
-/* --- Modal --- */
+/* --- Served & Cancelled Badges --- */
+.badge-served {
+    display: inline-block;
+    padding: 6px 14px;
+    background: #dcfce7;
+    color: #16a34a;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 12px;
+}
+
+.badge-cancelled {
+    display: inline-block;
+    padding: 6px 14px;
+    background: #fee2e2;
+    color: #dc2626;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 12px;
+}
+
+/* --- Modals --- */
 .modal {
     display: none;
     position: fixed;
@@ -315,7 +354,7 @@
     background: #d4e0e2;
 }
 
-/* --- Responsive --- */
+/* --- Responsive Layout --- */
 @media (max-width: 768px) {
     .hero-header .hero-content {
         flex-direction: column;
