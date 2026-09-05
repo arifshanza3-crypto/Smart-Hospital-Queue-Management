@@ -28,17 +28,10 @@
                     <span class="hero-tag">Advanced Technology</span>
                     <h1 class="hero-title">Expert Doctors <br>& Expert Care</h1>
                     <p class="hero-description">Experience the next generation of patient care with real-time updates and seamless queue management.</p>
-<<<<<<< HEAD
                     <!-- <div class="hero-btn-group">
                         <a href="#" class="btn-secondary-hero">Learn More</a>
                     </div> -->
                 <!-- </div>
-=======
-                    <div class="hero-btn-group">
-                        <a href="{{ route('about') }}" class="btn-secondary-hero">Learn More</a>
-                    </div>
-                </div>
->>>>>>> 0e2f13c81a0d22d7d61fb3ea1cdf2a8f08f28036
                 <div class="hero-right">
                     <img src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=1000" alt="Medical Technology">
                 </div>
@@ -69,7 +62,7 @@
     </div>
 </section>
 
-{{-- ✅ TOKEN STATUS SECTION --}}
+<!-- {{-- ✅ TOKEN STATUS SECTION --}}
 <section class="token-status-section">
     <div class="container">
         <div class="token-status-wrapper">
@@ -90,16 +83,16 @@
                         @endforeach
                     </div>
                 </div>
-            @endif
+            @endif -->
 
-            {{-- ✅ User's Own Active Token --}}
+            <!-- {{-- ✅ User's Own Active Token --}}
             @if(isset($userToken) && $userToken)
                 <div class="user-token-card">
                     <div class="token-card-header">
                         <span class="token-icon">✅</span>
                         <h3>Your Active Token</h3>
-                    </div>
-                    <div class="token-card-body">
+                    </div> -->
+                    <!-- <div class="token-card-body">
                         <div class="token-number-large">{{ $userToken->token_number }}</div>
                         <div class="token-details">
                             <div class="token-detail-item">
@@ -120,11 +113,11 @@
                         <a href="{{ route('status.page', ['token' => $userToken->token_number]) }}" class="btn-view-status">View Full Status →</a>
                     </div>
                 </div>
-            @endif
-
+            @endif -->
+<!-- 
         </div>
     </div>
-</section>
+</section> -->
 
 {{-- ✅ COMPONENTS --}}
 @include("component/Doctors_details")

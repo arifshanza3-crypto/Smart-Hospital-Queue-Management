@@ -13,7 +13,7 @@
 /* ============================================ */
 /* ABOUT HERO                                  */
 /* ============================================ */
-.about-hero.hero-with-bg {
+.about-hero {
     background-size: cover !important;
     background-position: center !important;
     background-attachment: fixed;

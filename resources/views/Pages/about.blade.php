@@ -7,7 +7,7 @@
 <link href="{{ asset('css/about-hero.css') }}" rel="stylesheet">
 
 {{-- About Hero --}}
-<section class="about-hero hero-with-bg" 
+<section class="about-hero " 
          style="background: linear-gradient(135deg, rgba(10, 42, 58, 0.88) 0%, rgba(26, 122, 130, 0.75) 100%), 
                 url('{{ asset('Assert/about-hero.png') }}'); background-size: cover; background-position: center; background-attachment: fixed;">
     
